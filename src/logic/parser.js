@@ -1,7 +1,7 @@
 import { Point } from './Point'
 
 const language_de_DE = {
-    id: "de-DE",
+    id: 'de-DE',
     point: 'punkt',
     segment: 'strecke',
     ray: 'strahl',
@@ -39,7 +39,7 @@ const parsePoint = args => {
         return null
     }
 
-    const name = args[0] 
+    const name = args[0]
 
     const x = toNumber(args[1])
     const y = toNumber(args[2])
@@ -68,7 +68,7 @@ const parse = input => {
     switch (first) {
         case lang.point:
             return parsePoint(args)
-            break
+
         default:
             return null
     }

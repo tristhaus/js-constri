@@ -27,7 +27,7 @@ describe('parser logic unit tests', () => {
     describe('point', () => {
 
         test('valid point returns expected', () => {
-            const result = parse(lang.point + " A -0.1 4.3")
+            const result = parse(lang.point + ' A -0.1 4.3')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.point)
@@ -37,25 +37,25 @@ describe('parser logic unit tests', () => {
         })
 
         test('point: too few arguments returns null', () => {
-            const result = parse(lang.point + " A -0.1")
+            const result = parse(lang.point + ' A -0.1')
 
             expect(result).toBeNull()
         })
 
         test('point: invalid name returns null', () => {
-            const result = parse(lang.point + " 999 -0.1 A")
+            const result = parse(lang.point + ' 999 -0.1 A')
 
             expect(result).toBeNull()
         })
 
         test('point: y-coordinate is not a number returns null', () => {
-            const result = parse(lang.point + " A a 4.3")
+            const result = parse(lang.point + ' A a 4.3')
 
             expect(result).toBeNull()
         })
 
         test('point: y-coordinate is not a number returns null', () => {
-            const result = parse(lang.point + " A -0.1 a")
+            const result = parse(lang.point + ' A -0.1 a')
 
             expect(result).toBeNull()
         })
@@ -66,16 +66,16 @@ describe('parser logic unit tests', () => {
 
         if ('de-DE' === lang.id) {
             test('valid point returns expected (de-DE)', () => {
-                const result = parse("punkt A1_b -0.1 4.3")
+                const result = parse('punkt A1_b -0.1 4.3')
 
                 expect(result).not.toBeNull()
                 expect(result.type).toBe(registry.point)
             })
         }
         else {
-            console.log("you really need to implement these syntax tests")
-            test("you really need to implement these syntax tests for your language", () => {
-                expect(false).toBeTrue();
+            console.log('you really need to implement these syntax tests')
+            test('you really need to implement these syntax tests for your language', () => {
+                expect(false).toBeTrue()
             })
         }
     })

@@ -9,5 +9,5 @@ class Point {
         this.type = registry.point
     }
 }
- 
+
 export { Point }
