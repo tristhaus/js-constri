@@ -16,14 +16,14 @@ const lang = {
     allKeywords: Object.values(choice)
 }
 
+const userEnteredNamePattern = /^[a-zA-Z][a-zA-Z_0-9]*$/
+
 const isValidName = candidate => {
     if (typeof candidate !== 'string') {
         return false
     }
 
-    const pattern = /^[a-zA-Z][a-zA-Z_0-9]*$/
-
-    return candidate.match(pattern) !== null
+    return candidate.match(userEnteredNamePattern) !== null
 }
 
 const toNumber = candidate => {
@@ -74,4 +74,4 @@ const parse = input => {
     }
 }
 
-export { lang, parse }
+export { lang, parse, userEnteredNamePattern }
