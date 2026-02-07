@@ -1,6 +1,6 @@
-import { solve } from './solver'
-import { registry } from './registry'
 import { Point } from './Point'
+import { registry } from './registry'
+import { solve } from './solver'
 
 // ~digits of precision
 const jestPrecision = 4

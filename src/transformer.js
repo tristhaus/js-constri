@@ -1,5 +1,5 @@
-import { registry } from './logic/registry'
 import { userEnteredNamePattern } from './logic/parser'
+import { registry } from './logic/registry'
 
 // implementation note: when adding circles, we'll need to add fake points at their extrema such that the draw range is correct.
 

@@ -1,6 +1,6 @@
 import { handleInput } from './inputHandler'
-import { Point } from './Point'
 import { lang } from './parser'
+import { Point } from './Point'
 
 describe('input handler tests', () => {
 

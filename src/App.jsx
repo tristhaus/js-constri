@@ -1,6 +1,8 @@
-import './App.css'
 import { useEffect, useState } from 'react'
 import Plot from 'react-plotly.js'
+
+import './App.css'
+
 import { handleInput } from './logic/inputHandler'
 import { transform } from './transformer'
 

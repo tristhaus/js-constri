@@ -1,5 +1,5 @@
-import { registry } from './registry'
 import { lang, parse } from './parser'
+import { registry } from './registry'
 
 // ~digits of precision
 const jestPrecision = 4
