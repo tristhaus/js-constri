@@ -1,4 +1,5 @@
-import { Point } from './Point'
+import { CommandPoint } from './CommandPoint'
+import { CommandSegment } from './CommandSegment'
 
 const language_de_DE = {
     id: 'de-DE',
@@ -48,7 +49,23 @@ const parsePoint = args => {
         return null
     }
 
-    return new Point(name, x, y)
+    return new CommandPoint(name, x, y)
+}
+
+const parseSegment = args => {
+    if (args.length !== 3) {
+        return null
+    }
+
+    if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
+        return null
+    }
+
+    const name = args[0]
+    const startPointName = args[1]
+    const endPointName = args[2]
+
+    return new CommandSegment(name, startPointName, endPointName)
 }
 
 const parse = input => {
@@ -68,6 +85,9 @@ const parse = input => {
     switch (first) {
         case lang.point:
             return parsePoint(args)
+
+        case lang.segment:
+            return parseSegment(args)
 
         default:
             return null

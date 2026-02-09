@@ -1,6 +1,6 @@
 import { registry } from './registry'
 
-class Point {
+class CommandPoint {
     constructor(name, x, y) {
         this.name = name
         this.x = x
@@ -10,4 +10,4 @@ class Point {
     }
 }
 
-export { Point }
+export { CommandPoint }

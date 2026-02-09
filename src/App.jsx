@@ -39,7 +39,7 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
 }
 
 function App() {
-    const [code, setCode] = useState('punkt A 1 2\npunkt B 3 6')
+    const [code, setCode] = useState('punkt A 1 2\npunkt B 3 6\nstrecke ab A B ')
     const [plotlyData, setPlotlyData] = useState([])
 
     const execute = () => {

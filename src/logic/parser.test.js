@@ -59,7 +59,43 @@ describe('parser logic unit tests', () => {
 
             expect(result).toBeNull()
         })
+    })
 
+    describe('segment', () => {
+
+        test('valid segment returns expected', () => {
+            const result = parse(lang.segment + ' pq P Q')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.segment)
+            expect(result.name).toBe('pq')
+            expect(result.startPointName).toBe('P')
+            expect(result.endPointName).toBe('Q')
+        })
+
+        test('segment: too few arguments returns null', () => {
+            const result = parse(lang.segment + ' pq P')
+
+            expect(result).toBeNull()
+        })
+
+        test('segment: invalid name returns null', () => {
+            const result = parse(lang.segment + ' 0.1 P Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('segment: invalid startPointName returns null', () => {
+            const result = parse(lang.segment + ' pq 0.2 Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('segment: invalid endPointName returns null', () => {
+            const result = parse(lang.segment + ' pq P 0.3s')
+
+            expect(result).toBeNull()
+        })
     })
 
     describe('localized tests', () => {
@@ -70,6 +106,13 @@ describe('parser logic unit tests', () => {
 
                 expect(result).not.toBeNull()
                 expect(result.type).toBe(registry.point)
+            })
+
+            test('valid segment returns expected (de-DE)', () => {
+                const result = parse('strecke ab A B')
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.segment)
             })
         }
         else {

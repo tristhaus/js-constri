@@ -1,6 +1,6 @@
 import { handleInput } from './inputHandler'
 import { lang } from './parser'
-import { Point } from './Point'
+import { ItemPoint } from './ItemPoint'
 
 describe('input handler tests', () => {
 
@@ -15,7 +15,7 @@ describe('input handler tests', () => {
         const collection = handleInput(`${lang.point} Z 1.2 2.0`)
 
         expect(collection).not.toBeNull()
-        expect(collection).toStrictEqual([new Point('Z', 1.2, 2.0)])
+        expect(collection).toStrictEqual([new ItemPoint('Z', 1.2, 2.0)])
     })
 
     test('two valid points returns valid collection', () => {
@@ -26,8 +26,8 @@ describe('input handler tests', () => {
 
         expect(collection).not.toBeNull()
         expect(collection).toStrictEqual([
-            new Point('Z', 1.2, 2.0),
-            new Point('Y', 1.3, 2.1),
+            new ItemPoint('Z', 1.2, 2.0),
+            new ItemPoint('Y', 1.3, 2.1),
         ])
     })
 
