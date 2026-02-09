@@ -98,6 +98,7 @@ function App() {
                         modebar: {
                             remove: ['autoScale2d', 'lasso2d', 'pan2d', 'select2d', 'zoom2d', 'zoomIn2d', 'zoomOut2d'],
                         },
+                        showlegend: false,
                         autosize: false,
                         width: availableWidth,
                         height: availableHeight,

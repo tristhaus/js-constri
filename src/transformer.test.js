@@ -29,6 +29,7 @@ describe('transformer tests', () => {
         expect(collection[0].text).toStrictEqual(['A', 'B', ''])
         expect(collection[0].x).toStrictEqual([1, 3, 5])
         expect(collection[0].y).toStrictEqual([2, 4, 6])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
     })
 
     test('items collection with points and segment returns data', () => {
@@ -49,10 +50,12 @@ describe('transformer tests', () => {
         expect(collection[0].text).toStrictEqual(['A', 'B', ''])
         expect(collection[0].x).toStrictEqual([1, 3, 5])
         expect(collection[0].y).toStrictEqual([2, 4, 6])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
 
         expect(collection[1].type).toStrictEqual('scatter')
         expect(collection[1].mode).toStrictEqual('lines')
         expect(collection[1].x).toStrictEqual([1, 3])
         expect(collection[1].y).toStrictEqual([2, 4])
+        expect(collection[1].line.color).toStrictEqual('#000000')
     })
 })
