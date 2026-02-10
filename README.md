@@ -1,8 +1,6 @@
-# React + Vite
+# Constri in Javascript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Constri is a language to describe geometric construction in 2D. It was originally conceived by Hupfeld Software.
 
-Currently, two official plugins are available:
+This a proof-of-concept to show the feasibility of implementing Constri in JS for use with e.g. smartphones. The German language version is currently deployed at [https://tristhaus.github.io/js-constri/].
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
