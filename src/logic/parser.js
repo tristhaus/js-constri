@@ -1,3 +1,4 @@
+import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandSegment } from './CommandSegment'
 
@@ -29,6 +30,22 @@ const isValidName = candidate => {
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
+}
+
+const parseLine = args => {
+    if (args.length !== 3) {
+        return null
+    }
+
+    if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
+        return null
+    }
+
+    const name = args[0]
+    const startPointName = args[1]
+    const endPointName = args[2]
+
+    return new CommandLine(name, startPointName, endPointName)
 }
 
 const parsePoint = args => {
@@ -83,6 +100,9 @@ const parse = input => {
     const args = allArgs.slice(1)
 
     switch (first) {
+        case lang.line:
+            return parseLine(args)
+
         case lang.point:
             return parsePoint(args)
 

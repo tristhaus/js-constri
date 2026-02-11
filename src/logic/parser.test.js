@@ -24,6 +24,43 @@ describe('parser logic unit tests', () => {
         expect(result).toBeNull()
     })
 
+    describe('line', () => {
+
+        test('valid line returns expected', () => {
+            const result = parse(lang.line + ' pq P Q')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.line)
+            expect(result.name).toBe('pq')
+            expect(result.startPointName).toBe('P')
+            expect(result.endPointName).toBe('Q')
+        })
+
+        test('line: too few arguments returns null', () => {
+            const result = parse(lang.line + ' pq P')
+
+            expect(result).toBeNull()
+        })
+
+        test('line: invalid name returns null', () => {
+            const result = parse(lang.line + ' 0.1 P Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('line: invalid startPointName returns null', () => {
+            const result = parse(lang.line + ' pq 0.2 Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('line: invalid endPointName returns null', () => {
+            const result = parse(lang.line + ' pq P 0.3s')
+
+            expect(result).toBeNull()
+        })
+    })
+
     describe('point', () => {
 
         test('valid point returns expected', () => {
@@ -101,6 +138,13 @@ describe('parser logic unit tests', () => {
     describe('localized tests', () => {
 
         if ('de-DE' === lang.id) {
+            test('valid line returns expected (de-DE)', () => {
+                const result = parse('gerade ab A B')
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.line)
+            })
+
             test('valid point returns expected (de-DE)', () => {
                 const result = parse('punkt A1_b -0.1 4.3')
 

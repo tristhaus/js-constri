@@ -1,6 +1,39 @@
 import { userEnteredNamePattern } from './logic/parser'
 import { registry } from './logic/registry'
 
+const findExtrema = points => {
+    const allX = points.map(p => p.x)
+    const allY = points.map(p => p.y)
+
+    return {
+        minX: Math.min(...allX),
+        maxX: Math.max(...allX),
+        minY: Math.min(...allY),
+        maxY: Math.max(...allY),
+    }
+}
+
+const createPlotlyDataFromLine = (line, currentColor, extrema) => {
+    const ESx = Math.abs((line.startPoint.x - line.endPoint.x) * ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+    const ESy = Math.abs((line.startPoint.y - line.endPoint.y) * ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+
+    const lowerX = Math.min(line.startPoint.x, line.endPoint.x) - ESx
+    const upperX = Math.max(line.startPoint.x, line.endPoint.x) + ESx
+
+    const lowerY = Math.min(line.startPoint.y, line.endPoint.y) - ESy
+    const upperY = Math.max(line.startPoint.y, line.endPoint.y) + ESy
+
+    const linePlotlyData = {
+        x: [lowerX, upperX],
+        y: [lowerY, upperY],
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: currentColor, },
+    }
+
+    return linePlotlyData
+}
+
 const createPlotlyDataFromSegment = (segment, currentColor) => {
     const segmentPlotlyData = {
         x: [segment.startPoint.x, segment.endPoint.x],
@@ -18,14 +51,21 @@ const createPlotlyDataFromSegment = (segment, currentColor) => {
 const transform = items => {
     let currentColor = registry.colors.black
 
+    const extrema = findExtrema(items.filter(x => x.type === registry.point))
+
     const pointsX = []
     const pointsY = []
     const pointsLabel = []
 
+    const linesPlotlyDatas = []
     const segmentsPlotlyDatas = []
 
     for (const item of items) {
         switch (item.type) {
+            case registry.line:
+                linesPlotlyDatas.push(createPlotlyDataFromLine(item, currentColor, extrema))
+                break
+
             case registry.point:
                 pointsLabel.push(item.name.match(userEnteredNamePattern) !== null ? item.name : '')
                 pointsX.push(item.x)
@@ -52,7 +92,7 @@ const transform = items => {
         marker: { color: '#000000', },
     }
 
-    return [pointsPlotlyData, ...segmentsPlotlyDatas]
+    return [pointsPlotlyData, ...segmentsPlotlyDatas, ...linesPlotlyDatas]
 }
 
 export { transform }
