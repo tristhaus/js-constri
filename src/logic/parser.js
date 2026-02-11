@@ -1,3 +1,4 @@
+import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandSegment } from './CommandSegment'
@@ -8,6 +9,8 @@ const language_de_DE = {
     segment: 'strecke',
     ray: 'strahl',
     line: 'gerade',
+    name: 'bez',
+    intersection: 'sp',
 }
 
 // if you choose a different language here, you also need to adapt the tests
@@ -30,6 +33,18 @@ const isValidName = candidate => {
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
+}
+
+const parseIntersection = args => {
+    if (args.length < 3 || args.length > 4) {
+        return null
+    }
+
+    if (!args.every(x => isValidName(x))) {
+        return null
+    }
+
+    return new CommandIntersection(args[0], args[1], args.slice(2))
 }
 
 const parseLine = args => {
@@ -100,6 +115,14 @@ const parse = input => {
     const args = allArgs.slice(1)
 
     switch (first) {
+        case lang.name:
+
+            // implementation note: alternative 'angle' is to come
+            if (args[0] !== lang.intersection) {
+                return null
+            }
+            return parseIntersection(args.slice(1))
+
         case lang.line:
             return parseLine(args)
 

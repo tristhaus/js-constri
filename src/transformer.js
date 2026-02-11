@@ -14,14 +14,16 @@ const findExtrema = points => {
 }
 
 const createPlotlyDataFromLine = (line, currentColor, extrema) => {
-    const ESx = Math.abs((line.startPoint.x - line.endPoint.x) * ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
-    const ESy = Math.abs((line.startPoint.y - line.endPoint.y) * ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+    const ESx = line.startPoint.x - line.endPoint.x
+    const ESy = line.startPoint.y - line.endPoint.y
 
-    const lowerX = Math.min(line.startPoint.x, line.endPoint.x) - ESx
-    const upperX = Math.max(line.startPoint.x, line.endPoint.x) + ESx
+    const factor = Math.max(2, ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
 
-    const lowerY = Math.min(line.startPoint.y, line.endPoint.y) - ESy
-    const upperY = Math.max(line.startPoint.y, line.endPoint.y) + ESy
+    const lowerX = line.startPoint.x + ESx * factor
+    const upperX = line.endPoint.x - ESx * factor
+
+    const lowerY = line.startPoint.y + ESy * factor
+    const upperY = line.endPoint.y - ESy * factor
 
     const linePlotlyData = {
         x: [lowerX, upperX],

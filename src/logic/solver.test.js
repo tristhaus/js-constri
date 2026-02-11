@@ -1,3 +1,4 @@
+import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandSegment } from './CommandSegment'
@@ -11,6 +12,609 @@ import { solve } from './solver'
 const jestPrecision = 4
 
 describe('solver logic unit tests', () => {
+
+    describe('name intersection unit tests', () => {
+
+        test('duplicate name (1) returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+            const segmentAC = new ItemSegment('ac', pointA, pointC)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                pointC,
+                segmentAB,
+                segmentAC,
+            ] }
+
+            const result = solve(new CommandIntersection('ab', 'ac', ['B']), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('duplicate name (2) returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+            const segmentAC = new ItemSegment('ac', pointA, pointC)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                pointC,
+                segmentAB,
+                segmentAC,
+            ] }
+
+            const result = solve(new CommandIntersection('ab', 'ac', ['D', 'B']), state)
+
+            expect(result).toBeNull()
+        })
+
+        describe('two lines unit tests', () => {
+
+            test('non-vertical lines crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 1.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('non-vertical lines crossing at origin', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, -3.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('vertical and horizontal line crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, 3.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(-2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('vertical and skew line crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 4.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 6.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(5, jestPrecision)
+            })
+
+            test('non-vertical parallel lines not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 4.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('non-vertical identical lines not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 3.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 4.0, 4.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical parallel lines not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 2.0, 1.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 2.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical identical lines not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 1.0, 4.0)
+                const lineA = new ItemLine('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    lineA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+        })
+
+        describe('two segments unit tests', () => {
+
+            test('non-vertical segments crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 1.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('non-vertical short segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 2.5, 2.5)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 1.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('non-vertical segments crossing at origin', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, -3.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('non-vertical short segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 0.5)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, -3.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical and horizontal segments crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', -3.0, 0.0)
+                const pointB2 = new ItemPoint('B2', -1.0, 0.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(-2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('vertical and horizontal short segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, 3.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical and skew segments crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 7.0)
+                const pointA2 = new ItemPoint('A2', 2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 4.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 6.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(5, jestPrecision)
+            })
+
+            test('short vertical and skew segment not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 4.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 6.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('non-vertical parallel segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 6.0, 6.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 4.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('non-vertical identical segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 1.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 2.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical parallel segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 2.0, 1.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 2.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical identical segments not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 1.0)
+                const pointB2 = new ItemPoint('B2', 1.0, 2.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const segmentB = new ItemSegment('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    segmentB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+        })
+
+        describe('segment plus line unit tests', () => {
+
+            test('segment and line crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 0.0, 0.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 1.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('short segment and line not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 0.0, 0.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 3.0, 1.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const lineB = new ItemLine('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+        })
+    })
 
     describe('line logic unit tests', () => {
 
