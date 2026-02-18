@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import Plot from 'react-plotly.js'
 
-import './App.css'
-
+import Help from './Help'
 import { handleInput } from './logic/inputHandler'
 import { transform } from './transformer'
 
@@ -38,6 +37,7 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
 }
 
 function App() {
+    const [showHelp, setShowHelp] = useState(false)
     const [code, setCode] = useState('punkt A 1 2\npunkt B 3 6\nstrecke ab A B')
     const [plotlyData, setPlotlyData] = useState([])
 
@@ -81,6 +81,7 @@ function App() {
 
     return (
         <>
+            {showHelp && <Help closeAction={() => setShowHelp(false)}/>}
             <div>
                 <Plot
                     data={plotlyData}
@@ -124,6 +125,7 @@ function App() {
             <div>
                 <textarea value={code} onChange={e => setCode(e.target.value)} />
                 <button onClick={() => execute()}>Ausführen</button>
+                <button onClick={() => setShowHelp(true)}>Hilfe</button>
             </div>
         </>
     )
