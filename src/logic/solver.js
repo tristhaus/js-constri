@@ -1,5 +1,6 @@
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
+import { ItemRay } from './ItemRay'
 import { ItemSegment } from './ItemSegment'
 import { registry } from './registry'
 
@@ -35,6 +36,21 @@ const findInterval = lineLike => {
         Sy = Number.NEGATIVE_INFINITY
         Ex = Number.POSITIVE_INFINITY
         Ey = Number.POSITIVE_INFINITY
+    }
+
+    if (lineLike.type === registry.ray) {
+        if (lineLike.startPoint.x < lineLike.endPoint.x) {
+            Ex = Number.POSITIVE_INFINITY
+        }
+        if (lineLike.startPoint.x > lineLike.endPoint.x) {
+            Sx = Number.NEGATIVE_INFINITY
+        }
+        if (lineLike.startPoint.y < lineLike.endPoint.y) {
+            Ey = Number.POSITIVE_INFINITY
+        }
+        if (lineLike.startPoint.y > lineLike.endPoint.y) {
+            Sy = Number.NEGATIVE_INFINITY
+        }
     }
 
     return {
@@ -93,8 +109,8 @@ const solveIntersection = (commandIntersection, state) => {
     const itemA = state.collection.find(x => x.name === commandIntersection.itemAName)
     const itemB = state.collection.find(x => x.name === commandIntersection.itemBName)
 
-    if (!(itemA?.type === registry.line || itemA?.type === registry.segment) ||
-        !(itemB?.type === registry.line || itemB?.type === registry.segment))
+    if (!(itemA?.type === registry.line || itemA?.type === registry.ray || itemA?.type === registry.segment) ||
+        !(itemB?.type === registry.line || itemB?.type === registry.ray || itemB?.type === registry.segment))
     {
         return null
     }
@@ -129,6 +145,30 @@ const solveLine = (commandLine, state) => {
 const solvePoint = (commandPoint, state) => {
     const itemPoint = new ItemPoint(commandPoint.name, commandPoint.x, commandPoint.y)
     state.collection.push(itemPoint)
+    return state
+}
+
+const solveRay = (commandRay, state) => {
+    if (commandRay.startPointName === commandRay.endPointName) {
+        return null
+    }
+
+    const startPoint = state.collection.find(x => x.name === commandRay.startPointName)
+    if (startPoint === undefined || startPoint.type !== registry.point) {
+        return null
+    }
+
+    const endPoint = state.collection.find(x => x.name === commandRay.endPointName)
+    if (endPoint === undefined || endPoint.type !== registry.point) {
+        return null
+    }
+
+    if (pointsSeemIdentical(startPoint, endPoint)) {
+        return null
+    }
+
+    const itemRay = new ItemRay(commandRay.name, startPoint, endPoint)
+    state.collection.push(itemRay)
     return state
 }
 
@@ -175,6 +215,9 @@ const solve = (item, state) => {
 
         case registry.point:
             return solvePoint(item, state)
+
+        case registry.ray:
+            return solveRay(item, state)
 
         case registry.segment:
             return solveSegment(item, state)

@@ -36,6 +36,26 @@ const createPlotlyDataFromLine = (line, currentColor, extrema) => {
     return linePlotlyData
 }
 
+const createPlotlyDataFromRay = (ray, currentColor, extrema) => {
+    const ESx = ray.startPoint.x - ray.endPoint.x
+    const ESy = ray.startPoint.y - ray.endPoint.y
+
+    const factor = Math.max(2, ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+
+    const upperX = ray.endPoint.x - ESx * factor
+    const upperY = ray.endPoint.y - ESy * factor
+
+    const rayPlotlyData = {
+        x: [ray.startPoint.x, upperX],
+        y: [ray.startPoint.y, upperY],
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: currentColor, },
+    }
+
+    return rayPlotlyData
+}
+
 const createPlotlyDataFromSegment = (segment, currentColor) => {
     const segmentPlotlyData = {
         x: [segment.startPoint.x, segment.endPoint.x],
@@ -72,6 +92,10 @@ const transform = items => {
                 pointsLabel.push(item.name.match(userEnteredNamePattern) !== null ? item.name : '')
                 pointsX.push(item.x)
                 pointsY.push(item.y)
+                break
+
+            case registry.ray:
+                segmentsPlotlyDatas.push(createPlotlyDataFromRay(item, currentColor, extrema))
                 break
 
             case registry.segment:

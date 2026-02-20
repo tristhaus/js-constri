@@ -26,9 +26,14 @@ const Help = ({ closeAction }) => {
                                     <td>Zeichne die Strecke <span className="command">c</span> von Punkt <span className="command">A</span> nach Punkt <span className="command">B</span></td>
                                 </tr>
                                 <tr>
-                                    <td className="command">gerade g D E</td>
+                                    <td className="command">strahl de D E</td>
                                     <td></td>
-                                    <td>Zeichne die Gerade <span className="command">g</span> durch die Punkte <span className="command">D</span> und <span className="command">E</span></td>
+                                    <td>Zeichne den Strahl <span className="command">de</span> ausgehend von <span className="command">D</span> durch <span className="command">E</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">gerade g F G</td>
+                                    <td></td>
+                                    <td>Zeichne die Gerade <span className="command">g</span> durch die Punkte <span className="command">F</span> und <span className="command">G</span></td>
                                 </tr>
                                 <tr>
                                     <td className="command">bez sp c g Z</td>

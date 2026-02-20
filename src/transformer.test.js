@@ -1,5 +1,6 @@
 import { ItemLine } from './logic/ItemLine'
 import { ItemPoint } from './logic/ItemPoint'
+import { ItemRay } from './logic/ItemRay'
 import { ItemSegment } from './logic/ItemSegment'
 import { transform } from './transformer'
 
@@ -69,6 +70,33 @@ describe('transformer tests', () => {
             pointB,
             new ItemPoint('$x', 5, 4),
             new ItemLine('ab', pointA, pointB)
+        ])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual(['A', 'B', ''])
+        expect(collection[0].x).toStrictEqual([1, 3, 5])
+        expect(collection[0].y).toStrictEqual([2, 6, 4])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines')
+        const slope = (collection[1].y[0] - collection[1].y[1]) / (collection[1].x[0] - collection[1].x[1])
+        expect(slope).toBeCloseTo(2)
+        expect(collection[1].line.color).toStrictEqual('#000000')
+    })
+
+    test('items collection with points and ray returns data', () => {
+        const pointA = new ItemPoint('A', 1, 2)
+        const pointB = new ItemPoint('B', 3, 6)
+
+        const collection = transform([
+            pointA,
+            pointB,
+            new ItemPoint('$x', 5, 4),
+            new ItemRay('ab', pointA, pointB)
         ])
 
         expect(collection.length).toBe(2)

@@ -50,6 +50,13 @@ describe('parser logic unit tests', () => {
                 expect(result.type).toBe(registry.point)
             })
 
+            test('valid ray returns expected (de-DE)', () => {
+                const result = parse('strahl ab A B')
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.ray)
+            })
+
             test('valid segment returns expected (de-DE)', () => {
                 const result = parse('strecke ab A B')
 
@@ -205,6 +212,49 @@ describe('parser logic unit tests', () => {
 
         test('point: y-coordinate is not a number returns null', () => {
             const result = parse(lang.point + ' A -0.1 a')
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe('ray', () => {
+
+        test('valid ray returns expected', () => {
+            const result = parse(lang.ray + ' pq P Q')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.ray)
+            expect(result.name).toBe('pq')
+            expect(result.startPointName).toBe('P')
+            expect(result.endPointName).toBe('Q')
+        })
+
+        test('ray: too few arguments returns null', () => {
+            const result = parse(lang.ray + ' pq P')
+
+            expect(result).toBeNull()
+        })
+
+        test('ray: too many arguments returns null', () => {
+            const result = parse(lang.ray + ' pq P Q R')
+
+            expect(result).toBeNull()
+        })
+
+        test('ray: invalid name returns null', () => {
+            const result = parse(lang.ray + ' 0.1 P Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('ray: invalid startPointName returns null', () => {
+            const result = parse(lang.ray + ' pq 0.2 Q')
+
+            expect(result).toBeNull()
+        })
+
+        test('ray: invalid endPointName returns null', () => {
+            const result = parse(lang.ray + ' pq P 0.3')
 
             expect(result).toBeNull()
         })

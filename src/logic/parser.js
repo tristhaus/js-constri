@@ -1,6 +1,7 @@
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
+import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
 
 const language_de_DE = {
@@ -84,6 +85,22 @@ const parsePoint = args => {
     return new CommandPoint(name, x, y)
 }
 
+const parseRay = args => {
+    if (args.length !== 3) {
+        return null
+    }
+
+    if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
+        return null
+    }
+
+    const name = args[0]
+    const startPointName = args[1]
+    const endPointName = args[2]
+
+    return new CommandRay(name, startPointName, endPointName)
+}
+
 const parseSegment = args => {
     if (args.length !== 3) {
         return null
@@ -128,6 +145,9 @@ const parse = input => {
 
         case lang.point:
             return parsePoint(args)
+
+        case lang.ray:
+            return parseRay(args)
 
         case lang.segment:
             return parseSegment(args)

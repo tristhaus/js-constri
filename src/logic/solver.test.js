@@ -1,9 +1,11 @@
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
+import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
+import { ItemRay } from './ItemRay'
 import { ItemSegment } from './ItemSegment'
 import { registry } from './registry'
 import { solve } from './solver'
@@ -253,6 +255,231 @@ describe('solver logic unit tests', () => {
                     pointB2,
                     lineA,
                     lineB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+        })
+
+        describe('two rays unit tests', () => {
+
+            test('non-vertical rays crossing anywhere (1)', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 2.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 6.0)
+                const pointB1 = new ItemPoint('B1', 6.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 5.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(1.5, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3.0, jestPrecision)
+            })
+
+            test('non-vertical rays not crossing due to direction (1)', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 2.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 6.0)
+                const pointB1 = new ItemPoint('B1', 5.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 6.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('non-vertical rays crossing anywhere (2)', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 2.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 6.0)
+                const pointB1 = new ItemPoint('B1', -6.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -5.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(1.5, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3.0, jestPrecision)
+            })
+
+            test('non-vertical rays not crossing due to direction (2)', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 2.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 6.0)
+                const pointB1 = new ItemPoint('B1', -5.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -6.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical and horizontal rays crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, -1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, 1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(-2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('vertical and horizontal rays not crossing due to direction (1)', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, 1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, -1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', -1.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('vertical and horizontal rays not crossing due to direction (2)', () => {
+                const pointA1 = new ItemPoint('A1', -2.0, -1.0)
+                const pointA2 = new ItemPoint('A2', -2.0, 1.0)
+                const pointB1 = new ItemPoint('B1', -1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 1.0, 3.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('parallel rays not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 2.0, 4.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('identical rays not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 1.0, 1.0)
+                const pointA2 = new ItemPoint('A2', 2.0, 2.0)
+                const pointB1 = new ItemPoint('B1', 3.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 4.0, 4.0)
+                const rayA = new ItemRay('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    rayA,
+                    rayB,
                 ] }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
@@ -614,6 +841,83 @@ describe('solver logic unit tests', () => {
                 expect(result.collection.length).toBe(6)
             })
         })
+
+        describe('segment plus ray unit tests', () => {
+
+            test('segment and ray crossing anywhere', () => {
+                const pointA1 = new ItemPoint('A1', 0.0, 0.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 1.5, 2.5)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Iab')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('short segment and ray not crossing', () => {
+                const pointA1 = new ItemPoint('A1', 0.0, 0.0)
+                const pointA2 = new ItemPoint('A2', 1.0, 1.0)
+                const pointB1 = new ItemPoint('B1', 1.0, 3.0)
+                const pointB2 = new ItemPoint('B2', 1.5, 2.5)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+
+            test('segment and ray not crossing due to direction', () => {
+                const pointA1 = new ItemPoint('A1', 0.0, 0.0)
+                const pointA2 = new ItemPoint('A2', 3.0, 3.0)
+                const pointB1 = new ItemPoint('B1', 1.5, 2.5)
+                const pointB2 = new ItemPoint('B2', 1.0, 3.0)
+                const segmentA = new ItemSegment('la', pointA1, pointA2)
+                const rayB = new ItemRay('lb', pointB1, pointB2)
+
+                const state = { collection: [
+                    pointA1,
+                    pointA2,
+                    pointB1,
+                    pointB2,
+                    segmentA,
+                    rayB,
+                ] }
+
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+            })
+        })
     })
 
     describe('line logic unit tests', () => {
@@ -810,6 +1114,173 @@ describe('solver logic unit tests', () => {
             expect(result.collection[1].name).toBe('B')
             expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
             expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+        })
+    })
+
+    describe('ray logic unit tests', () => {
+
+        test('duplicate name returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+            ] }
+
+            const result = solve(new CommandRay('ab', 'A', 'B'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('valid ray input returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'A', 'C'), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(5)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.ray)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.point)
+            expect(result.collection[3].name).toBe('C')
+            expect(result.collection[3].x).toBeCloseTo(5, jestPrecision)
+            expect(result.collection[3].y).toBeCloseTo(6, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.ray)
+            expect(result.collection[4].name).toBe('ac')
+            expect(result.collection[4].startPoint.name).toBe('A')
+            expect(result.collection[4].endPoint.name).toBe('C')
+        })
+
+        test('ray with identical start and end points returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'A', 'A'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('ray with reference to non-existent start point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'Z', 'C'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('ray with reference to start that is not a point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'ab', 'C'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('ray with reference to non-existent end point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'A', 'Z'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('ray with reference to end that is not a point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+                pointC,
+            ] }
+
+            const result = solve(new CommandRay('ac', 'A', 'ab'), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('ray with very close start and end poitns returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 1.0, 2.000001)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+            ] }
+
+            const result = solve(new CommandRay('ab', 'A', 'B'), state)
+
+            expect(result).toBeNull()
         })
     })
 
