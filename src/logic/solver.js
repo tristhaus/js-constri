@@ -1,3 +1,4 @@
+import { ItemCircle } from './ItemCircle'
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
 import { ItemRay } from './ItemRay'
@@ -14,6 +15,32 @@ const initState = () => {
 
 const pointsSeemIdentical = (pointA, pointB) => {
     return (pointA.x - pointB.x)**2 + (pointA.y - pointB.y)**2 < epsilon
+}
+
+const solveCircle = (commandCircle, state) => {
+    const centerPoint = state.collection.find(x => x.name === commandCircle.centerName)
+    if (centerPoint === undefined || centerPoint.type !== registry.point) {
+        return null
+    }
+
+    if (commandCircle.radius < epsilon) {
+        return null
+    }
+
+    const extremaPoints = [
+        new ItemPoint(`!${commandCircle.name}.circle.px`, centerPoint.x + commandCircle.radius, centerPoint.y),
+        new ItemPoint(`!${commandCircle.name}.circle.nx`, centerPoint.x - commandCircle.radius, centerPoint.y),
+        new ItemPoint(`!${commandCircle.name}.circle.py`, centerPoint.x, centerPoint.y + commandCircle.radius),
+        new ItemPoint(`!${commandCircle.name}.circle.ny`, centerPoint.x, centerPoint.y - commandCircle.radius),
+    ]
+
+    if (extremaPoints.some(p => state.collection.some(x => x.name === p.name))) {
+        return null
+    }
+
+    const itemCircle = new ItemCircle(commandCircle.name, centerPoint, commandCircle.radius, extremaPoints)
+    state.collection.push(itemCircle, ...extremaPoints)
+    return state
 }
 
 // returns [a, b, c] of a*x + b*y = c
@@ -201,26 +228,29 @@ const solveSegment = (commandSegment, state) => {
 // this may create items with names not matching allowed user input
 // points starting with '$'
 //  - will not display names
-const solve = (item, state) => {
-    if (state.collection.some(x => x.name === item.name || item.names?.some(y => y === x.name))) {
+const solve = (command, state) => {
+    if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name))) {
         return null
     }
 
-    switch (item.type) {
+    switch (command.type) {
+        case registry.circle:
+            return solveCircle(command, state)
+
         case registry.intersection:
-            return solveIntersection(item, state)
+            return solveIntersection(command, state)
 
         case registry.line:
-            return solveLine(item, state)
+            return solveLine(command, state)
 
         case registry.point:
-            return solvePoint(item, state)
+            return solvePoint(command, state)
 
         case registry.ray:
-            return solveRay(item, state)
+            return solveRay(command, state)
 
         case registry.segment:
-            return solveSegment(item, state)
+            return solveSegment(command, state)
 
         default:
             return null

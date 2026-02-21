@@ -13,6 +13,43 @@ const findExtrema = points => {
     }
 }
 
+const createPlotlyDataFromCircle = (circle, currentColor) => {
+    const xData = []
+    const yPositiveBranch = []
+    const yNegativeBranch = []
+
+    const intervals = 100
+    const squaredRadius = circle.radius * circle.radius
+
+    // be sure to get `interval / interval * Math.PI`
+    for (let i = 0; i <= intervals; i++) {
+        // 'local' variables are with origin = circle.centerPoint, i.e.
+        // before translating to true coordinate system
+        const localX = Math.cos(Math.PI * i / intervals) * circle.radius
+        const localY = Math.sqrt(squaredRadius - localX * localX)
+
+        xData.push(localX + circle.centerPoint.x)
+        yPositiveBranch.push( localY + circle.centerPoint.y)
+        yNegativeBranch.push(-localY + circle.centerPoint.y)
+    }
+
+    yNegativeBranch.reverse()
+    const revXData = [...xData]
+    revXData.reverse()
+
+    const circlePlotlyData = {
+        x: [...xData, ...revXData],
+        y: [...yPositiveBranch, ...yNegativeBranch],
+        text: [`    ${circle.name}`],
+        textposition: 'middleright',
+        type: 'scatter',
+        mode: 'lines+text',
+        line: { color: currentColor, },
+    }
+
+    return circlePlotlyData
+}
+
 const createPlotlyDataFromLine = (line, currentColor, extrema) => {
     const ESx = line.startPoint.x - line.endPoint.x
     const ESy = line.startPoint.y - line.endPoint.y
@@ -68,8 +105,6 @@ const createPlotlyDataFromSegment = (segment, currentColor) => {
     return segmentPlotlyData
 }
 
-// implementation note: when adding circles, we'll need to add fake points at their extrema such that the draw range is correct.
-
 const transform = items => {
     let currentColor = registry.colors.black
 
@@ -79,23 +114,38 @@ const transform = items => {
     const pointsY = []
     const pointsLabel = []
 
+    const fakePointsX = []
+    const fakePointsY = []
+
+    const cirlePlotlyDatas = []
     const linesPlotlyDatas = []
+    const raysPlotlyDatas = []
     const segmentsPlotlyDatas = []
 
     for (const item of items) {
         switch (item.type) {
+            case registry.circle:
+                cirlePlotlyDatas.push(createPlotlyDataFromCircle(item, currentColor))
+                break
+
             case registry.line:
                 linesPlotlyDatas.push(createPlotlyDataFromLine(item, currentColor, extrema))
                 break
 
             case registry.point:
+                if (item.name.startsWith('!')) {
+                    fakePointsX.push(item.x)
+                    fakePointsY.push(item.y)
+                    break
+                }
+
                 pointsLabel.push(item.name.match(userEnteredNamePattern) !== null ? item.name : '')
                 pointsX.push(item.x)
                 pointsY.push(item.y)
                 break
 
             case registry.ray:
-                segmentsPlotlyDatas.push(createPlotlyDataFromRay(item, currentColor, extrema))
+                raysPlotlyDatas.push(createPlotlyDataFromRay(item, currentColor, extrema))
                 break
 
             case registry.segment:
@@ -118,7 +168,12 @@ const transform = items => {
         marker: { color: '#000000', },
     }
 
-    return [pointsPlotlyData, ...segmentsPlotlyDatas, ...linesPlotlyDatas]
+    const fakePointsPlotlyData = {
+        x: fakePointsX,
+        y: fakePointsY,
+    }
+
+    return [[pointsPlotlyData, ...cirlePlotlyDatas, ...linesPlotlyDatas, ...raysPlotlyDatas, ...segmentsPlotlyDatas], fakePointsPlotlyData]
 }
 
 export { transform }

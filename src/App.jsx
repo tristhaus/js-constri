@@ -40,15 +40,20 @@ function App() {
     const [showHelp, setShowHelp] = useState(false)
     const [code, setCode] = useState('punkt A 1 2\npunkt B 3 6\nstrecke ab A B')
     const [plotlyData, setPlotlyData] = useState([])
+    const [auxPointsData, setAuxPointsData] = useState({ x: [], y: [] })
 
     const execute = () => {
         const items = handleInput(code)
 
         if (items !== null) {
-            const newPlotlyData = transform(items)
+            const [newPlotlyData, newAuxPointsData] = transform(items)
 
             if (newPlotlyData !== null) {
                 setPlotlyData(newPlotlyData)
+            }
+
+            if (newAuxPointsData !== null) {
+                setAuxPointsData(newAuxPointsData)
             }
         }
         else {
@@ -76,7 +81,7 @@ function App() {
     const aspectRatio = availableHeight / availableWidth
 
     const [xRange, yRange] = (plotlyData.length > 0)
-        ? calculateRanges(plotlyData[0].x, plotlyData[0].y, aspectRatio)
+        ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x), plotlyData[0].y.concat(auxPointsData.y), aspectRatio)
         : calculateRanges([0, 5], [0, 5], aspectRatio)
 
     return (

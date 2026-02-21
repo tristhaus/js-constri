@@ -36,14 +36,19 @@ const Help = ({ closeAction }) => {
                                     <td>Zeichne die Gerade <span className="command">g</span> durch die Punkte <span className="command">F</span> und <span className="command">G</span></td>
                                 </tr>
                                 <tr>
+                                    <td className="command">kreis k A 6.0</td>
+                                    <td></td>
+                                    <td>Zeichne den Kreis <span className="command">k</span> um den Mittelpunkt <span className="command">A</span> mit dem Radius <span className="command">6.0</span></td>
+                                </tr>
+                                <tr>
                                     <td className="command">bez sp c g Z</td>
                                     <td></td>
-                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span></td>
+                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>.<span style={{ color: 'red' }}> Kreise funktionieren noch nicht.</span></td>
                                 </tr>
                             </tbody>
                         </table>
                         <h4>Über JS-Constri</h4>
-                        Eine work-in-progress Reimplementierung von Constri in Javascript.<br/>Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri">hier</a> (nicht mein Inhalt, fremde Seite).
+                        Eine work-in-progress Reimplementierung von Constri in Javascript.<br/>Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">hier</a> (nicht mein Inhalt, fremde Seite).
                     </div>
                 </div>
             </div>

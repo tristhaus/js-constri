@@ -1,4 +1,5 @@
 const registry = {
+    circle: 'circle_t',
     intersection: 'intersection_t',
     line: 'line_t',
     point: 'point_t',
@@ -7,7 +8,7 @@ const registry = {
 
     colors: {
         black: '#000000'
-    }
+    },
 }
 
 export { registry }

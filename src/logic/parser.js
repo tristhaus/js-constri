@@ -1,3 +1,4 @@
+import { CommandCircle } from './CommandCircle'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
@@ -6,12 +7,13 @@ import { CommandSegment } from './CommandSegment'
 
 const language_de_DE = {
     id: 'de-DE',
-    point: 'punkt',
-    segment: 'strecke',
-    ray: 'strahl',
+    circle: 'kreis',
+    intersection: 'sp',
     line: 'gerade',
     name: 'bez',
-    intersection: 'sp',
+    point: 'punkt',
+    ray: 'strahl',
+    segment: 'strecke',
 }
 
 // if you choose a different language here, you also need to adapt the tests
@@ -34,6 +36,26 @@ const isValidName = candidate => {
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
+}
+
+const parseCircle = args => {
+    if (args.length !== 3) {
+        return null
+    }
+
+    if (!isValidName(args[0]) || !isValidName(args[1])) {
+        return null
+    }
+
+    const name = args[0]
+    const centerName = args[1]
+    const radius = toNumber(args[2])
+
+    if (Number.isNaN(radius)) {
+        return null
+    }
+
+    return new CommandCircle(name, centerName, radius)
 }
 
 const parseIntersection = args => {
@@ -132,6 +154,12 @@ const parse = input => {
     const args = allArgs.slice(1)
 
     switch (first) {
+        case lang.circle:
+            return parseCircle(args)
+
+        case lang.line:
+            return parseLine(args)
+
         case lang.name:
 
             // implementation note: alternative 'angle' is to come
@@ -139,9 +167,6 @@ const parse = input => {
                 return null
             }
             return parseIntersection(args.slice(1))
-
-        case lang.line:
-            return parseLine(args)
 
         case lang.point:
             return parsePoint(args)

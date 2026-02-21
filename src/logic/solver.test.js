@@ -1,8 +1,10 @@
+import { CommandCircle } from './CommandCircle'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
+import { ItemCircle } from './ItemCircle'
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
 import { ItemRay } from './ItemRay'
@@ -14,6 +16,111 @@ import { solve } from './solver'
 const jestPrecision = 4
 
 describe('solver logic unit tests', () => {
+
+    describe('circle logic unit tests', () => {
+
+        test('duplicate name returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const circleK = new ItemCircle('k', pointA, 3.0)
+
+            const state = { collection: [
+                pointA,
+                circleK,
+            ] }
+
+            const result = solve(new CommandCircle('k', 'A', 3.0), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('valid circle input returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+
+            const state = { collection: [
+                pointA,
+            ] }
+
+            const result = solve(new CommandCircle('k', 'A', 3.0), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.circle)
+            expect(result.collection[1].name).toBe('k')
+            expect(result.collection[1].centerPoint.x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[1].centerPoint.y).toBeCloseTo(2, jestPrecision)
+            expect(result.collection[1].radius).toBeCloseTo(3.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.point)
+            expect(result.collection[2].name).toBe('!k.circle.px')
+            expect(result.collection[2].x).toBeCloseTo(4, jestPrecision)
+            expect(result.collection[2].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[3].type).toBe(registry.point)
+            expect(result.collection[3].name).toBe('!k.circle.nx')
+            expect(result.collection[3].x).toBeCloseTo(-2, jestPrecision)
+            expect(result.collection[3].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!k.circle.py')
+            expect(result.collection[4].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(5, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.point)
+            expect(result.collection[5].name).toBe('!k.circle.ny')
+            expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[5].y).toBeCloseTo(-1, jestPrecision)
+        })
+
+        test('circle with reference to non-existent center point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+
+            const state = { collection: [
+                pointA,
+            ] }
+
+            const result = solve(new CommandCircle('k', 'B', 3.0), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('circle with reference to center that is not a point returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result = solve(new CommandCircle('k', 'ab', 3.0), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('circle with too small radius returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+
+            const state = { collection: [
+                pointA,
+            ] }
+
+            const result1 = solve(new CommandCircle('k', 'A', 0.0), state)
+
+            expect(result1).toBeNull()
+
+            const result2 = solve(new CommandCircle('k', 'A', -1.0), state)
+
+            expect(result2).toBeNull()
+        })
+    })
 
     describe('name intersection unit tests', () => {
 
@@ -1072,7 +1179,7 @@ describe('solver logic unit tests', () => {
             expect(result).toBeNull()
         })
 
-        test('line with very close start and end poitns returns null', () => {
+        test('line with very close start and end points returns null', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
@@ -1269,7 +1376,7 @@ describe('solver logic unit tests', () => {
             expect(result).toBeNull()
         })
 
-        test('ray with very close start and end poitns returns null', () => {
+        test('ray with very close start and end points returns null', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
@@ -1436,7 +1543,7 @@ describe('solver logic unit tests', () => {
             expect(result).toBeNull()
         })
 
-        test('segment with very close start and end poitns returns null', () => {
+        test('segment with very close start and end points returns null', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 

@@ -29,6 +29,13 @@ describe('parser logic unit tests', () => {
     describe('localized tests', () => {
 
         if ('de-DE' === lang.id) {
+            test('valid circle returns expected (de-DE)', () => {
+                const result = parse('kreis k A 5')
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.circle)
+            })
+
             test('valid line returns expected (de-DE)', () => {
                 const result = parse('gerade ab A B')
 
@@ -70,6 +77,49 @@ describe('parser logic unit tests', () => {
                 expect(false).toBeTrue()
             })
         }
+    })
+
+    describe('circle', () => {
+
+        test('valid circle returns expected', () => {
+            const result = parse(lang.circle + ' k A 6.1')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.circle)
+            expect(result.name).toBe('k')
+            expect(result.centerName).toBe('A')
+            expect(result.radius).toBeCloseTo(6.1, jestPrecision)
+        })
+
+        test('circle: too few arguments returns null', () => {
+            const result = parse(lang.circle + ' k A')
+
+            expect(result).toBeNull()
+        })
+
+        test('circle: too many arguments returns null', () => {
+            const result = parse(lang.circle + ' k A B 6.1')
+
+            expect(result).toBeNull()
+        })
+
+        test('circle: invalid name returns null', () => {
+            const result = parse(lang.circle + ' 0.1 A 6.1')
+
+            expect(result).toBeNull()
+        })
+
+        test('circle: invalid centerName returns null', () => {
+            const result = parse(lang.circle + ' k 0.1 6.1')
+
+            expect(result).toBeNull()
+        })
+
+        test('circle: invalid radius returns null', () => {
+            const result = parse(lang.circle + ' k A B')
+
+            expect(result).toBeNull()
+        })
     })
 
     describe('line', () => {
