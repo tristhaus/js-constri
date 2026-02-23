@@ -1025,6 +1025,1064 @@ describe('solver logic unit tests', () => {
                 expect(result.collection.length).toBe(6)
             })
         })
+
+        describe('circle plus line unit tests', () => {
+
+            test('circle and line not crossing, too far apart', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 0.5, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and horizontal line touching', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 3.0)
+                const pointB = new ItemPoint('B', 2.0, 3.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and vertical line touching', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circle and slanted line crossing 1', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-0.56155, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-0.56155, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(3.56155, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3.56155, jestPrecision)
+            })
+
+            test('circle and slanted line crossing 2', () => {
+                const pointM = new ItemPoint('M', -1.0, -2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.7, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(0.30910, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(0.69931, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(-3.94479, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(-2.57291, jestPrecision)
+            })
+
+            test('circle and horizontal line crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.5, 3.0)
+                const pointB = new ItemPoint('B', 1.5, 3.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-1.82843, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(3.82843, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and horizontal line crossing (midpoint equals A)', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 3.0)
+                const pointB = new ItemPoint('B', 2.0, 3.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(3.82843, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(-1.82843, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and horizontal line crossing (midpoint equals B)', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 3.0)
+                const pointB = new ItemPoint('B', 1.0, 3.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-1.82843, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(3.82843, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and vertical line crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-0.82843, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(4.82843, jestPrecision)
+            })
+
+            test('circle with slanted line through center', () => {
+                const pointM = new ItemPoint('M', 0.5, 1.0)
+                const circlek = new ItemCircle('k', pointM, 0.25, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 0.0)
+                const pointB = new ItemPoint('B', 1.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(0.38820, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(0.77639, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(0.61180, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(1.22361, jestPrecision)
+            })
+
+            test('circle with horizontal line through center', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 2.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(4, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(-2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circle with vertical line through center', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 2.0)
+                const pointB = new ItemPoint('B', 1.0, 1.0)
+                const lineab = new ItemLine('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    lineab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-1, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(5, jestPrecision)
+            })
+        })
+
+        describe('circle plus ray unit tests', () => {
+
+            test('circle and ray not crossing, too far apart', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 0.5, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and horizontal ray touching (1)', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 3.0)
+                const pointB = new ItemPoint('B', 1.5, 3.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and ray not touching (1): wrong direction', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 3.0)
+                const pointB = new ItemPoint('B', 1.5, 3.0)
+                const rayba = new ItemRay('ba', pointB, pointA)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayba,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and horizontal ray touching (2a)', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.5, 3.0)
+                const pointB = new ItemPoint('B', 1.5, 3.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and horizontal ray touching (2b)', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.5, 3.0)
+                const pointB = new ItemPoint('B', 1.5, 3.0)
+                const rayba = new ItemRay('ab', pointB, pointA)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayba,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and vertical ray touching', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 3.0)
+                const pointB = new ItemPoint('B', 0.0, 0.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circle and horizontal ray crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 2.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', -2.0, 3.0)
+                const pointB = new ItemPoint('B', 5.0, 3.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-0.73205, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(2.732050, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and vertical ray crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 2.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 5.0)
+                const pointB = new ItemPoint('B', 0.0, 0.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3.73205, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(0.26795, jestPrecision)
+            })
+
+            test('circle and slanted ray crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 3.0, 3.0)
+                const pointB = new ItemPoint('B', 2.5, 2.5)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(1, jestPrecision)
+            })
+
+            test('circle and slanted ray not crossing: wrong direction', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 3.0, 3.0)
+                const pointB = new ItemPoint('B', 2.5, 2.5)
+                const rayba = new ItemRay('ba', pointB, pointA)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayba,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and slanted ray crossing, originating inside', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.5, 1.5)
+                const pointB = new ItemPoint('B', 3.0, 3.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circle and slanted ray crossing, originating outside', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.5, 1.5)
+                const pointB = new ItemPoint('B', 3.0, 3.0)
+                const rayba = new ItemRay('ba', pointB, pointA)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayba,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikba1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikba2')
+                expect(result.collection[6].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(1, jestPrecision)
+            })
+
+            test('circle and slanted ray passing through center', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 0.0)
+                const pointB = new ItemPoint('B', 2.0, 4.0)
+                const rayab = new ItemRay('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    rayab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikba1', 'Ikba2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikba1')
+                expect(result.collection[5].x).toBeCloseTo(0.55279, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.10557, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikba2')
+                expect(result.collection[6].x).toBeCloseTo(1.44721, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(2.89443, jestPrecision)
+            })
+        })
+
+        describe('circle plus segment unit tests', () => {
+
+            test('circle and segment not crossing, too far apart', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 0.5, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and horizontal segment touching', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 3.0)
+                const pointB = new ItemPoint('B', 2.0, 3.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and horizontal segment not touching: too short', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.5, 3.0)
+                const pointB = new ItemPoint('B', 2.0, 3.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and vertical segment touching', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circle and vertical segment not touching: too short', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 1.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 1.5)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and slanted segment crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', -5.0, -5.0)
+                const pointB = new ItemPoint('B', 5.0, 5.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-0.56155, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-0.56155, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(3.56155, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3.56155, jestPrecision)
+            })
+
+            test('circle and slanted segment not crossing: too short', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', -5.0, -5.0)
+                const pointB = new ItemPoint('B', -4.0, -4.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and horizontal segment crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', -3.0, 3.0)
+                const pointB = new ItemPoint('B', 5.0, 3.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(-1.82843, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(3.82843, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circle and horizontal segment not crossing: too short', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', -3.0, 3.0)
+                const pointB = new ItemPoint('B', -2.5, 3.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle and vertical segment crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, -5.0)
+                const pointB = new ItemPoint('B', 2.0, 5.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-0.82843, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(4.82843, jestPrecision)
+            })
+
+            test('circle and vertical segment not crossing: too short', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 2.0, -5.0)
+                const pointB = new ItemPoint('B', 2.0, -4.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+
+            test('circle with slanted segment through center', () => {
+                const pointM = new ItemPoint('M', 0.5, 1.0)
+                const circlek = new ItemCircle('k', pointM, 0.25, []) // disregard extrema
+                const pointA = new ItemPoint('A', 0.0, 0.0)
+                const pointB = new ItemPoint('B', 1.0, 2.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(7)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab1')
+                expect(result.collection[5].x).toBeCloseTo(0.38820, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(0.77639, jestPrecision)
+
+                expect(result.collection[6].type).toBe(registry.point)
+                expect(result.collection[6].name).toBe('Ikab2')
+                expect(result.collection[6].x).toBeCloseTo(0.61180, jestPrecision)
+                expect(result.collection[6].y).toBeCloseTo(1.22361, jestPrecision)
+            })
+
+            test('circle and slanted segment: just one crossing', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 5.0, 5.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('Ikab2')
+                expect(result.collection[5].x).toBeCloseTo(3.56155, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3.56155, jestPrecision)
+            })
+
+            test('circle and segment not crossing: segment entirely inside circle', () => {
+                const pointM = new ItemPoint('M', 1.0, 2.0)
+                const circlek = new ItemCircle('k', pointM, 3.0, []) // disregard extrema
+                const pointA = new ItemPoint('A', 1.0, 1.0)
+                const pointB = new ItemPoint('B', 2.0, 2.0)
+                const segmentab = new ItemSegment('ab', pointA, pointB)
+
+                const state = { collection: [
+                    pointM,
+                    circlek,
+                    pointA,
+                    pointB,
+                    segmentab,
+                ] }
+
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+            })
+        })
     })
 
     describe('line logic unit tests', () => {

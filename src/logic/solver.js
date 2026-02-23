@@ -47,9 +47,12 @@ const solveCircle = (commandCircle, state) => {
 const findNormalLineEquation = lineLike => {
     const a = -(lineLike.endPoint.y - lineLike.startPoint.y)
     const b =   lineLike.endPoint.x - lineLike.startPoint.x
+
+    const norm = Math.sqrt(a**2 + b**2)
+
     const c = lineLike.startPoint.y * lineLike.endPoint.x - lineLike.startPoint.x * lineLike.endPoint.y
 
-    return [a, b, c]
+    return [a / norm, b / norm, c / norm]
 }
 
 const findInterval = lineLike => {
@@ -69,14 +72,15 @@ const findInterval = lineLike => {
         if (lineLike.startPoint.x < lineLike.endPoint.x) {
             Ex = Number.POSITIVE_INFINITY
         }
-        if (lineLike.startPoint.x > lineLike.endPoint.x) {
-            Sx = Number.NEGATIVE_INFINITY
+        else if (lineLike.startPoint.x > lineLike.endPoint.x) {
+            Ex = Number.NEGATIVE_INFINITY
         }
+
         if (lineLike.startPoint.y < lineLike.endPoint.y) {
             Ey = Number.POSITIVE_INFINITY
         }
-        if (lineLike.startPoint.y > lineLike.endPoint.y) {
-            Sy = Number.NEGATIVE_INFINITY
+        else if (lineLike.startPoint.y > lineLike.endPoint.y) {
+            Ey = Number.NEGATIVE_INFINITY
         }
     }
 
@@ -86,6 +90,14 @@ const findInterval = lineLike => {
         yMin: Math.min(Sy, Ey),
         yMax: Math.max(Sy, Ey),
     }
+}
+
+const filterByInterval = (points, lineLikes) => {
+    const intervals = lineLikes.map(lineLike => findInterval(lineLike))
+
+    return points.filter(point => intervals.every(interval =>
+        interval.xMin <= point.x && interval.xMax >= point.x && interval.yMin <= point.y && interval.yMax >= point.y
+    ))
 }
 
 // a `lineLike` is a `Line`, `Ray`, or `Segment`
@@ -110,39 +122,108 @@ const solveTwoLineLikesIntersection = (pointName, lineLikeR, lineLikeS, state) =
     const intersectX =  (Rc * Sb - Rb * Sc) / detN
     const intersectY =  (Ra * Sc - Rc * Sa) / detN
 
-    const intervalR = findInterval(lineLikeR)
-    const intervalS = findInterval(lineLikeS)
-
-    if (intervalR.xMin > intersectX ||
-        intervalR.xMax < intersectX ||
-        intervalR.yMin > intersectY ||
-        intervalR.yMax < intersectY ||
-        intervalS.xMin > intersectX ||
-        intervalS.xMax < intersectX ||
-        intervalS.yMin > intersectY ||
-        intervalS.yMax < intersectY)
-    {
-        return state
-    }
-
     const itemIntersectionPoint = new ItemPoint(pointName, intersectX, intersectY)
-    state.collection.push(itemIntersectionPoint)
+    const filtered = filterByInterval([itemIntersectionPoint], [lineLikeR, lineLikeS])
+
+    state.collection.push(...filtered)
     return state
 }
 
-// implementation note: we disregard circles for now
+// treat as line no matter what
+const calculateDistanceLinePoint = (normalParametersLine, point) => {
+    const [La, Lb, Lc] = normalParametersLine
+
+    return Math.abs(La * point.x + Lb * point.y - Lc)
+}
+
+// D is M or C, depending
+const calculatePointsFromMidpoint = (lineLike, midpointD, distDI, names) => {
+    if (distDI < epsilon) {
+        const singleI = new ItemPoint(names[0], midpointD.x, midpointD.y)
+        return filterByInterval([singleI], [lineLike])
+    }
+
+    // select H from {A, B} where: H !== midpointD
+    const H = pointsSeemIdentical(lineLike.startPoint, midpointD) ? lineLike.endPoint : lineLike.startPoint
+
+    const dx = H.x - midpointD.x
+    const dy = H.y - midpointD.y
+    const norming = Math.sqrt(dx**2 + dy**2)
+    const unitvectorDA = [dx  * distDI / norming, dy  * distDI / norming]
+
+    const I1 = new ItemPoint(names[0], midpointD.x + unitvectorDA[0], midpointD.y + unitvectorDA[1])
+    const I2 = new ItemPoint(names[1], midpointD.x - unitvectorDA[0], midpointD.y - unitvectorDA[1])
+    return filterByInterval([I1, I2], [lineLike])
+}
+
+// a `lineLike` is a `Line`, `Ray`, or `Segment`
+const solveCircleLineLikeIntersection = (names, circle, lineLike, state) => {
+    // M is the center of the circle
+    // C is the midpoint between the two intersection point candidates
+    // I1, I2 are the intersection points
+
+    const [La, Lb, Lc] = findNormalLineEquation(lineLike)
+
+    const distCM = calculateDistanceLinePoint([La, Lb, Lc], circle.centerPoint)
+
+    if (distCM > circle.radius) {
+        return state
+    }
+
+    // M is on the line: dist(M, I1/2) === circle radius
+    if (distCM < epsilon) {
+        const points = calculatePointsFromMidpoint(lineLike, circle.centerPoint, circle.radius, names, state)
+        state.collection.push(...points)
+        return state
+    }
+
+    // create M->C candidates
+    const normalizationFactor = 1.0 / Math.sqrt(La * La + Lb * Lb)
+    const vectorMC = [La * distCM * normalizationFactor, Lb * distCM * normalizationFactor]
+
+    const C1 = new ItemPoint(names[0], circle.centerPoint.x + vectorMC[0], circle.centerPoint.y + vectorMC[1])
+    const C2 = new ItemPoint(names[0], circle.centerPoint.x - vectorMC[0], circle.centerPoint.y - vectorMC[1])
+
+    const distC1ab = calculateDistanceLinePoint([La, Lb, Lc], C1)
+    const distC2ab = calculateDistanceLinePoint([La, Lb, Lc], C2)
+
+    const C = distC1ab < distC2ab ? C1 : C2
+
+    const distIC = Math.sqrt(circle.radius**2 - distCM**2)
+
+    const points = calculatePointsFromMidpoint(lineLike, C, distIC, names, state)
+    state.collection.push(...points)
+    return state
+}
+
+// implementation note: we disregard circle + circle for now
 
 const solveIntersection = (commandIntersection, state) => {
     const itemA = state.collection.find(x => x.name === commandIntersection.itemAName)
     const itemB = state.collection.find(x => x.name === commandIntersection.itemBName)
 
-    if (!(itemA?.type === registry.line || itemA?.type === registry.ray || itemA?.type === registry.segment) ||
-        !(itemB?.type === registry.line || itemB?.type === registry.ray || itemB?.type === registry.segment))
+    const aIsLineLike = itemA?.type === registry.line || itemA?.type === registry.ray || itemA?.type === registry.segment
+    const bIsLineLike = itemB?.type === registry.line || itemB?.type === registry.ray || itemB?.type === registry.segment
+
+    const aIsCircle = itemA?.type === registry.circle
+    const bIsCircle = itemB?.type === registry.circle
+
+    if (aIsLineLike && bIsLineLike)
     {
-        return null
+        return solveTwoLineLikesIntersection(commandIntersection.names[0], itemA, itemB, state)
     }
 
-    return solveTwoLineLikesIntersection(commandIntersection.names[0], itemA, itemB, state)
+    if (aIsCircle && bIsLineLike)
+    {
+        return solveCircleLineLikeIntersection(commandIntersection.names, itemA, itemB, state)
+    }
+
+    if (bIsCircle && aIsLineLike)
+    {
+        return solveCircleLineLikeIntersection(commandIntersection.names, itemB, itemA, state)
+    }
+
+    return null
 }
 
 const solveLine = (commandLine, state) => {
