@@ -2083,6 +2083,701 @@ describe('solver logic unit tests', () => {
                 expect(result.collection.length).toBe(5)
             })
         })
+
+        describe('two circles unit tests', () => {
+            test('circles not crossing, too far apart', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(4)
+            })
+
+            test('circles not crossing, first contains second', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 7.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 4.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(4)
+            })
+
+            test('circles not crossing, second contains first', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 4.0)
+                const circlekS = new ItemCircle('kS', pointS, 7.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(4)
+            })
+
+            test('circles, next to each other, horizontally, touching (different size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(2, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('circles, next to each other, horizontally, touching (same size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.5, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('circles, next to each other, vertically, touching (different size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(2, jestPrecision)
+            })
+
+            test('circles, next to each other, vertically, touching (same size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(1.5, jestPrecision)
+            })
+
+            test('circles, next to each other, slanted, touching (different size)', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0.2, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0.6, jestPrecision)
+            })
+
+            test('circles, next to each other, slanted, touching (same size)', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0.5, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(1, jestPrecision)
+            })
+
+            test('circles, first containing second, horizontally, touching', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 4.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(4, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('circles, second containing first, horizontally, touching', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 4.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(-1, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0, jestPrecision)
+            })
+
+            test('circles, first containing second, vertically, touching', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 4.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(4, jestPrecision)
+            })
+
+            test('circles, second containing first, vertically, touching', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 1.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 4.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-1, jestPrecision)
+            })
+
+            test('circles, first containing second, slanted, touching', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 7.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(-2.2, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-2.6, jestPrecision)
+            })
+
+            test('circles, second containing first, slanted, touching', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 7.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(5)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(3.2, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(4.6, jestPrecision)
+            })
+
+            test('circles, between, horizontally, crossing (different size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(2.16667, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-1.24722, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(2.16667, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.24722, jestPrecision)
+            })
+
+            test('circles, between, horizontally, crossing (same size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.5, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-1.32288, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(1.5, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.32288, jestPrecision)
+            })
+
+            test('circles, far side 1, horizontally, crossing', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 3.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(2.875, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-1.99609, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(2.875, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.99609, jestPrecision)
+            })
+
+            test('circles, far side 2, horizontally, crossing', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 3.0, 0.0)
+                const circlekS = new ItemCircle('kS', pointS, 3.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0.125, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-1.99609, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(0.125, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.99609, jestPrecision)
+            })
+
+            test('circles, between, vertically, crossing (different size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.24722, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(2.16667, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-1.24722, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2.16667, jestPrecision)
+            })
+
+            test('circles, between, vertically, crossing (same size)', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.32288, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(1.5, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-1.32288, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.5, jestPrecision)
+            })
+
+            test('circles, far side 1, vertically, crossing', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 3.5, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.99609, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(2.875, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-1.99609, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(2.875, jestPrecision)
+            })
+
+            test('circles, far side 2, vertically, crossing', () => {
+                const pointR = new ItemPoint('R', 0.0, 0.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 0.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 3.5, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.99609, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0.125, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-1.99609, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(0.125, jestPrecision)
+            })
+
+            test('circles, between, slanted, crossing (different size)', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 4.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(2.84, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0.12, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-1, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(3, jestPrecision)
+            })
+
+            test('circles, between, slanted, crossing (same size)', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 3.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(1.82665, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(0.00501, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-0.82665, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(1.99499, jestPrecision)
+            })
+
+            test('circles, far side 1, slanted, crossing', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 6.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(3.91880, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(2.43590, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(0.92120, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(4.68410, jestPrecision)
+            })
+
+            test('circles, far side 1, slanted, crossing', () => {
+                const pointR = new ItemPoint('R', -1.0, -1.0)
+                const circlekR = new ItemCircle('kR', pointR, 2.0, []) // disregard extrema
+                const pointS = new ItemPoint('S', 2.0, 3.0)
+                const circlekS = new ItemCircle('kS', pointS, 6.0, []) // disregard extrema
+
+                const state = { collection: [
+                    pointR,
+                    circlekR,
+                    pointS,
+                    circlekS,
+                ] }
+
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+
+                expect(result).not.toBeNull()
+                expect(result.collection.length).toBe(6)
+
+                expect(result.collection[4].type).toBe(registry.point)
+                expect(result.collection[4].name).toBe('I1')
+                expect(result.collection[4].x).toBeCloseTo(0.07880, jestPrecision)
+                expect(result.collection[4].y).toBeCloseTo(-2.68410, jestPrecision)
+
+                expect(result.collection[5].type).toBe(registry.point)
+                expect(result.collection[5].name).toBe('I2')
+                expect(result.collection[5].x).toBeCloseTo(-2.91880, jestPrecision)
+                expect(result.collection[5].y).toBeCloseTo(-0.43590, jestPrecision)
+            })
+        })
     })
 
     describe('line logic unit tests', () => {

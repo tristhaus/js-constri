@@ -43,7 +43,7 @@ const Help = ({ closeAction }) => {
                                 <tr>
                                     <td className="command">bez sp c g Z</td>
                                     <td></td>
-                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>.<span style={{ color: 'red' }}> Kreis und Kreis funktioniert noch nicht.</span></td>
+                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span></td>
                                 </tr>
                             </tbody>
                         </table>

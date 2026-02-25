@@ -196,7 +196,61 @@ const solveCircleLineLikeIntersection = (names, circle, lineLike, state) => {
     return state
 }
 
-// implementation note: we disregard circle + circle for now
+const solveTwoCirclesIntersection = (names, circleR, circleS, state) => {
+    // R, S are the centers
+    // rs is the line defined by R and S
+    // rR, rS are the circle radii
+    // I1, I2 are the intersection(s) of the circles
+    // C is the midpoint between I1 and I2
+    // d is dist(C, S)
+    // h is dist(C, I1/2) === 0.5 * dist(I1, I2) by definition of C
+    // note that CI1/CI2 is perpendicular to CR/CS
+
+    // vector
+    const SRx = circleR.centerPoint.x - circleS.centerPoint.x
+    const SRy = circleR.centerPoint.y - circleS.centerPoint.y
+    const distCenters = Math.sqrt(SRx**2 + SRy**2)
+
+    // unit vector
+    const SRxu = SRx / distCenters
+    const SRyu = SRy / distCenters
+
+    const sumRadii = circleR.radius + circleS.radius
+    const [largeRadius, smallRadius] = circleR.radius > circleS.radius ? [circleR.radius, circleS.radius] : [circleS.radius, circleR.radius]
+
+    // check that
+    //  - small circles are not too far apart
+    //  - a large circle does not completely contain a small circle
+    if (sumRadii < distCenters || largeRadius > (distCenters + smallRadius)) {
+        return state
+    }
+
+    const d = (circleS.radius**2 + distCenters**2 - circleR.radius**2 ) / (2 * distCenters)
+    const h = Math.sqrt(circleS.radius**2 - d**2)
+
+    const Cx = circleS.centerPoint.x + d * SRxu
+    const Cy = circleS.centerPoint.y + d * SRyu
+
+    // use the perpendicular vector to SR
+    const I1x = Cx - SRyu * h
+    const I1y = Cy + SRxu * h
+    const I2x = Cx + SRyu * h
+    const I2y = Cy - SRxu * h
+
+    const I1 = new ItemPoint(names[0], I1x, I1y)
+    const I2 = new ItemPoint(names[1], I2x, I2y)
+
+    // we only have one point in this case
+    if (h < epsilon)
+    {
+        state.collection.push(I1)
+    }
+    else {
+        state.collection.push(I1, I2)
+    }
+
+    return state
+}
 
 const solveIntersection = (commandIntersection, state) => {
     const itemA = state.collection.find(x => x.name === commandIntersection.itemAName)
@@ -221,6 +275,10 @@ const solveIntersection = (commandIntersection, state) => {
     if (bIsCircle && aIsLineLike)
     {
         return solveCircleLineLikeIntersection(commandIntersection.names, itemB, itemA, state)
+    }
+
+    if (aIsCircle && bIsCircle) {
+        return solveTwoCirclesIntersection(commandIntersection.names, itemA, itemB, state)
     }
 
     return null
