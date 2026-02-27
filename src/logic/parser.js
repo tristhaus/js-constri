@@ -4,9 +4,12 @@ import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
+import { registry } from './registry'
 
-const language_de_DE = {
-    id: 'de-DE',
+const allStrings = {}
+
+const strings_de = {
+    id: registry.langs.de,
     circle: 'kreis',
     intersection: 'sp',
     line: 'gerade',
@@ -16,13 +19,19 @@ const language_de_DE = {
     segment: 'strecke',
 }
 
-// if you choose a different language here, you also need to adapt the tests
-const choice = language_de_DE
-
-const lang = {
-    ...choice,
-    allKeywords: Object.values(choice)
+const strings_en = {
+    id: registry.langs.en,
+    circle: 'circle',
+    intersection: 'inter',
+    line: 'line',
+    name: 'name',
+    point: 'point',
+    ray: 'ray',
+    segment: 'segment',
 }
+
+allStrings[registry.langs.de] = strings_de
+allStrings[registry.langs.en] = strings_en
 
 const userEnteredNamePattern = /^[a-zA-Z][a-zA-Z_0-9]*$/
 
@@ -139,10 +148,12 @@ const parseSegment = args => {
     return new CommandSegment(name, startPointName, endPointName)
 }
 
-const parse = input => {
+const parse = (lang, input) => {
     if (typeof input !== 'string') {
         return null
     }
+
+    const strings = allStrings[lang]
 
     const allArgs = input.split(' ').filter(x => x !== '')
 
@@ -154,27 +165,27 @@ const parse = input => {
     const args = allArgs.slice(1)
 
     switch (first) {
-        case lang.circle:
+        case strings.circle:
             return parseCircle(args)
 
-        case lang.line:
+        case strings.line:
             return parseLine(args)
 
-        case lang.name:
+        case strings.name:
 
             // implementation note: alternative 'angle' is to come
-            if (args[0] !== lang.intersection) {
+            if (args[0] !== strings.intersection) {
                 return null
             }
             return parseIntersection(args.slice(1))
 
-        case lang.point:
+        case strings.point:
             return parsePoint(args)
 
-        case lang.ray:
+        case strings.ray:
             return parseRay(args)
 
-        case lang.segment:
+        case strings.segment:
             return parseSegment(args)
 
         default:
@@ -182,4 +193,4 @@ const parse = input => {
     }
 }
 
-export { lang, parse, userEnteredNamePattern }
+export { parse, strings_de, userEnteredNamePattern }

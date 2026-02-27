@@ -1,4 +1,8 @@
 const registry = {
+    langs: {
+        de: 'de',
+        en: 'en',
+    },
     circle: 'circle_t',
     intersection: 'intersection_t',
     line: 'line_t',

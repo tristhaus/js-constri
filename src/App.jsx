@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import Plot from 'react-plotly.js'
 
-import Help from './Help'
+import { HelpDe, HelpEn } from './Help'
 import { handleInput } from './logic/inputHandler'
 import { transform } from './transformer'
+import { registry } from './logic/registry'
 
 const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
     const maxX = Math.max(...pointDataX)
@@ -36,14 +37,27 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
     return [xRange, yRange]
 }
 
+const strings = {}
+strings[registry.langs.de] =  {
+    defaultInput: 'punkt A 1 2\npunkt B 3 6\nstrecke ab A B',
+    execute: 'Ausführen',
+    help: 'Hilfe'
+}
+strings[registry.langs.en] = {
+    defaultInput: 'point C 0 1\ncircle k C 3',
+    execute: 'Execute',
+    help: 'Help'
+}
+
 function App() {
+    const [lang, setLang] = useState(registry.langs.de)
     const [showHelp, setShowHelp] = useState(false)
-    const [code, setCode] = useState('punkt A 1 2\npunkt B 3 6\nstrecke ab A B')
+    const [code, setCode] = useState(strings[lang].defaultInput)
     const [plotlyData, setPlotlyData] = useState([])
     const [auxPointsData, setAuxPointsData] = useState({ x: [], y: [] })
 
     const execute = () => {
-        const items = handleInput(code)
+        const items = handleInput(lang, code)
 
         if (items !== null) {
             const [newPlotlyData, newAuxPointsData] = transform(items)
@@ -84,9 +98,23 @@ function App() {
         ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x), plotlyData[0].y.concat(auxPointsData.y), aspectRatio)
         : calculateRanges([0, 5], [0, 5], aspectRatio)
 
+    const handleLanguageButtonPressed = (newLang) => {
+        setLang(newLang)
+        setCode(strings[newLang].defaultInput)
+    }
+
     return (
         <>
-            {showHelp && <Help closeAction={() => setShowHelp(false)}/>}
+            {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)}/>}
+            {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)}/>}
+            <div style={{ textAlign: 'right' }}>
+                <button onClick={() => handleLanguageButtonPressed(registry.langs.de)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z"/><path fill="#D00" d="M0 1h5v2H0z"/><path fill="#FFCE00" d="M0 2h5v1H0z"/></svg>
+                </button>
+                <button onClick={() => handleLanguageButtonPressed(registry.langs.en)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clipPath="url(#a)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6"/><path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4"/><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/></g></svg>
+                </button>
+            </div>
             <div>
                 <Plot
                     data={plotlyData}
@@ -129,8 +157,8 @@ function App() {
             </div>
             <div>
                 <textarea value={code} onChange={e => setCode(e.target.value)} />
-                <button onClick={() => execute()}>Ausführen</button>
-                <button onClick={() => setShowHelp(true)}>Hilfe</button>
+                <button onClick={() => execute()}>{strings[lang].execute}</button>
+                <button onClick={() => setShowHelp(true)}>{strings[lang].help}</button>
             </div>
         </>
     )

@@ -1,4 +1,4 @@
-const Help = ({ closeAction }) => {
+const HelpDe = ({ closeAction }) => {
     return <>
         <div className="darkBG" onClick={closeAction} />
         <div className="overlayBox">
@@ -31,7 +31,7 @@ const Help = ({ closeAction }) => {
                                     <td>Zeichne den Strahl <span className="command">de</span> ausgehend von <span className="command">D</span> durch <span className="command">E</span></td>
                                 </tr>
                                 <tr>
-                                    <td className="command">gerade g F G</td>
+                                    <td className="command">gerade h F G</td>
                                     <td></td>
                                     <td>Zeichne die Gerade <span className="command">g</span> durch die Punkte <span className="command">F</span> und <span className="command">G</span></td>
                                 </tr>
@@ -43,7 +43,7 @@ const Help = ({ closeAction }) => {
                                 <tr>
                                     <td className="command">bez sp c g Z</td>
                                     <td></td>
-                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span></td>
+                                    <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>. Optional: ein weiterer Name.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -59,4 +59,65 @@ const Help = ({ closeAction }) => {
     </>
 }
 
-export default Help
+const HelpEn = ({ closeAction }) => {
+    return <>
+        <div className="darkBG" onClick={closeAction} />
+        <div className="overlayBox">
+            <div className="overlayContent">
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div>
+                        <h4>Help</h4>
+                        <table className="commandListing">
+                            <thead>
+                                <tr>
+                                    <td>Example</td>
+                                    <td style={{ paddingLeft: 20 }}></td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td className="command">point A -5.5 3</td>
+                                    <td></td>
+                                    <td>Draw the point <span className="command">A</span> with coordinates (<span className="command">-5.5</span>, <span className="command">3</span>)</td>
+                                </tr>
+                                <tr>
+                                    <td className="command">segment c A B</td>
+                                    <td></td>
+                                    <td>Draw the line segment <span className="command">c</span> from point <span className="command">A</span> to point <span className="command">B</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">ray de D E</td>
+                                    <td></td>
+                                    <td>Draw the ray <span className="command">de</span> starting at point <span className="command">D</span> through point <span className="command">E</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">line h F G</td>
+                                    <td></td>
+                                    <td>Draw the infinite line <span className="command">h</span> through points <span className="command">F</span> and <span className="command">G</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">circle k A 6.0</td>
+                                    <td></td>
+                                    <td>Draw the circle <span className="command">k</span> centered on point <span className="command">A</span> with radius <span className="command">6.0</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">name inter c g Z</td>
+                                    <td></td>
+                                    <td>Consider the intersection of objects <span className="command">c</span> and <span className="command">g</span>. Give it the name <span className="command">Z</span>. Two names are possible.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h4>About JS-Constri</h4>
+                        A work-in-progress reimplementation of Constri in Javascript.<br/>For more information about Constri (in German), see <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">here</a> (not my content, third-party site).
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button id="help_OkButton" onClick={closeAction}>OK</button>
+            </div>
+        </div>
+    </>
+}
+
+export { HelpDe, HelpEn }

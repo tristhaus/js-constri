@@ -1,88 +1,132 @@
-import { lang, parse } from './parser'
+import { parse, strings_de } from './parser'
 import { registry } from './registry'
 
 // ~digits of precision
 const jestPrecision = 4
 
 describe('parser logic unit tests', () => {
+
+    const defaultLang = registry.langs.de
+
     describe('general', () => {
 
         test('non-string returns null', () => {
-            const result = parse(2)
+            const result = parse(defaultLang, 2)
 
             expect(result).toBeNull()
         })
 
         test('empty string returns null', () => {
-            const result = parse('')
+            const result = parse(defaultLang, '')
 
             expect(result).toBeNull()
         })
 
         test('too few tokens returns null', () => {
-            const result = parse(lang.point)
+            const result = parse(defaultLang, strings_de.point)
 
             expect(result).toBeNull()
         })
     })
 
-    describe('localized tests', () => {
+    describe('localized tests: de', () => {
 
-        if ('de-DE' === lang.id) {
-            test('valid circle returns expected (de-DE)', () => {
-                const result = parse('kreis k A 5')
+        const lang = registry.langs.de
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.circle)
-            })
+        test('valid circle returns expected', () => {
+            const result = parse(lang, 'kreis k A 5')
 
-            test('valid line returns expected (de-DE)', () => {
-                const result = parse('gerade ab A B')
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.circle)
+        })
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.line)
-            })
+        test('valid line returns expected', () => {
+            const result = parse(lang, 'gerade ab A B')
 
-            test('valid name intersection returns expected (de-DE)', () => {
-                const result = parse('bez sp ab cd E')
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.line)
+        })
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.intersection)
-            })
+        test('valid name intersection returns expected', () => {
+            const result = parse(lang, 'bez sp ab cd E')
 
-            test('valid point returns expected (de-DE)', () => {
-                const result = parse('punkt A1_b -0.1 4.3')
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.intersection)
+        })
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.point)
-            })
+        test('valid point returns expected', () => {
+            const result = parse(lang, 'punkt A1_b -0.1 4.3')
 
-            test('valid ray returns expected (de-DE)', () => {
-                const result = parse('strahl ab A B')
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.point)
+        })
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.ray)
-            })
+        test('valid ray returns expected', () => {
+            const result = parse(lang, 'strahl ab A B')
 
-            test('valid segment returns expected (de-DE)', () => {
-                const result = parse('strecke ab A B')
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.ray)
+        })
 
-                expect(result).not.toBeNull()
-                expect(result.type).toBe(registry.segment)
-            })
-        }
-        else {
-            console.log('you really need to implement these syntax tests')
-            test('you really need to implement these syntax tests for your language', () => {
-                expect(false).toBeTrue()
-            })
-        }
+        test('valid segment returns expected', () => {
+            const result = parse(lang, 'strecke ab A B')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.segment)
+        })
+    })
+
+    describe('localized tests: en', () => {
+
+        const lang = registry.langs.en
+
+        test('valid circle returns expected', () => {
+            const result = parse(lang, 'circle k A 5')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.circle)
+        })
+
+        test('valid line returns expected', () => {
+            const result = parse(lang, 'line ab A B')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.line)
+        })
+
+        test('valid name intersection returns expected', () => {
+            const result = parse(lang, 'name inter ab cd E')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.intersection)
+        })
+
+        test('valid point returns expected', () => {
+            const result = parse(lang, 'point A1_b -0.1 4.3')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.point)
+        })
+
+        test('valid ray returns expected', () => {
+            const result = parse(lang, 'ray ab A B')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.ray)
+        })
+
+        test('valid segment returns expected', () => {
+            const result = parse(lang, 'segment ab A B')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.segment)
+        })
     })
 
     describe('circle', () => {
 
         test('valid circle returns expected', () => {
-            const result = parse(lang.circle + ' k A 6.1')
+            const result = parse(defaultLang, strings_de.circle + ' k A 6.1')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.circle)
@@ -92,31 +136,31 @@ describe('parser logic unit tests', () => {
         })
 
         test('circle: too few arguments returns null', () => {
-            const result = parse(lang.circle + ' k A')
+            const result = parse(defaultLang, strings_de.circle + ' k A')
 
             expect(result).toBeNull()
         })
 
         test('circle: too many arguments returns null', () => {
-            const result = parse(lang.circle + ' k A B 6.1')
+            const result = parse(defaultLang, strings_de.circle + ' k A B 6.1')
 
             expect(result).toBeNull()
         })
 
         test('circle: invalid name returns null', () => {
-            const result = parse(lang.circle + ' 0.1 A 6.1')
+            const result = parse(defaultLang, strings_de.circle + ' 0.1 A 6.1')
 
             expect(result).toBeNull()
         })
 
         test('circle: invalid centerName returns null', () => {
-            const result = parse(lang.circle + ' k 0.1 6.1')
+            const result = parse(defaultLang, strings_de.circle + ' k 0.1 6.1')
 
             expect(result).toBeNull()
         })
 
         test('circle: invalid radius returns null', () => {
-            const result = parse(lang.circle + ' k A B')
+            const result = parse(defaultLang, strings_de.circle + ' k A B')
 
             expect(result).toBeNull()
         })
@@ -125,7 +169,7 @@ describe('parser logic unit tests', () => {
     describe('line', () => {
 
         test('valid line returns expected', () => {
-            const result = parse(lang.line + ' pq P Q')
+            const result = parse(defaultLang, strings_de.line + ' pq P Q')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.line)
@@ -135,31 +179,31 @@ describe('parser logic unit tests', () => {
         })
 
         test('line: too few arguments returns null', () => {
-            const result = parse(lang.line + ' pq P')
+            const result = parse(defaultLang, strings_de.line + ' pq P')
 
             expect(result).toBeNull()
         })
 
         test('line: too many arguments returns null', () => {
-            const result = parse(lang.line + ' pq P Q R')
+            const result = parse(defaultLang, strings_de.line + ' pq P Q R')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid name returns null', () => {
-            const result = parse(lang.line + ' 0.1 P Q')
+            const result = parse(defaultLang, strings_de.line + ' 0.1 P Q')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid startPointName returns null', () => {
-            const result = parse(lang.line + ' pq 0.2 Q')
+            const result = parse(defaultLang, strings_de.line + ' pq 0.2 Q')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid endPointName returns null', () => {
-            const result = parse(lang.line + ' pq P 0.3')
+            const result = parse(defaultLang, strings_de.line + ' pq P 0.3')
 
             expect(result).toBeNull()
         })
@@ -168,7 +212,7 @@ describe('parser logic unit tests', () => {
     describe('name intersection', () => {
 
         test('valid name intersection (1) returns expected', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' ab cd E')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' ab cd E')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.intersection)
@@ -178,7 +222,7 @@ describe('parser logic unit tests', () => {
         })
 
         test('valid name intersection (2) returns expected', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' circle1 circle2 S1 S2')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' circle1 circle2 S1 S2')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.intersection)
@@ -188,37 +232,37 @@ describe('parser logic unit tests', () => {
         })
 
         test('line: too few arguments returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' ab E')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' ab E')
 
             expect(result).toBeNull()
         })
 
         test('line: too few arguments returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' ab cd pq rs E')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' ab cd pq rs E')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid name (1) returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' ab cd 0.1')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' ab cd 0.1')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid name (2) returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' circle1 circle2 S1 0.1')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' circle1 circle2 S1 0.1')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid startPointName returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' 0.1 cd E')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' 0.1 cd E')
 
             expect(result).toBeNull()
         })
 
         test('line: invalid endPointName returns null', () => {
-            const result = parse(lang.name + ' ' + lang.intersection + ' ab 0.1 E')
+            const result = parse(defaultLang, strings_de.name + ' ' + strings_de.intersection + ' ab 0.1 E')
 
             expect(result).toBeNull()
         })
@@ -227,7 +271,7 @@ describe('parser logic unit tests', () => {
     describe('point', () => {
 
         test('valid point returns expected', () => {
-            const result = parse(lang.point + ' A -0.1 4.3')
+            const result = parse(defaultLang, strings_de.point + ' A -0.1 4.3')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.point)
@@ -237,31 +281,31 @@ describe('parser logic unit tests', () => {
         })
 
         test('point: too few arguments returns null', () => {
-            const result = parse(lang.point + ' A -0.1')
+            const result = parse(defaultLang, strings_de.point + ' A -0.1')
 
             expect(result).toBeNull()
         })
 
         test('point: too many arguments returns null', () => {
-            const result = parse(lang.point + ' A -0.1 0.2 0.3')
+            const result = parse(defaultLang, strings_de.point + ' A -0.1 0.2 0.3')
 
             expect(result).toBeNull()
         })
 
         test('point: invalid name returns null', () => {
-            const result = parse(lang.point + ' 999 -0.1 A')
+            const result = parse(defaultLang, strings_de.point + ' 999 -0.1 A')
 
             expect(result).toBeNull()
         })
 
         test('point: y-coordinate is not a number returns null', () => {
-            const result = parse(lang.point + ' A a 4.3')
+            const result = parse(defaultLang, strings_de.point + ' A a 4.3')
 
             expect(result).toBeNull()
         })
 
         test('point: y-coordinate is not a number returns null', () => {
-            const result = parse(lang.point + ' A -0.1 a')
+            const result = parse(defaultLang, strings_de.point + ' A -0.1 a')
 
             expect(result).toBeNull()
         })
@@ -270,7 +314,7 @@ describe('parser logic unit tests', () => {
     describe('ray', () => {
 
         test('valid ray returns expected', () => {
-            const result = parse(lang.ray + ' pq P Q')
+            const result = parse(defaultLang, strings_de.ray + ' pq P Q')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.ray)
@@ -280,31 +324,31 @@ describe('parser logic unit tests', () => {
         })
 
         test('ray: too few arguments returns null', () => {
-            const result = parse(lang.ray + ' pq P')
+            const result = parse(defaultLang, strings_de.ray + ' pq P')
 
             expect(result).toBeNull()
         })
 
         test('ray: too many arguments returns null', () => {
-            const result = parse(lang.ray + ' pq P Q R')
+            const result = parse(defaultLang, strings_de.ray + ' pq P Q R')
 
             expect(result).toBeNull()
         })
 
         test('ray: invalid name returns null', () => {
-            const result = parse(lang.ray + ' 0.1 P Q')
+            const result = parse(defaultLang, strings_de.ray + ' 0.1 P Q')
 
             expect(result).toBeNull()
         })
 
         test('ray: invalid startPointName returns null', () => {
-            const result = parse(lang.ray + ' pq 0.2 Q')
+            const result = parse(defaultLang, strings_de.ray + ' pq 0.2 Q')
 
             expect(result).toBeNull()
         })
 
         test('ray: invalid endPointName returns null', () => {
-            const result = parse(lang.ray + ' pq P 0.3')
+            const result = parse(defaultLang, strings_de.ray + ' pq P 0.3')
 
             expect(result).toBeNull()
         })
@@ -313,7 +357,7 @@ describe('parser logic unit tests', () => {
     describe('segment', () => {
 
         test('valid segment returns expected', () => {
-            const result = parse(lang.segment + ' pq P Q')
+            const result = parse(defaultLang, strings_de.segment + ' pq P Q')
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.segment)
@@ -323,31 +367,31 @@ describe('parser logic unit tests', () => {
         })
 
         test('segment: too few arguments returns null', () => {
-            const result = parse(lang.segment + ' pq P')
+            const result = parse(defaultLang, strings_de.segment + ' pq P')
 
             expect(result).toBeNull()
         })
 
         test('segment: too many arguments returns null', () => {
-            const result = parse(lang.segment + ' pq P Q R')
+            const result = parse(defaultLang, strings_de.segment + ' pq P Q R')
 
             expect(result).toBeNull()
         })
 
         test('segment: invalid name returns null', () => {
-            const result = parse(lang.segment + ' 0.1 P Q')
+            const result = parse(defaultLang, strings_de.segment + ' 0.1 P Q')
 
             expect(result).toBeNull()
         })
 
         test('segment: invalid startPointName returns null', () => {
-            const result = parse(lang.segment + ' pq 0.2 Q')
+            const result = parse(defaultLang, strings_de.segment + ' pq 0.2 Q')
 
             expect(result).toBeNull()
         })
 
         test('segment: invalid 0.1endPointName returns null', () => {
-            const result = parse(lang.segment + ' pq P 0.3s')
+            const result = parse(defaultLang, strings_de.segment + ' pq P 0.3s')
 
             expect(result).toBeNull()
         })

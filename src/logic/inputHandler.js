@@ -1,13 +1,13 @@
 import { parse } from './parser.js'
 import { initState, solve } from './solver.js'
 
-const handleInput = inputText => {
+const handleInput = (lang, inputText) => {
     const code = inputText.split('\n').map(x => x.trim()).filter(x => x !== '')
 
     const state = initState()
 
     for (let i = 0; i < code.length; i++) {
-        const parseResult = parse(code[i])
+        const parseResult = parse(lang, code[i])
 
         if (parseResult === null) {
             return null
