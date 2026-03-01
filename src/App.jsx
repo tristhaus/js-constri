@@ -34,6 +34,19 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
     const xRange = [minX - 0.1 * internalX, minX + 1.2 * internalX]
     const yRange = [minY - 0.1 * internalY, minY + 1.2 * internalY]
 
+    // now center ranges around input points
+    const naiveXRange = [minX, maxX]
+    const naiveYRange = [minY, maxY]
+
+    const zip = (a, b) => a.map((k, i) => [k, b[i]])
+
+    for (const [actual, naive] of zip([xRange, yRange], [naiveXRange, naiveYRange])) {
+        const leftDiff = actual[0] - naive[0]
+        const rightDiff = naive[1] - actual[1]
+        actual[0] -= (leftDiff - rightDiff) * 0.5
+        actual[1] -= (leftDiff - rightDiff) * 0.5
+    }
+
     return [xRange, yRange]
 }
 
@@ -80,7 +93,7 @@ function App() {
 
     useEffect(() => {
         const handleWindowResize = () => {
-            setWidth(window.innerWidth)
+            setWidth(Math.max(window.innerWidth, 1280))
             setHeight(window.innerHeight)
         }
 
@@ -98,7 +111,7 @@ function App() {
         ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x), plotlyData[0].y.concat(auxPointsData.y), aspectRatio)
         : calculateRanges([0, 5], [0, 5], aspectRatio)
 
-    const handleLanguageButtonPressed = (newLang) => {
+    const handleLanguageButtonPressed = newLang => {
         setLang(newLang)
         setCode(strings[newLang].defaultInput)
     }
@@ -124,7 +137,8 @@ function App() {
                             t: Math.floor(0.03 * availableHeight),
                             r: Math.floor(0.03 * availableWidth),
                             b: Math.floor(0.03 * availableHeight),
-                        },                        legend: {
+                        },
+                        legend: {
                             itemclick: false,
                             itemdoubleclick: false,
                         },
@@ -133,8 +147,8 @@ function App() {
                         },
                         showlegend: false,
                         autosize: false,
-                        width: availableWidth,
-                        height: availableHeight,
+                        width: 0.94 * availableWidth,
+                        height: 0.94 * availableHeight,
                         xaxis: {
                             zeroline: false,
                             showgrid: false, // relevant property: dtick
@@ -149,14 +163,15 @@ function App() {
                         }
                     }}
                     config={{
-                        doubleClick: 'reset',
+                        doubleClick: false,
                         responsive: true,
                     }}
-                    style={{ width: '100%', height: '100%' }}
                 />
             </div>
             <div>
                 <textarea value={code} onChange={e => setCode(e.target.value)} />
+            </div>
+            <div>
                 <button onClick={() => execute()}>{strings[lang].execute}</button>
                 <button onClick={() => setShowHelp(true)}>{strings[lang].help}</button>
             </div>

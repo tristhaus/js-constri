@@ -48,7 +48,7 @@ const HelpDe = ({ closeAction }) => {
                             </tbody>
                         </table>
                         <h4>Über JS-Constri</h4>
-                        Eine work-in-progress Reimplementierung von Constri in Javascript.<br/>Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">hier</a> (nicht mein Inhalt, fremde Seite).
+                        Eine <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress Reimplementierung von Constri in Javascript.<br/>Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">hier</a> (nicht mein Inhalt, fremde Seite).
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@ const HelpEn = ({ closeAction }) => {
                             </tbody>
                         </table>
                         <h4>About JS-Constri</h4>
-                        A work-in-progress reimplementation of Constri in Javascript.<br/>For more information about Constri (in German), see <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">here</a> (not my content, third-party site).
+                        A <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress reimplementation of Constri in Javascript.<br/>For more information about Constri (in German), see <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">here</a> (not my content, third-party site).
                     </div>
                 </div>
             </div>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666665 8.4666666"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="jsconstri.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="26.910887"
+     inkscape:cx="7.6548946"
+     inkscape:cy="16.38742"
+     inkscape:window-width="1920"
+     inkscape:window-height="1127"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showguides="false" />
+  <defs
+     id="defs2">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3011">
+      <rect
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0965277;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3013"
+         width="8.4666662"
+         height="5.2916665"
+         x="-6.9388939e-18"
+         y="5.2916665" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2943"
+       transform="translate(-0.11959006,0.05245545)">
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.13376;stroke-dasharray:none;stroke-opacity:1"
+         d="M 4.1679661,5.5360545 5.5835959,0.30237654 6.9992258,5.4677869 5.5835959,2.3351188 Z"
+         id="path1406"
+         sodipodi:nodetypes="ccccc" />
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.150138;stroke-dasharray:none;stroke-opacity:1"
+         id="path2923"
+         cx="4.3529234"
+         cy="5.4705729"
+         r="2.7683163" />
+    </g>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.1;stroke-dasharray:none;stroke-opacity:1"
+       d="M -0.8902471,5.897831 8.8656053,7.405082"
+       id="path2939"
+       clip-path="url(#clipPath3011)" />
+  </g>
+</svg>
