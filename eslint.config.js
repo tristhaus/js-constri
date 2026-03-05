@@ -3,7 +3,6 @@ import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import pluginJest from 'eslint-plugin-jest'
 
 export default [
     { ignores: ['dist'] },
@@ -12,7 +11,6 @@ export default [
         languageOptions: {
             ecmaVersion: 2020,
             globals: {
-                ...pluginJest.environments.globals.globals,
                 ...globals.browser
             },
             parserOptions: {
@@ -26,7 +24,6 @@ export default [
             react,
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
-            jest: pluginJest,
         },
         rules: {
             ...js.configs.recommended.rules,

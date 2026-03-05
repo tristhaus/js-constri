@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 import { CommandCircle } from './CommandCircle'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'

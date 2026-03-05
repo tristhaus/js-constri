@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 import { parse, strings_de } from './parser'
 import { registry } from './registry'
 

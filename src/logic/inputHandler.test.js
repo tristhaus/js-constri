@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 import { handleInput } from './inputHandler'
 import { strings_de } from './parser'
 import { ItemPoint } from './ItemPoint'
