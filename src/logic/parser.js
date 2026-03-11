@@ -1,16 +1,19 @@
 import { CommandCircle } from './CommandCircle'
+import { CommandDeleteItem } from './CommandDeleteItem'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
 import { registry } from './registry'
+import { isUserEnteredName } from './nameLogic'
 
 const allStrings = {}
 
 const strings_de = {
     id: registry.langs.de,
     circle: 'kreis',
+    delete: 'loesche',
     intersection: 'sp',
     line: 'gerade',
     name: 'bez',
@@ -22,6 +25,7 @@ const strings_de = {
 const strings_en = {
     id: registry.langs.en,
     circle: 'circle',
+    delete: 'delete',
     intersection: 'inter',
     line: 'line',
     name: 'name',
@@ -30,24 +34,21 @@ const strings_en = {
     segment: 'segment',
 }
 
+// some words are not valid as names, otherwise parsing becomes a pain
+for (const stringsObject of [strings_de, strings_en]) {
+    stringsObject.prohibited = [
+        stringsObject.name // problem solved: `delete name` - is `name` a name or the keyword?
+    ]
+}
+
 allStrings[registry.langs.de] = strings_de
 allStrings[registry.langs.en] = strings_en
-
-const userEnteredNamePattern = /^[a-zA-Z][a-zA-Z_0-9]*$/
-
-const isValidName = candidate => {
-    if (typeof candidate !== 'string') {
-        return false
-    }
-
-    return candidate.match(userEnteredNamePattern) !== null
-}
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
 }
 
-const parseCircle = args => {
+const parseCircle = (isValidName, args) => {
     if (args.length !== 3) {
         return null
     }
@@ -67,7 +68,20 @@ const parseCircle = args => {
     return new CommandCircle(name, centerName, radius)
 }
 
-const parseIntersection = args => {
+const parseDelete = (isValidName, args) => {
+    // implementation note: ignore `delete name` for now
+    if (args.length < 1) {
+        return null
+    }
+
+    if (!args.every(x => isValidName(x))) {
+        return null
+    }
+
+    return new CommandDeleteItem(args)
+}
+
+const parseIntersection = (isValidName, args) => {
     if (args.length < 3 || args.length > 4) {
         return null
     }
@@ -79,7 +93,7 @@ const parseIntersection = args => {
     return new CommandIntersection(args[0], args[1], args.slice(2))
 }
 
-const parseLine = args => {
+const parseLine = (isValidName, args) => {
     if (args.length !== 3) {
         return null
     }
@@ -95,7 +109,7 @@ const parseLine = args => {
     return new CommandLine(name, startPointName, endPointName)
 }
 
-const parsePoint = args => {
+const parsePoint = (isValidName, args) => {
     if (args.length !== 3) {
         return null
     }
@@ -116,7 +130,7 @@ const parsePoint = args => {
     return new CommandPoint(name, x, y)
 }
 
-const parseRay = args => {
+const parseRay = (isValidName, args) => {
     if (args.length !== 3) {
         return null
     }
@@ -132,7 +146,7 @@ const parseRay = args => {
     return new CommandRay(name, startPointName, endPointName)
 }
 
-const parseSegment = args => {
+const parseSegment = (isValidName, args) => {
     if (args.length !== 3) {
         return null
     }
@@ -154,6 +168,9 @@ const parse = (lang, input) => {
     }
 
     const strings = allStrings[lang]
+    const isValidName = candidate => {
+        return isUserEnteredName(candidate) && strings.prohibited.every(x => x !== candidate)
+    }
 
     const allArgs = input.split(' ').filter(x => x !== '')
 
@@ -166,10 +183,13 @@ const parse = (lang, input) => {
 
     switch (first) {
         case strings.circle:
-            return parseCircle(args)
+            return parseCircle(isValidName, args)
+
+        case strings.delete:
+            return parseDelete(isValidName, args)
 
         case strings.line:
-            return parseLine(args)
+            return parseLine(isValidName, args)
 
         case strings.name:
 
@@ -177,20 +197,20 @@ const parse = (lang, input) => {
             if (args[0] !== strings.intersection) {
                 return null
             }
-            return parseIntersection(args.slice(1))
+            return parseIntersection(isValidName, args.slice(1))
 
         case strings.point:
-            return parsePoint(args)
+            return parsePoint(isValidName, args)
 
         case strings.ray:
-            return parseRay(args)
+            return parseRay(isValidName, args)
 
         case strings.segment:
-            return parseSegment(args)
+            return parseSegment(isValidName, args)
 
         default:
             return null
     }
 }
 
-export { parse, strings_de, userEnteredNamePattern }
+export { parse, strings_de }

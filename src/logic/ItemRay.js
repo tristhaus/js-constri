@@ -1,6 +1,6 @@
 import { registry } from './registry'
 
-class ItemRay{
+class ItemRay {
     constructor(name, startPoint, endPoint) {
         this.name = name
         this.startPoint = startPoint

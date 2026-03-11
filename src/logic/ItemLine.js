@@ -1,6 +1,6 @@
 import { registry } from './registry'
 
-class ItemLine{
+class ItemLine {
     constructor(name, startPoint, endPoint) {
         this.name = name
         this.startPoint = startPoint

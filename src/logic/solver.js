@@ -4,6 +4,7 @@ import { ItemPoint } from './ItemPoint'
 import { ItemRay } from './ItemRay'
 import { ItemSegment } from './ItemSegment'
 import { registry } from './registry'
+import { getNameWithoutPossiblePrefix, isUserEnteredName } from './nameLogic'
 
 const epsilon = 1e-10
 
@@ -14,7 +15,7 @@ const initState = () => {
 }
 
 const pointsSeemIdentical = (pointA, pointB) => {
-    return (pointA.x - pointB.x)**2 + (pointA.y - pointB.y)**2 < epsilon
+    return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2 < epsilon
 }
 
 const solveCircle = (commandCircle, state) => {
@@ -46,9 +47,9 @@ const solveCircle = (commandCircle, state) => {
 // returns [a, b, c] of a*x + b*y = c
 const findNormalLineEquation = lineLike => {
     const a = -(lineLike.endPoint.y - lineLike.startPoint.y)
-    const b =   lineLike.endPoint.x - lineLike.startPoint.x
+    const b = +(lineLike.endPoint.x - lineLike.startPoint.x)
 
-    const norm = Math.sqrt(a**2 + b**2)
+    const norm = Math.sqrt(a ** 2 + b ** 2)
 
     const c = lineLike.startPoint.y * lineLike.endPoint.x - lineLike.startPoint.x * lineLike.endPoint.y
 
@@ -114,13 +115,12 @@ const solveTwoLineLikesIntersection = (pointName, lineLikeR, lineLikeS, state) =
     const detN = Ra * Sb - Rb * Sa
 
     // no intersection
-    if (Math.abs(detN) < epsilon)
-    {
+    if (Math.abs(detN) < epsilon) {
         return state
     }
 
-    const intersectX =  (Rc * Sb - Rb * Sc) / detN
-    const intersectY =  (Ra * Sc - Rc * Sa) / detN
+    const intersectX = (Rc * Sb - Rb * Sc) / detN
+    const intersectY = (Ra * Sc - Rc * Sa) / detN
 
     const itemIntersectionPoint = new ItemPoint(pointName, intersectX, intersectY)
     const filtered = filterByInterval([itemIntersectionPoint], [lineLikeR, lineLikeS])
@@ -148,8 +148,8 @@ const calculatePointsFromMidpoint = (lineLike, midpointD, distDI, names) => {
 
     const dx = H.x - midpointD.x
     const dy = H.y - midpointD.y
-    const norming = Math.sqrt(dx**2 + dy**2)
-    const unitvectorDA = [dx  * distDI / norming, dy  * distDI / norming]
+    const norming = Math.sqrt(dx ** 2 + dy ** 2)
+    const unitvectorDA = [dx * distDI / norming, dy * distDI / norming]
 
     const I1 = new ItemPoint(names[0], midpointD.x + unitvectorDA[0], midpointD.y + unitvectorDA[1])
     const I2 = new ItemPoint(names[1], midpointD.x - unitvectorDA[0], midpointD.y - unitvectorDA[1])
@@ -189,7 +189,7 @@ const solveCircleLineLikeIntersection = (names, circle, lineLike, state) => {
 
     const C = distC1ab < distC2ab ? C1 : C2
 
-    const distIC = Math.sqrt(circle.radius**2 - distCM**2)
+    const distIC = Math.sqrt(circle.radius ** 2 - distCM ** 2)
 
     const points = calculatePointsFromMidpoint(lineLike, C, distIC, names, state)
     state.collection.push(...points)
@@ -209,7 +209,7 @@ const solveTwoCirclesIntersection = (names, circleR, circleS, state) => {
     // vector
     const SRx = circleR.centerPoint.x - circleS.centerPoint.x
     const SRy = circleR.centerPoint.y - circleS.centerPoint.y
-    const distCenters = Math.sqrt(SRx**2 + SRy**2)
+    const distCenters = Math.sqrt(SRx ** 2 + SRy ** 2)
 
     // unit vector
     const SRxu = SRx / distCenters
@@ -225,8 +225,8 @@ const solveTwoCirclesIntersection = (names, circleR, circleS, state) => {
         return state
     }
 
-    const d = (circleS.radius**2 + distCenters**2 - circleR.radius**2 ) / (2 * distCenters)
-    const h = Math.sqrt(circleS.radius**2 - d**2)
+    const d = (circleS.radius ** 2 + distCenters ** 2 - circleR.radius ** 2) / (2 * distCenters)
+    const h = Math.sqrt(circleS.radius ** 2 - d ** 2)
 
     const Cx = circleS.centerPoint.x + d * SRxu
     const Cy = circleS.centerPoint.y + d * SRyu
@@ -241,8 +241,7 @@ const solveTwoCirclesIntersection = (names, circleR, circleS, state) => {
     const I2 = new ItemPoint(names[1], I2x, I2y)
 
     // we only have one point in this case
-    if (h < epsilon)
-    {
+    if (h < epsilon) {
         state.collection.push(I1)
     }
     else {
@@ -262,18 +261,15 @@ const solveIntersection = (commandIntersection, state) => {
     const aIsCircle = itemA?.type === registry.circle
     const bIsCircle = itemB?.type === registry.circle
 
-    if (aIsLineLike && bIsLineLike)
-    {
+    if (aIsLineLike && bIsLineLike) {
         return solveTwoLineLikesIntersection(commandIntersection.names[0], itemA, itemB, state)
     }
 
-    if (aIsCircle && bIsLineLike)
-    {
+    if (aIsCircle && bIsLineLike) {
         return solveCircleLineLikeIntersection(commandIntersection.names, itemA, itemB, state)
     }
 
-    if (bIsCircle && aIsLineLike)
-    {
+    if (bIsCircle && aIsLineLike) {
         return solveCircleLineLikeIntersection(commandIntersection.names, itemB, itemA, state)
     }
 
@@ -364,10 +360,122 @@ const solveSegment = (commandSegment, state) => {
     return state
 }
 
-// this may create items with names not matching allowed user input
-// points starting with '$'
-//  - will not display names
-const solve = (command, state) => {
+const deleteObject = (targetName, state) => {
+    const targetItem = state.collection.find(x => x.name === targetName)
+
+    if (targetItem === undefined) {
+        return null
+    }
+
+    let hasEffect = false
+    const toBeRemoved = [targetItem]
+
+    while (toBeRemoved.length > 0) {
+        const currentItemToBeRemoved = toBeRemoved.shift()
+
+        if (currentItemToBeRemoved.type === registry.point) {
+            // garbage-collect the point
+
+            let pointCanBeDeleted = currentItemToBeRemoved.name === targetItem.name || !(isUserEnteredName(currentItemToBeRemoved.name))
+            let pointCanBeInvisible = true
+
+            for (const holder of state.collection.filter(x => x.type !== registry.point)) {
+                switch (holder.type) {
+                    case registry.circle:
+                        if (holder.centerPoint.name === currentItemToBeRemoved.name) {
+                            pointCanBeDeleted = false
+                        }
+                        break
+
+                    case registry.line:
+                        if (holder.startPoint.name === currentItemToBeRemoved.name
+                            || holder.endPoint.name === currentItemToBeRemoved.name) {
+                            pointCanBeDeleted = false
+                        }
+                        break
+
+                    case registry.ray:
+                        if (holder.startPoint.name === currentItemToBeRemoved.name) {
+                            pointCanBeDeleted = false
+                            pointCanBeInvisible = false
+                        }
+
+                        if (holder.endPoint.name === currentItemToBeRemoved.name) {
+                            pointCanBeDeleted = false
+
+                        }
+                        break
+
+                    case registry.segment:
+                        if (holder.startPoint.name === currentItemToBeRemoved.name
+                            || holder.endPoint.name === currentItemToBeRemoved.name) {
+                            pointCanBeDeleted = false
+                            pointCanBeInvisible = false
+                        }
+                        break
+                }
+            }
+
+            if (pointCanBeDeleted) {
+                state.collection = state.collection.filter(x => x.name !== currentItemToBeRemoved.name)
+                hasEffect = true
+            }
+            else if (pointCanBeInvisible) {
+                const uniquePortion = getNameWithoutPossiblePrefix(currentItemToBeRemoved.name)
+                currentItemToBeRemoved.name = `!${uniquePortion}`
+                hasEffect = true
+            }
+        }
+        else if (currentItemToBeRemoved.type === registry.circle) {
+            if (!isUserEnteredName(currentItemToBeRemoved.centerPoint.name)) {
+                toBeRemoved.push(currentItemToBeRemoved.centerPoint)
+            }
+            toBeRemoved.push(...currentItemToBeRemoved.extremaPoints)
+            state.collection = state.collection.filter(x => x.name !== currentItemToBeRemoved.name)
+            hasEffect = true
+        }
+        else if (currentItemToBeRemoved.type === registry.line
+            || currentItemToBeRemoved.type === registry.ray
+            || currentItemToBeRemoved.type === registry.segment) {
+
+            for (const point of [currentItemToBeRemoved.startPoint, currentItemToBeRemoved.endPoint]) {
+                if (!isUserEnteredName(point.name)) {
+                    toBeRemoved.push(point)
+                }
+            }
+
+            state.collection = state.collection.filter(x => x.name !== currentItemToBeRemoved.name)
+            hasEffect = true
+        }
+    }
+
+    return hasEffect ? state : null
+}
+
+const solveDeleteObject = (command, state) => {
+    let localState = state
+
+    for (const targetName of command.targetNames) {
+        localState = deleteObject(targetName, localState)
+        if (localState === null) {
+            return null
+        }
+    }
+
+    return localState
+}
+
+const solveDeletion = (command, state) => {
+    switch (command.type) {
+        case registry.deleteItem:
+            return solveDeleteObject(command, state)
+
+        default:
+            return null
+    }
+}
+
+const solveCreation = (command, state) => {
     if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name))) {
         return null
     }
@@ -393,6 +501,20 @@ const solve = (command, state) => {
 
         default:
             return null
+    }
+}
+
+// this may create items with names not matching allowed user input
+// points starting with '§'
+//  - will not display names
+// points starting with '!'
+//  - will not be displayed
+const solve = (command, state) => {
+    if (command.type === registry.deleteItem) {
+        return solveDeletion(command, state)
+    }
+    else {
+        return solveCreation(command, state)
     }
 }
 

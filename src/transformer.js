@@ -1,4 +1,4 @@
-import { userEnteredNamePattern } from './logic/parser'
+import { isUserEnteredName } from './logic/nameLogic'
 import { registry } from './logic/registry'
 
 const findExtrema = points => {
@@ -139,7 +139,7 @@ const transform = items => {
                     break
                 }
 
-                pointsLabel.push(item.name.match(userEnteredNamePattern) !== null ? item.name : '')
+                pointsLabel.push(isUserEnteredName(item.name) ? item.name : '')
                 pointsX.push(item.x)
                 pointsY.push(item.y)
                 break

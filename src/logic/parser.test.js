@@ -42,6 +42,13 @@ describe('parser logic unit tests', () => {
             expect(result.type).toBe(registry.circle)
         })
 
+        test('valid delete item returns expected', () => {
+            const result = parse(lang, 'loesche A')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteItem)
+        })
+
         test('valid line returns expected', () => {
             const result = parse(lang, 'gerade ab A B')
 
@@ -76,6 +83,12 @@ describe('parser logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.segment)
         })
+
+        test('name bez" is rejected', () => {
+            const result = parse(lang, 'strecke bez A B')
+
+            expect(result).toBeNull()
+        })
     })
 
     describe('localized tests: en', () => {
@@ -87,6 +100,13 @@ describe('parser logic unit tests', () => {
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.circle)
+        })
+
+        test('valid delete item returns expected', () => {
+            const result = parse(lang, 'delete A')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteItem)
         })
 
         test('valid line returns expected', () => {
@@ -122,6 +142,12 @@ describe('parser logic unit tests', () => {
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.segment)
+        })
+
+        test('name "name" is rejected', () => {
+            const result = parse(lang, 'strecke bez A B')
+
+            expect(result).toBeNull()
         })
     })
 
@@ -163,6 +189,37 @@ describe('parser logic unit tests', () => {
 
         test('circle: invalid radius returns null', () => {
             const result = parse(defaultLang, strings_de.circle + ' k A B')
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe('delete item', () => {
+
+        test('valid delete item with one argument returns expected', () => {
+            const result = parse(defaultLang, strings_de.delete + ' k')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteItem)
+            expect(result.targetNames).toStrictEqual(['k'])
+        })
+
+        test('valid delete item with many arguments returns expected', () => {
+            const result = parse(defaultLang, strings_de.delete + ' k l M N')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteItem)
+            expect(result.targetNames).toStrictEqual(['k', 'l', 'M', 'N'])
+        })
+
+        test('delete item: too few arguments returns null', () => {
+            const result = parse(defaultLang, strings_de.delete + ' ')
+
+            expect(result).toBeNull()
+        })
+
+        test('delete item: invalid name returns null', () => {
+            const result = parse(defaultLang, strings_de.delete + ' A 0.1 C')
 
             expect(result).toBeNull()
         })

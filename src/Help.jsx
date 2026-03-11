@@ -45,10 +45,15 @@ const HelpDe = ({ closeAction }) => {
                                     <td></td>
                                     <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>. Optional: ein weiterer Name.</td>
                                 </tr>
+                                <tr>
+                                    <td className="command">loesche h Y</td>
+                                    <td></td>
+                                    <td>Lösche die Objekte <span className="command">h</span> und <span className="command">Y</span></td>
+                                </tr>
                             </tbody>
                         </table>
                         <h4>Über JS-Constri</h4>
-                        Eine <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress Reimplementierung von Constri in Javascript.<br/>Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">hier</a> (nicht mein Inhalt, fremde Seite).
+                        Eine <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress Reimplementierung von Constri in Javascript.<br />Für mehr Informationen über Constri, siehe <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">hier</a> (nicht mein Inhalt, fremde Seite).
                     </div>
                 </div>
             </div>
@@ -104,12 +109,17 @@ const HelpEn = ({ closeAction }) => {
                                 <tr>
                                     <td className="command">name inter c g Z</td>
                                     <td></td>
-                                    <td>Consider the intersection of objects <span className="command">c</span> and <span className="command">g</span>. Give it the name <span className="command">Z</span>. Two names are possible.</td>
+                                    <td>Consider the intersection of objects <span className="command">c</span> and <span className="command">g</span>: give it the name <span className="command">Z</span>. Two names are possible.</td>
+                                </tr>
+                                <tr>
+                                    <td className="command">delete h Y</td>
+                                    <td></td>
+                                    <td>Delete the objects <span className="command">h</span> and <span className="command">Y</span></td>
                                 </tr>
                             </tbody>
                         </table>
                         <h4>About JS-Constri</h4>
-                        A <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress reimplementation of Constri in Javascript.<br/>For more information about Constri (in German), see <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">here</a> (not my content, third-party site).
+                        A <a href="https://github.com/tristhaus/js-constri" target="_blank">open-source</a> work-in-progress reimplementation of Constri in Javascript.<br />For more information about Constri (in German), see <a href="https://hupfeld-software.de/dokuwiki/doku.php/constri" target="_blank">here</a> (not my content, third-party site).
                     </div>
                 </div>
             </div>

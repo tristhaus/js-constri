@@ -4,6 +4,7 @@ const registry = {
         en: 'en',
     },
     circle: 'circle_t',
+    deleteItem: 'deleteItem_t',
     intersection: 'intersection_t',
     line: 'line_t',
     point: 'point_t',

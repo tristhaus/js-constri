@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
 import { CommandCircle } from './CommandCircle'
+import { CommandDeleteItem } from './CommandDeleteItem'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
@@ -121,6 +122,623 @@ describe('solver logic unit tests', () => {
             const result2 = solve(new CommandCircle('k', 'A', -1.0), state)
 
             expect(result2).toBeNull()
+        })
+    })
+
+    describe('delete item unit tests', () => {
+
+        test('deletion of non-existent item returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['z']), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('trivial deletion of named point returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('B')
+            expect(result.collection[0].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('trivial deletion of unnamed point returns expected', () => {
+            const pointA = new ItemPoint('§A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['§A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('B')
+            expect(result.collection[0].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('trivial deletion of invisible point returns expected', () => {
+            const pointA = new ItemPoint('!A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['!A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('B')
+            expect(result.collection[0].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('deletion of points belonging to line returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const intermediate = solve(new CommandDeleteItem(['A']), state)
+            const result = solve(new CommandDeleteItem(['B']), intermediate)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(3)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('!A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('!B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.line)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('!A')
+            expect(result.collection[2].endPoint.name).toBe('!B')
+        })
+
+        test('deletion of points belonging to ray returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+            ] }
+
+            const result1  = solve(new CommandDeleteItem(['A']), state)
+            expect(result1).toBeNull()
+
+            const result2 = solve(new CommandDeleteItem(['B']), state)
+
+            expect(result2).not.toBeNull()
+            expect(result2.collection.length).toBe(3)
+
+            expect(result2.collection[0].type).toBe(registry.point)
+            expect(result2.collection[0].name).toBe('A')
+            expect(result2.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result2.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result2.collection[1].type).toBe(registry.point)
+            expect(result2.collection[1].name).toBe('!B')
+            expect(result2.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result2.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result2.collection[2].type).toBe(registry.ray)
+            expect(result2.collection[2].name).toBe('ab')
+            expect(result2.collection[2].startPoint.name).toBe('A')
+            expect(result2.collection[2].endPoint.name).toBe('!B')
+        })
+
+        test('deletion of points belonging to segment returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result1 = solve(new CommandDeleteItem(['A']), state)
+            expect(result1).toBeNull()
+            const result2 = solve(new CommandDeleteItem(['B']), state)
+            expect(result2).toBeNull()
+        })
+
+        test('deletion of points belonging to more than one line-like returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+            const rayCB = new ItemRay('cb', pointC, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                pointC,
+                segmentAB,
+                rayCB,
+            ] }
+
+            const result1 = solve(new CommandDeleteItem(['A']), state)
+            expect(result1).toBeNull()
+            const result2 = solve(new CommandDeleteItem(['B']), state)
+            expect(result2).toBeNull()
+            const result3 = solve(new CommandDeleteItem(['C']), state)
+            expect(result3).toBeNull()
+        })
+
+        test('deletion of circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['k']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+        })
+
+        test('deletion of center of circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('!A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.circle)
+            expect(result.collection[1].name).toBe('k')
+            expect(result.collection[1].centerPoint.x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[1].centerPoint.y).toBeCloseTo(2, jestPrecision)
+            expect(result.collection[1].radius).toBeCloseTo(3.0, jestPrecision)
+            expect(result.collection[1].centerPoint.name).toBe('!A')
+
+            expect(result.collection[2].type).toBe(registry.point)
+            expect(result.collection[2].name).toBe('!k.circle.px')
+            expect(result.collection[2].x).toBeCloseTo(4, jestPrecision)
+            expect(result.collection[2].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[3].type).toBe(registry.point)
+            expect(result.collection[3].name).toBe('!k.circle.nx')
+            expect(result.collection[3].x).toBeCloseTo(-2, jestPrecision)
+            expect(result.collection[3].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!k.circle.py')
+            expect(result.collection[4].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(5, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.point)
+            expect(result.collection[5].name).toBe('!k.circle.ny')
+            expect(result.collection[5].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[5].y).toBeCloseTo(-1, jestPrecision)
+        })
+
+        test('deletion of line with named points returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('deletion of line with one named and one unnamed point returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('!B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+        })
+
+        test('deletion of line with two invisible points returns expected', () => {
+            const pointA = new ItemPoint('§A', 1.0, 2.0)
+            const pointB = new ItemPoint('§B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('deletion of ray with named points returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('deletion of ray with one named and one invisible point returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('§B', 3.0, 4.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                rayAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+        })
+
+        test('deletion of segment with named points returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+        })
+
+        test('deletion of segment with one named and one unnamed point returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('!B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+        })
+
+        test('deletion of segment with two unnamed points returns expected', () => {
+            const pointA = new ItemPoint('!A', 1.0, 2.0)
+            const pointB = new ItemPoint('!B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('two-step deletion of center of circle, circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const intermediate = solve(new CommandDeleteItem(['A']), state)
+            const result = solve(new CommandDeleteItem(['k']), intermediate)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('two-step deletion of circle, center of circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const intermediate = solve(new CommandDeleteItem(['k']), state)
+            const result = solve(new CommandDeleteItem(['A']), intermediate)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('combined deletion of center of circle, circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['A', 'k']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('combined deletion of circle, center of circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const extremumPX = new ItemPoint('!k.circle.px', 4.0, 2.0)
+            const extremumNX = new ItemPoint('!k.circle.nx', -2.0, 2.0)
+            const extremumPY = new ItemPoint('!k.circle.py', 1.0, 5.0)
+            const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
+            const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
+
+            const state = { collection: [
+                pointA,
+                circleK,
+                extremumPX,
+                extremumNX,
+                extremumPY,
+                extremumNY,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['k', 'A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('three-step deletion of segment, points returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const intermediate1 = solve(new CommandDeleteItem(['ab']), state)
+            const intermediate2 = solve(new CommandDeleteItem(['A']), intermediate1)
+            const result = solve(new CommandDeleteItem(['B']), intermediate2)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('three-step deletion of points, line returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const intermediate1 = solve(new CommandDeleteItem(['A']), state)
+            const intermediate2 = solve(new CommandDeleteItem(['B']), intermediate1)
+            const result = solve(new CommandDeleteItem(['ab']), intermediate2)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('combined deletion of segment, points returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                segmentAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['ab', 'A', 'B']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
+        })
+
+        test('combined deletion of points, line returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+
+            const state = { collection: [
+                pointA,
+                pointB,
+                lineAB,
+            ] }
+
+            const result = solve(new CommandDeleteItem(['A', 'B', 'ab']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(0)
         })
     })
 

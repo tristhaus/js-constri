@@ -29,7 +29,7 @@ describe('transformer tests', () => {
         const [collection, aux] = transform([
             new ItemPoint('A', 1, 2),
             new ItemPoint('B', 3, 4),
-            new ItemPoint('$x', 5, 6),
+            new ItemPoint('§x', 5, 6),
             new ItemPoint('!x', 7, 8),
         ])
 
@@ -109,7 +109,7 @@ describe('transformer tests', () => {
         const [collection, aux] = transform([
             pointA,
             pointB,
-            new ItemPoint('$x', 5, 6),
+            new ItemPoint('§x', 5, 6),
             new ItemSegment('ab', pointA, pointB)
         ])
 
@@ -138,7 +138,7 @@ describe('transformer tests', () => {
         const [collection, aux] = transform([
             pointA,
             pointB,
-            new ItemPoint('$x', 5, 4),
+            new ItemPoint('§x', 5, 4),
             new ItemLine('ab', pointA, pointB)
         ])
 
@@ -167,7 +167,7 @@ describe('transformer tests', () => {
         const [collection, aux] = transform([
             pointA,
             pointB,
-            new ItemPoint('$x', 5, 4),
+            new ItemPoint('§x', 5, 4),
             new ItemRay('ab', pointA, pointB)
         ])
 
