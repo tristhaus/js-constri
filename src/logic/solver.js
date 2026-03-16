@@ -10,7 +10,7 @@ const epsilon = 1e-10
 
 const initState = () => {
     return {
-        collection: []
+        collection: [],
     }
 }
 

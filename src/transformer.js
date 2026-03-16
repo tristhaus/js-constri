@@ -29,7 +29,7 @@ const createPlotlyDataFromCircle = (circle, currentColor) => {
         const localY = Math.sqrt(squaredRadius - localX * localX)
 
         xData.push(localX + circle.centerPoint.x)
-        yPositiveBranch.push( localY + circle.centerPoint.y)
+        yPositiveBranch.push(+localY + circle.centerPoint.y)
         yNegativeBranch.push(-localY + circle.centerPoint.y)
     }
 
@@ -44,7 +44,7 @@ const createPlotlyDataFromCircle = (circle, currentColor) => {
         textposition: 'middleright',
         type: 'scatter',
         mode: 'lines+text',
-        line: { color: currentColor, },
+        line: { color: currentColor },
     }
 
     return circlePlotlyData
@@ -54,7 +54,7 @@ const createPlotlyDataFromLine = (line, currentColor, extrema) => {
     const ESx = line.startPoint.x - line.endPoint.x
     const ESy = line.startPoint.y - line.endPoint.y
 
-    const factor = Math.max(2, ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+    const factor = Math.max(2, ((extrema.maxX - extrema.minX) ** 2 + (extrema.maxY - extrema.minY) ** 2))
 
     const lowerX = line.startPoint.x + ESx * factor
     const upperX = line.endPoint.x - ESx * factor
@@ -67,7 +67,7 @@ const createPlotlyDataFromLine = (line, currentColor, extrema) => {
         y: [lowerY, upperY],
         type: 'scatter',
         mode: 'lines',
-        line: { color: currentColor, },
+        line: { color: currentColor },
     }
 
     return linePlotlyData
@@ -77,7 +77,7 @@ const createPlotlyDataFromRay = (ray, currentColor, extrema) => {
     const ESx = ray.startPoint.x - ray.endPoint.x
     const ESy = ray.startPoint.y - ray.endPoint.y
 
-    const factor = Math.max(2, ((extrema.maxX - extrema.minX)**2 + (extrema.maxY - extrema.minY)**2))
+    const factor = Math.max(2, ((extrema.maxX - extrema.minX) ** 2 + (extrema.maxY - extrema.minY) ** 2))
 
     const upperX = ray.endPoint.x - ESx * factor
     const upperY = ray.endPoint.y - ESy * factor
@@ -87,7 +87,7 @@ const createPlotlyDataFromRay = (ray, currentColor, extrema) => {
         y: [ray.startPoint.y, upperY],
         type: 'scatter',
         mode: 'lines',
-        line: { color: currentColor, },
+        line: { color: currentColor },
     }
 
     return rayPlotlyData
@@ -99,14 +99,14 @@ const createPlotlyDataFromSegment = (segment, currentColor) => {
         y: [segment.startPoint.y, segment.endPoint.y],
         type: 'scatter',
         mode: 'lines',
-        line: { color: currentColor, },
+        line: { color: currentColor },
     }
 
     return segmentPlotlyData
 }
 
 const transform = items => {
-    let currentColor = registry.colors.black
+    const currentColor = registry.colors.black
 
     const extrema = findExtrema(items.filter(x => x.type === registry.point))
 
@@ -165,7 +165,7 @@ const transform = items => {
         type: 'scatter',
         mode: 'markers+text',
         textposition: 'top',
-        marker: { color: '#000000', },
+        marker: { color: '#000000' },
     }
 
     const fakePointsPlotlyData = {

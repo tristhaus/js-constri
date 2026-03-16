@@ -51,15 +51,15 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
 }
 
 const strings = {}
-strings[registry.langs.de] =  {
+strings[registry.langs.de] = {
     defaultInput: 'punkt A 1 2\npunkt B 3 6\nstrecke ab A B',
     execute: 'Ausführen',
-    help: 'Hilfe'
+    help: 'Hilfe',
 }
 strings[registry.langs.en] = {
     defaultInput: 'point C 0 1\ncircle k C 3',
     execute: 'Execute',
-    help: 'Help'
+    help: 'Help',
 }
 
 function App() {
@@ -118,14 +118,14 @@ function App() {
 
     return (
         <>
-            {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)}/>}
-            {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)}/>}
+            {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)} />}
+            {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)} />}
             <div style={{ textAlign: 'right' }}>
                 <button onClick={() => handleLanguageButtonPressed(registry.langs.de)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z"/><path fill="#D00" d="M0 1h5v2H0z"/><path fill="#FFCE00" d="M0 2h5v1H0z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z" /><path fill="#D00" d="M0 1h5v2H0z" /><path fill="#FFCE00" d="M0 2h5v1H0z" /></svg>
                 </button>
                 <button onClick={() => handleLanguageButtonPressed(registry.langs.en)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clipPath="url(#a)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6"/><path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4"/><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/></g></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z" /></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z" /></clipPath><g clipPath="url(#a)"><path d="M0 0v30h60V0z" fill="#012169" /><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" /><path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4" /><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" /><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" /></g></svg>
                 </button>
             </div>
             <div>
@@ -160,7 +160,7 @@ function App() {
                             showgrid: false, // relevant property: dtick
                             showticklabels: false,
                             range: yRange,
-                        }
+                        },
                     }}
                     config={{
                         doubleClick: false,

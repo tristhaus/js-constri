@@ -37,7 +37,7 @@ const strings_en = {
 // some words are not valid as names, otherwise parsing becomes a pain
 for (const stringsObject of [strings_de, strings_en]) {
     stringsObject.prohibited = [
-        stringsObject.name // problem solved: `delete name` - is `name` a name or the keyword?
+        stringsObject.name, // problem solved: `delete name` - is `name` a name or the keyword?
     ]
 }
 

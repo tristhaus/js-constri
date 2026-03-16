@@ -3,6 +3,7 @@ import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import stylistic from '@stylistic/eslint-plugin'
 
 export default [
     { ignores: ['dist'] },
@@ -11,7 +12,7 @@ export default [
         languageOptions: {
             ecmaVersion: 2020,
             globals: {
-                ...globals.browser
+                ...globals.browser,
             },
             parserOptions: {
                 ecmaVersion: 'latest',
@@ -24,6 +25,7 @@ export default [
             react,
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
+            '@stylistic': stylistic,
         },
         rules: {
             ...js.configs.recommended.rules,
@@ -35,32 +37,52 @@ export default [
                 'warn',
                 { allowConstantExport: true },
             ],
-            'indent': [
+            'curly': 'error',
+            'eqeqeq': 'error',
+            'no-eq-null': 'error',
+            'no-var': 'error',
+            'no-unassigned-vars': 'error',
+            'prefer-const': 'error',
+            'yoda': 'error',
+            '@stylistic/arrow-spacing': [
+                'error', { 'before': true, 'after': true },
+            ],
+            '@stylistic/brace-style': ['error', 'stroustrup', {}],
+            '@stylistic/comma-dangle': ['error', {
+                'arrays': 'only-multiline',
+                'objects': 'only-multiline',
+                'imports': 'never',
+                'exports': 'never',
+                'functions': 'never',
+                'importAttributes': 'never',
+                'dynamicImports': 'never',
+                'enums': 'only-multiline',
+                'generics': 'never',
+                'tuples': 'never',
+            }],
+            '@stylistic/comma-style': ['error', 'last'],
+            '@stylistic/indent': [
                 'error',
                 4,
-                { 'SwitchCase': 1 }
+                { 'SwitchCase': 1 },
             ],
-            'linebreak-style': [
+            '@stylistic/linebreak-style': [
                 'error',
-                'unix'
+                'unix',
             ],
-            'quotes': [
+            '@stylistic/no-tabs': 'error',
+            '@stylistic/no-trailing-spaces': 'error',
+            '@stylistic/object-curly-spacing': [
+                'error', 'always',
+            ],
+            '@stylistic/quotes': [
                 'error',
-                'single'
+                'single',
             ],
-            'semi': [
+            '@stylistic/semi': [
                 'error',
-                'never'
+                'never',
             ],
-            'eqeqeq': 'error',
-            'no-trailing-spaces': 'error',
-            'object-curly-spacing': [
-                'error', 'always'
-            ],
-            'arrow-spacing': [
-                'error', { 'before': true, 'after': true }
-            ],
-            'no-console': 0,
             'react/prop-types': 0,
             'react/react-in-jsx-scope': 0,
         },

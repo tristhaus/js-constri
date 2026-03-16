@@ -61,7 +61,7 @@ describe('transformer tests', () => {
         const [collection, aux] = transform([
             pointA,
             ...extremaPoints,
-            new ItemCircle('ab', pointA, 3.0, extremaPoints)
+            new ItemCircle('ab', pointA, 3.0, extremaPoints),
         ])
 
         expect(collection.length).toBe(2)
@@ -110,7 +110,7 @@ describe('transformer tests', () => {
             pointA,
             pointB,
             new ItemPoint('§x', 5, 6),
-            new ItemSegment('ab', pointA, pointB)
+            new ItemSegment('ab', pointA, pointB),
         ])
 
         expect(collection.length).toBe(2)
@@ -139,7 +139,7 @@ describe('transformer tests', () => {
             pointA,
             pointB,
             new ItemPoint('§x', 5, 4),
-            new ItemLine('ab', pointA, pointB)
+            new ItemLine('ab', pointA, pointB),
         ])
 
         expect(collection.length).toBe(2)
@@ -168,7 +168,7 @@ describe('transformer tests', () => {
             pointA,
             pointB,
             new ItemPoint('§x', 5, 4),
-            new ItemRay('ab', pointA, pointB)
+            new ItemRay('ab', pointA, pointB),
         ])
 
         expect(collection.length).toBe(2)

@@ -26,10 +26,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const circleK = new ItemCircle('k', pointA, 3.0)
 
-            const state = { collection: [
-                pointA,
-                circleK,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                ]
+            }
 
             const result = solve(new CommandCircle('k', 'A', 3.0), state)
 
@@ -39,9 +41,11 @@ describe('solver logic unit tests', () => {
         test('valid circle input returns extended state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
 
-            const state = { collection: [
-                pointA,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                ]
+            }
 
             const result = solve(new CommandCircle('k', 'A', 3.0), state)
 
@@ -83,9 +87,11 @@ describe('solver logic unit tests', () => {
         test('circle with reference to non-existent center point returns null', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
 
-            const state = { collection: [
-                pointA,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                ]
+            }
 
             const result = solve(new CommandCircle('k', 'B', 3.0), state)
 
@@ -97,11 +103,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandCircle('k', 'ab', 3.0), state)
 
@@ -111,9 +119,11 @@ describe('solver logic unit tests', () => {
         test('circle with too small radius returns null', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
 
-            const state = { collection: [
-                pointA,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                ]
+            }
 
             const result1 = solve(new CommandCircle('k', 'A', 0.0), state)
 
@@ -132,11 +142,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['z']), state)
 
@@ -147,10 +159,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['A']), state)
 
@@ -167,10 +181,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('§A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['§A']), state)
 
@@ -187,10 +203,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('!A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['!A']), state)
 
@@ -208,11 +226,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const intermediate = solve(new CommandDeleteItem(['A']), state)
             const result = solve(new CommandDeleteItem(['B']), intermediate)
@@ -241,13 +261,15 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                ]
+            }
 
-            const result1  = solve(new CommandDeleteItem(['A']), state)
+            const result1 = solve(new CommandDeleteItem(['A']), state)
             expect(result1).toBeNull()
 
             const result2 = solve(new CommandDeleteItem(['B']), state)
@@ -276,11 +298,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result1 = solve(new CommandDeleteItem(['A']), state)
             expect(result1).toBeNull()
@@ -295,13 +319,15 @@ describe('solver logic unit tests', () => {
             const segmentAB = new ItemSegment('ab', pointA, pointB)
             const rayCB = new ItemRay('cb', pointC, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                pointC,
-                segmentAB,
-                rayCB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentAB,
+                    rayCB,
+                ]
+            }
 
             const result1 = solve(new CommandDeleteItem(['A']), state)
             expect(result1).toBeNull()
@@ -319,14 +345,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['k']), state)
 
@@ -347,14 +375,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['A']), state)
 
@@ -399,11 +429,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -426,11 +458,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('!B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -448,11 +482,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('§B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -465,11 +501,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -492,11 +530,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('§B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -514,11 +554,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -541,11 +583,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('!B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -563,11 +607,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('!B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab']), state)
 
@@ -583,14 +629,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const intermediate = solve(new CommandDeleteItem(['A']), state)
             const result = solve(new CommandDeleteItem(['k']), intermediate)
@@ -607,14 +655,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const intermediate = solve(new CommandDeleteItem(['k']), state)
             const result = solve(new CommandDeleteItem(['A']), intermediate)
@@ -631,14 +681,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['A', 'k']), state)
 
@@ -654,14 +706,16 @@ describe('solver logic unit tests', () => {
             const extremumNY = new ItemPoint('!k.circle.ny', 1.0, -1.0)
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
-            const state = { collection: [
-                pointA,
-                circleK,
-                extremumPX,
-                extremumNX,
-                extremumPY,
-                extremumNY,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    circleK,
+                    extremumPX,
+                    extremumNX,
+                    extremumPY,
+                    extremumNY,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['k', 'A']), state)
 
@@ -674,11 +728,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const intermediate1 = solve(new CommandDeleteItem(['ab']), state)
             const intermediate2 = solve(new CommandDeleteItem(['A']), intermediate1)
@@ -693,11 +749,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const intermediate1 = solve(new CommandDeleteItem(['A']), state)
             const intermediate2 = solve(new CommandDeleteItem(['B']), intermediate1)
@@ -712,11 +770,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['ab', 'A', 'B']), state)
 
@@ -729,11 +789,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandDeleteItem(['A', 'B', 'ab']), state)
 
@@ -751,13 +813,15 @@ describe('solver logic unit tests', () => {
             const segmentAB = new ItemSegment('ab', pointA, pointB)
             const segmentAC = new ItemSegment('ac', pointA, pointC)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                pointC,
-                segmentAB,
-                segmentAC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentAB,
+                    segmentAC,
+                ]
+            }
 
             const result = solve(new CommandIntersection('ab', 'ac', ['B']), state)
 
@@ -771,13 +835,15 @@ describe('solver logic unit tests', () => {
             const segmentAB = new ItemSegment('ab', pointA, pointB)
             const segmentAC = new ItemSegment('ac', pointA, pointC)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                pointC,
-                segmentAB,
-                segmentAC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentAB,
+                    segmentAC,
+                ]
+            }
 
             const result = solve(new CommandIntersection('ab', 'ac', ['D', 'B']), state)
 
@@ -794,14 +860,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -822,14 +890,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -850,14 +920,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -878,14 +950,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -906,14 +980,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -929,14 +1005,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -952,14 +1030,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -975,14 +1055,16 @@ describe('solver logic unit tests', () => {
                 const lineA = new ItemLine('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    lineA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        lineA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1001,14 +1083,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1029,14 +1113,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1052,14 +1138,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1080,14 +1168,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1103,14 +1193,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1131,14 +1223,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1154,14 +1248,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1177,14 +1273,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1200,14 +1298,16 @@ describe('solver logic unit tests', () => {
                 const rayA = new ItemRay('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    rayA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        rayA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1226,14 +1326,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1254,14 +1356,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1277,14 +1381,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1305,14 +1411,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1328,14 +1436,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1356,14 +1466,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1379,14 +1491,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1407,14 +1521,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1430,14 +1546,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1453,14 +1571,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1476,14 +1596,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1499,14 +1621,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const segmentB = new ItemSegment('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    segmentB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        segmentB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1525,14 +1649,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1553,14 +1679,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const lineB = new ItemLine('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    lineB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        lineB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1579,14 +1707,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1607,14 +1737,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1630,14 +1762,16 @@ describe('solver logic unit tests', () => {
                 const segmentA = new ItemSegment('la', pointA1, pointA2)
                 const rayB = new ItemRay('lb', pointB1, pointB2)
 
-                const state = { collection: [
-                    pointA1,
-                    pointA2,
-                    pointB1,
-                    pointB2,
-                    segmentA,
-                    rayB,
-                ] }
+                const state = {
+                    collection: [
+                        pointA1,
+                        pointA2,
+                        pointB1,
+                        pointB2,
+                        segmentA,
+                        rayB,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
 
@@ -1655,13 +1789,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1676,13 +1812,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 3.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1702,13 +1840,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1728,13 +1868,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1759,13 +1901,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1790,13 +1934,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.5, 3.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1821,13 +1967,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 3.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1852,13 +2000,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.0, 3.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1883,13 +2033,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1914,13 +2066,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1945,13 +2099,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -1976,13 +2132,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.0, 1.0)
                 const lineab = new ItemLine('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    lineab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        lineab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2010,13 +2168,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2031,13 +2191,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.5, 3.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2057,13 +2219,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.5, 3.0)
                 const rayba = new ItemRay('ba', pointB, pointA)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayba,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayba,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
 
@@ -2078,13 +2242,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.5, 3.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2104,13 +2270,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.5, 3.0)
                 const rayba = new ItemRay('ab', pointB, pointA)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayba,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayba,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2130,13 +2298,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 0.0, 0.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
 
@@ -2156,13 +2326,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 5.0, 3.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2187,13 +2359,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 0.0, 0.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2218,13 +2392,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.5, 2.5)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2249,13 +2425,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.5, 2.5)
                 const rayba = new ItemRay('ba', pointB, pointA)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayba,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayba,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
 
@@ -2270,13 +2448,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 3.0, 3.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
 
@@ -2296,13 +2476,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 3.0, 3.0)
                 const rayba = new ItemRay('ba', pointB, pointA)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayba,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayba,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
 
@@ -2327,13 +2509,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 4.0)
                 const rayab = new ItemRay('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    rayab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        rayab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikba1', 'Ikba2']), state)
 
@@ -2361,13 +2545,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2382,13 +2568,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 3.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2408,13 +2596,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 3.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2429,13 +2619,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2455,13 +2647,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 1.5)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2476,13 +2670,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 5.0, 5.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2507,13 +2703,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', -4.0, -4.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2528,13 +2726,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 5.0, 3.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2559,13 +2759,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', -2.5, 3.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2580,13 +2782,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 5.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2611,13 +2815,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, -4.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2632,13 +2838,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 1.0, 2.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2663,13 +2871,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 5.0, 5.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2689,13 +2899,15 @@ describe('solver logic unit tests', () => {
                 const pointB = new ItemPoint('B', 2.0, 2.0)
                 const segmentab = new ItemSegment('ab', pointA, pointB)
 
-                const state = { collection: [
-                    pointM,
-                    circlek,
-                    pointA,
-                    pointB,
-                    segmentab,
-                ] }
+                const state = {
+                    collection: [
+                        pointM,
+                        circlek,
+                        pointA,
+                        pointB,
+                        segmentab,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
 
@@ -2711,12 +2923,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2730,12 +2944,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 4.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2749,12 +2965,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 4.0)
                 const circlekS = new ItemCircle('kS', pointS, 7.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2768,12 +2986,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2792,12 +3012,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2816,12 +3038,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2840,12 +3064,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2864,12 +3090,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2888,12 +3116,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2912,12 +3142,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2936,12 +3168,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 4.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2960,12 +3194,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -2984,12 +3220,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 4.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3008,12 +3246,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 7.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3032,12 +3272,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3056,12 +3298,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3085,12 +3329,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3114,12 +3360,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3143,12 +3391,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 3.0, 0.0)
                 const circlekS = new ItemCircle('kS', pointS, 3.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3172,12 +3422,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 1.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3201,12 +3453,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3230,12 +3484,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3259,12 +3515,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 0.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 3.5, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3288,12 +3546,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3317,12 +3577,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 3.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3346,12 +3608,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 2.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3375,12 +3639,14 @@ describe('solver logic unit tests', () => {
                 const pointS = new ItemPoint('S', 2.0, 3.0)
                 const circlekS = new ItemCircle('kS', pointS, 6.0, []) // disregard extrema
 
-                const state = { collection: [
-                    pointR,
-                    circlekR,
-                    pointS,
-                    circlekS,
-                ] }
+                const state = {
+                    collection: [
+                        pointR,
+                        circlekR,
+                        pointS,
+                        circlekS,
+                    ]
+                }
 
                 const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
 
@@ -3407,11 +3673,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                ]
+            }
 
             const result = solve(new CommandLine('ab', 'A', 'B'), state)
 
@@ -3424,12 +3692,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'A', 'C'), state)
 
@@ -3468,12 +3738,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'A', 'A'), state)
 
@@ -3486,12 +3758,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'Z', 'C'), state)
 
@@ -3504,12 +3778,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'ab', 'C'), state)
 
@@ -3522,12 +3798,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'A', 'Z'), state)
 
@@ -3540,12 +3818,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                lineAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandLine('ac', 'A', 'ab'), state)
 
@@ -3556,10 +3836,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandLine('ab', 'A', 'B'), state)
 
@@ -3604,11 +3886,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                ]
+            }
 
             const result = solve(new CommandRay('ab', 'A', 'B'), state)
 
@@ -3621,12 +3905,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'A', 'C'), state)
 
@@ -3665,12 +3951,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'A', 'A'), state)
 
@@ -3683,12 +3971,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'Z', 'C'), state)
 
@@ -3701,12 +3991,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'ab', 'C'), state)
 
@@ -3719,12 +4011,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'A', 'Z'), state)
 
@@ -3737,12 +4031,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                rayAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandRay('ac', 'A', 'ab'), state)
 
@@ -3753,10 +4049,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandRay('ab', 'A', 'B'), state)
 
@@ -3771,11 +4069,13 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
 
             const result = solve(new CommandSegment('ab', 'A', 'B'), state)
 
@@ -3788,12 +4088,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'A', 'C'), state)
 
@@ -3832,12 +4134,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'A', 'A'), state)
 
@@ -3850,12 +4154,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'Z', 'C'), state)
 
@@ -3868,12 +4174,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'ab', 'C'), state)
 
@@ -3886,12 +4194,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'A', 'Z'), state)
 
@@ -3904,12 +4214,14 @@ describe('solver logic unit tests', () => {
             const pointC = new ItemPoint('C', 5.0, 6.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-                segmentAB,
-                pointC,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                    pointC,
+                ]
+            }
 
             const result = solve(new CommandSegment('ac', 'A', 'ab'), state)
 
@@ -3920,10 +4232,12 @@ describe('solver logic unit tests', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
-            const state = { collection: [
-                pointA,
-                pointB,
-            ] }
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                ]
+            }
 
             const result = solve(new CommandSegment('ab', 'A', 'B'), state)
 

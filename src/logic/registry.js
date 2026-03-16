@@ -12,7 +12,7 @@ const registry = {
     segment: 'segment_t',
 
     colors: {
-        black: '#000000'
+        black: '#000000',
     },
 }
 
