@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
 import { CommandCircle } from './CommandCircle'
-import { CommandDeleteItem } from './CommandDeleteItem'
+import { CommandDeleteItems } from './CommandDeleteItems'
+import { CommandDeleteNames } from './CommandDeleteNames'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
@@ -150,7 +151,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['z']), state)
+            const result = solve(new CommandDeleteItems(['z']), state)
 
             expect(result).toBeNull()
         })
@@ -166,7 +167,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['A']), state)
+            const result = solve(new CommandDeleteItems(['A']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -188,7 +189,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['§A']), state)
+            const result = solve(new CommandDeleteItems(['§A']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -210,7 +211,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['!A']), state)
+            const result = solve(new CommandDeleteItems(['!A']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -234,8 +235,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItem(['A']), state)
-            const result = solve(new CommandDeleteItem(['B']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['A']), state)
+            const result = solve(new CommandDeleteItems(['B']), intermediate)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(3)
@@ -269,10 +270,10 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItem(['A']), state)
+            const result1 = solve(new CommandDeleteItems(['A']), state)
             expect(result1).toBeNull()
 
-            const result2 = solve(new CommandDeleteItem(['B']), state)
+            const result2 = solve(new CommandDeleteItems(['B']), state)
 
             expect(result2).not.toBeNull()
             expect(result2.collection.length).toBe(3)
@@ -306,9 +307,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItem(['A']), state)
+            const result1 = solve(new CommandDeleteItems(['A']), state)
             expect(result1).toBeNull()
-            const result2 = solve(new CommandDeleteItem(['B']), state)
+            const result2 = solve(new CommandDeleteItems(['B']), state)
             expect(result2).toBeNull()
         })
 
@@ -329,11 +330,11 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItem(['A']), state)
+            const result1 = solve(new CommandDeleteItems(['A']), state)
             expect(result1).toBeNull()
-            const result2 = solve(new CommandDeleteItem(['B']), state)
+            const result2 = solve(new CommandDeleteItems(['B']), state)
             expect(result2).toBeNull()
-            const result3 = solve(new CommandDeleteItem(['C']), state)
+            const result3 = solve(new CommandDeleteItems(['C']), state)
             expect(result3).toBeNull()
         })
 
@@ -356,7 +357,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['k']), state)
+            const result = solve(new CommandDeleteItems(['k']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -386,7 +387,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['A']), state)
+            const result = solve(new CommandDeleteItems(['A']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(6)
@@ -437,7 +438,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -466,7 +467,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -490,7 +491,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -509,7 +510,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -538,7 +539,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -562,7 +563,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -591,7 +592,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -615,7 +616,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -640,8 +641,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItem(['A']), state)
-            const result = solve(new CommandDeleteItem(['k']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['A']), state)
+            const result = solve(new CommandDeleteItems(['k']), intermediate)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -666,8 +667,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItem(['k']), state)
-            const result = solve(new CommandDeleteItem(['A']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['k']), state)
+            const result = solve(new CommandDeleteItems(['A']), intermediate)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -692,7 +693,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['A', 'k']), state)
+            const result = solve(new CommandDeleteItems(['A', 'k']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -717,7 +718,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['k', 'A']), state)
+            const result = solve(new CommandDeleteItems(['k', 'A']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -736,9 +737,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate1 = solve(new CommandDeleteItem(['ab']), state)
-            const intermediate2 = solve(new CommandDeleteItem(['A']), intermediate1)
-            const result = solve(new CommandDeleteItem(['B']), intermediate2)
+            const intermediate1 = solve(new CommandDeleteItems(['ab']), state)
+            const intermediate2 = solve(new CommandDeleteItems(['A']), intermediate1)
+            const result = solve(new CommandDeleteItems(['B']), intermediate2)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -757,9 +758,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate1 = solve(new CommandDeleteItem(['A']), state)
-            const intermediate2 = solve(new CommandDeleteItem(['B']), intermediate1)
-            const result = solve(new CommandDeleteItem(['ab']), intermediate2)
+            const intermediate1 = solve(new CommandDeleteItems(['A']), state)
+            const intermediate2 = solve(new CommandDeleteItems(['B']), intermediate1)
+            const result = solve(new CommandDeleteItems(['ab']), intermediate2)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -778,7 +779,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['ab', 'A', 'B']), state)
+            const result = solve(new CommandDeleteItems(['ab', 'A', 'B']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -797,10 +798,206 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItem(['A', 'B', 'ab']), state)
+            const result = solve(new CommandDeleteItems(['A', 'B', 'ab']), state)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
+        })
+    })
+
+    describe('delete name unit tests', () => {
+
+        test('deletion of non-existent name returns null', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentAB = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentAB,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['Z']), state)
+
+            expect(result).toBeNull()
+        })
+
+        test('trivial deletion of point name returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+
+            const state = {
+                collection: [
+                    pointA,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(1)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('§A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+        })
+
+        test('trivial deletion of line, ray, segment name returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+            const rayAC = new ItemRay('ac', pointA, pointC)
+            const segmentBC = new ItemSegment('bc', pointB, pointC)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    lineAB,
+                    rayAC,
+                    segmentBC,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['bc', 'ab', 'ac']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.point)
+            expect(result.collection[2].name).toBe('C')
+            expect(result.collection[2].x).toBeCloseTo(5, jestPrecision)
+            expect(result.collection[2].y).toBeCloseTo(6, jestPrecision)
+
+            expect(result.collection[3].type).toBe(registry.line)
+            expect(result.collection[3].name).toBe('§ab')
+
+            expect(result.collection[4].type).toBe(registry.ray)
+            expect(result.collection[4].name).toBe('§ac')
+
+            expect(result.collection[5].type).toBe(registry.segment)
+            expect(result.collection[5].name).toBe('§bc')
+        })
+
+        test('trivial deletion of circle name returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const circlek = new ItemCircle('k', pointA, 5, [])
+
+            const state = {
+                collection: [
+                    pointA,
+                    circlek,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['k']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.circle)
+            expect(result.collection[1].name).toBe('§k')
+        })
+
+        test('deletion of point names that are part of line, ray, segment returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const lineAB = new ItemLine('ab', pointA, pointB)
+            const rayAC = new ItemRay('ac', pointA, pointC)
+            const segmentBC = new ItemSegment('bc', pointB, pointC)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    lineAB,
+                    rayAC,
+                    segmentBC,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['C', 'B', 'A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('§A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('§B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.point)
+            expect(result.collection[2].name).toBe('§C')
+            expect(result.collection[2].x).toBeCloseTo(5, jestPrecision)
+            expect(result.collection[2].y).toBeCloseTo(6, jestPrecision)
+
+            expect(result.collection[3].type).toBe(registry.line)
+            expect(result.collection[3].name).toBe('ab')
+            expect(result.collection[3].startPoint.name).toBe('§A')
+            expect(result.collection[3].endPoint.name).toBe('§B')
+
+            expect(result.collection[4].type).toBe(registry.ray)
+            expect(result.collection[4].name).toBe('ac')
+            expect(result.collection[4].startPoint.name).toBe('§A')
+            expect(result.collection[4].endPoint.name).toBe('§C')
+
+            expect(result.collection[5].type).toBe(registry.segment)
+            expect(result.collection[5].name).toBe('bc')
+            expect(result.collection[5].startPoint.name).toBe('§B')
+            expect(result.collection[5].endPoint.name).toBe('§C')
+        })
+
+        test('deletion of point name that is part of a circle returns expected', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const circlek = new ItemCircle('k', pointA, 5, [])
+
+            const state = {
+                collection: [
+                    pointA,
+                    circlek,
+                ]
+            }
+
+            const result = solve(new CommandDeleteNames(['A']), state)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('§A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.circle)
+            expect(result.collection[1].name).toBe('k')
+            expect(result.collection[1].centerPoint.name).toBe('§A')
         })
     })
 

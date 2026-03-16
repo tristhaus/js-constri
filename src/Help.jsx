@@ -50,6 +50,11 @@ const HelpDe = ({ closeAction }) => {
                                     <td></td>
                                     <td>Lösche die Objekte <span className="command">h</span> und <span className="command">Y</span></td>
                                 </tr>
+                                <tr>
+                                    <td className="command">loesche bez i X</td>
+                                    <td></td>
+                                    <td>Lösche die Namen der Objekte <span className="command">i</span> und <span className="command">X</span></td>
+                                </tr>
                             </tbody>
                         </table>
                         <h4>Über JS-Constri</h4>
@@ -115,6 +120,11 @@ const HelpEn = ({ closeAction }) => {
                                     <td className="command">delete h Y</td>
                                     <td></td>
                                     <td>Delete the objects <span className="command">h</span> and <span className="command">Y</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">delete name i X</td>
+                                    <td></td>
+                                    <td>Delete the labels of objects <span className="command">i</span> and <span className="command">X</span></td>
                                 </tr>
                             </tbody>
                         </table>

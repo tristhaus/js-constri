@@ -46,7 +46,14 @@ describe('parser logic unit tests', () => {
             const result = parse(lang, 'loesche A')
 
             expect(result).not.toBeNull()
-            expect(result.type).toBe(registry.deleteItem)
+            expect(result.type).toBe(registry.deleteItems)
+        })
+
+        test('valid delete name returns expected', () => {
+            const result = parse(lang, 'loesche bez A')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteNames)
         })
 
         test('valid line returns expected', () => {
@@ -106,7 +113,14 @@ describe('parser logic unit tests', () => {
             const result = parse(lang, 'delete A')
 
             expect(result).not.toBeNull()
-            expect(result.type).toBe(registry.deleteItem)
+            expect(result.type).toBe(registry.deleteItems)
+        })
+
+        test('valid delete name returns expected', () => {
+            const result = parse(lang, 'delete name A')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteNames)
         })
 
         test('valid line returns expected', () => {
@@ -200,7 +214,7 @@ describe('parser logic unit tests', () => {
             const result = parse(defaultLang, strings_de.delete + ' k')
 
             expect(result).not.toBeNull()
-            expect(result.type).toBe(registry.deleteItem)
+            expect(result.type).toBe(registry.deleteItems)
             expect(result.targetNames).toStrictEqual(['k'])
         })
 
@@ -208,7 +222,7 @@ describe('parser logic unit tests', () => {
             const result = parse(defaultLang, strings_de.delete + ' k l M N')
 
             expect(result).not.toBeNull()
-            expect(result.type).toBe(registry.deleteItem)
+            expect(result.type).toBe(registry.deleteItems)
             expect(result.targetNames).toStrictEqual(['k', 'l', 'M', 'N'])
         })
 
@@ -220,6 +234,37 @@ describe('parser logic unit tests', () => {
 
         test('delete item: invalid name returns null', () => {
             const result = parse(defaultLang, strings_de.delete + ' A 0.1 C')
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe('delete name', () => {
+
+        test('valid delete name with one argument returns expected', () => {
+            const result = parse(defaultLang, strings_de.delete + ' ' + strings_de.name + ' k')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteNames)
+            expect(result.targetNames).toStrictEqual(['k'])
+        })
+
+        test('valid delete item with many arguments returns expected', () => {
+            const result = parse(defaultLang, strings_de.delete + ' ' + strings_de.name + ' k l M N')
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.deleteNames)
+            expect(result.targetNames).toStrictEqual(['k', 'l', 'M', 'N'])
+        })
+
+        test('delete item: too few arguments returns null', () => {
+            const result = parse(defaultLang, strings_de.delete + ' ' + strings_de.name + ' ')
+
+            expect(result).toBeNull()
+        })
+
+        test('delete item: invalid name returns null', () => {
+            const result = parse(defaultLang, strings_de.delete + ' ' + strings_de.name + ' A 0.1 C')
 
             expect(result).toBeNull()
         })

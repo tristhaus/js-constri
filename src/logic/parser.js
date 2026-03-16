@@ -1,5 +1,6 @@
 import { CommandCircle } from './CommandCircle'
-import { CommandDeleteItem } from './CommandDeleteItem'
+import { CommandDeleteItems } from './CommandDeleteItems'
+import { CommandDeleteNames } from './CommandDeleteNames'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
@@ -68,8 +69,7 @@ const parseCircle = (isValidName, args) => {
     return new CommandCircle(name, centerName, radius)
 }
 
-const parseDelete = (isValidName, args) => {
-    // implementation note: ignore `delete name` for now
+const parseDeleteItems = (isValidName, args) => {
     if (args.length < 1) {
         return null
     }
@@ -78,7 +78,19 @@ const parseDelete = (isValidName, args) => {
         return null
     }
 
-    return new CommandDeleteItem(args)
+    return new CommandDeleteItems(args)
+}
+
+const parseDeleteNames = (isValidName, args) => {
+    if (args.length < 1) {
+        return null
+    }
+
+    if (!args.every(x => isValidName(x))) {
+        return null
+    }
+
+    return new CommandDeleteNames(args)
 }
 
 const parseIntersection = (isValidName, args) => {
@@ -186,7 +198,11 @@ const parse = (lang, input) => {
             return parseCircle(isValidName, args)
 
         case strings.delete:
-            return parseDelete(isValidName, args)
+            if (args[0] === strings.name) {
+                return parseDeleteNames(isValidName, args.slice(1))
+            }
+
+            return parseDeleteItems(isValidName, args)
 
         case strings.line:
             return parseLine(isValidName, args)

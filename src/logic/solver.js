@@ -452,7 +452,7 @@ const deleteObject = (targetName, state) => {
     return hasEffect ? state : null
 }
 
-const solveDeleteObject = (command, state) => {
+const solveDeleteItems = (command, state) => {
     let localState = state
 
     for (const targetName of command.targetNames) {
@@ -465,10 +465,56 @@ const solveDeleteObject = (command, state) => {
     return localState
 }
 
+const deleteName = (targetName, state) => {
+    const targetItem = state.collection.find(x => x.name === targetName)
+
+    if (targetItem === undefined) {
+        return null
+    }
+
+    targetItem.name = '§' + targetItem.name
+
+    if (targetItem.type === registry.point) {
+        for (const lineLike of state.collection.filter(x => [registry.line, registry.ray, registry.segment].includes(x.type))) {
+            if (lineLike.startPoint.name === targetName) {
+                lineLike.startPoint.name = targetItem.name
+            }
+
+            if (lineLike.endPoint.name === targetName) {
+                lineLike.endPoint.name = targetItem.name
+            }
+        }
+
+        for (const circle of state.collection.filter(x => x.type === registry.circle)) {
+            if (circle.centerPoint.name === targetName) {
+                circle.centerPoint.name = targetItem.name
+            }
+        }
+    }
+
+    return state
+}
+
+const solveDeleteNames = (command, state) => {
+    let localState = state
+
+    for (const targetName of command.targetNames) {
+        localState = deleteName(targetName, localState)
+        if (localState === null) {
+            return null
+        }
+    }
+
+    return localState
+}
+
 const solveDeletion = (command, state) => {
     switch (command.type) {
-        case registry.deleteItem:
-            return solveDeleteObject(command, state)
+        case registry.deleteItems:
+            return solveDeleteItems(command, state)
+
+        case registry.deleteNames:
+            return solveDeleteNames(command, state)
 
         default:
             return null
@@ -510,7 +556,7 @@ const solveCreation = (command, state) => {
 // points starting with '!'
 //  - will not be displayed
 const solve = (command, state) => {
-    if (command.type === registry.deleteItem) {
+    if (command.type === registry.deleteItems || command.type === registry.deleteNames) {
         return solveDeletion(command, state)
     }
     else {

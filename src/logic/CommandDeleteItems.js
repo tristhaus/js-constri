@@ -1,11 +1,11 @@
 import { registry } from './registry'
 
-class CommandDeleteItem {
+class CommandDeleteItems {
     constructor(targetNames) {
         this.targetNames = targetNames
 
-        this.type = registry.deleteItem
+        this.type = registry.deleteItems
     }
 }
 
-export { CommandDeleteItem }
+export { CommandDeleteItems }
