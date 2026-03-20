@@ -6,56 +6,23 @@ import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
-import { registry } from './registry'
+import { InvalidCommand } from './InvalidCommand'
+import { allStrings } from './langs'
 import { isUserEnteredName } from './nameLogic'
 
-const allStrings = {}
-
-const strings_de = {
-    id: registry.langs.de,
-    circle: 'kreis',
-    delete: 'loesche',
-    intersection: 'sp',
-    line: 'gerade',
-    name: 'bez',
-    point: 'punkt',
-    ray: 'strahl',
-    segment: 'strecke',
-}
-
-const strings_en = {
-    id: registry.langs.en,
-    circle: 'circle',
-    delete: 'delete',
-    intersection: 'inter',
-    line: 'line',
-    name: 'name',
-    point: 'point',
-    ray: 'ray',
-    segment: 'segment',
-}
-
-// some words are not valid as names, otherwise parsing becomes a pain
-for (const stringsObject of [strings_de, strings_en]) {
-    stringsObject.prohibited = [
-        stringsObject.name, // problem solved: `delete name` - is `name` a name or the keyword?
-    ]
-}
-
-allStrings[registry.langs.de] = strings_de
-allStrings[registry.langs.en] = strings_en
+const createInvalidCommand = errorMessage => new InvalidCommand(errorMessage)
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
 }
 
-const parseCircle = (isValidName, args) => {
+const parseCircle = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
     }
 
     if (!isValidName(args[0]) || !isValidName(args[1])) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 2)))
     }
 
     const name = args[0]
@@ -63,55 +30,55 @@ const parseCircle = (isValidName, args) => {
     const radius = toNumber(args[2])
 
     if (Number.isNaN(radius)) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNumbers(args.slice(2, 3)))
     }
 
     return new CommandCircle(name, centerName, radius)
 }
 
-const parseDeleteItems = (isValidName, args) => {
+const parseDeleteItems = (isValidName, args, errorMessages) => {
     if (args.length < 1) {
-        return null
+        return createInvalidCommand(errorMessages.parser.tooFewArguments(args.join(' ')))
     }
 
     if (!args.every(x => isValidName(x))) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args))
     }
 
     return new CommandDeleteItems(args)
 }
 
-const parseDeleteNames = (isValidName, args) => {
+const parseDeleteNames = (isValidName, args, errorMessages) => {
     if (args.length < 1) {
-        return null
+        return createInvalidCommand(errorMessages.parser.tooFewArguments(args.join(' ')))
     }
 
     if (!args.every(x => isValidName(x))) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args))
     }
 
     return new CommandDeleteNames(args)
 }
 
-const parseIntersection = (isValidName, args) => {
+const parseIntersection = (isValidName, args, errorMessages) => {
     if (args.length < 3 || args.length > 4) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments('3-4', args))
     }
 
     if (!args.every(x => isValidName(x))) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args))
     }
 
     return new CommandIntersection(args[0], args[1], args.slice(2))
 }
 
-const parseLine = (isValidName, args) => {
+const parseLine = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
     }
 
     if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 3)))
     }
 
     const name = args[0]
@@ -121,13 +88,13 @@ const parseLine = (isValidName, args) => {
     return new CommandLine(name, startPointName, endPointName)
 }
 
-const parsePoint = (isValidName, args) => {
+const parsePoint = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
     }
 
     if (!isValidName(args[0])) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 1)))
     }
 
     const name = args[0]
@@ -136,19 +103,19 @@ const parsePoint = (isValidName, args) => {
     const y = toNumber(args[2])
 
     if (Number.isNaN(x) || Number.isNaN(y)) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNumbers(args.slice(1, 3)))
     }
 
     return new CommandPoint(name, x, y)
 }
 
-const parseRay = (isValidName, args) => {
+const parseRay = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
     }
 
     if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 3)))
     }
 
     const name = args[0]
@@ -158,13 +125,13 @@ const parseRay = (isValidName, args) => {
     return new CommandRay(name, startPointName, endPointName)
 }
 
-const parseSegment = (isValidName, args) => {
+const parseSegment = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
-        return null
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
     }
 
     if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2])) {
-        return null
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 3)))
     }
 
     const name = args[0]
@@ -174,9 +141,9 @@ const parseSegment = (isValidName, args) => {
     return new CommandSegment(name, startPointName, endPointName)
 }
 
-const parse = (lang, input) => {
+const parse = (lang, input, errorMessages) => {
     if (typeof input !== 'string') {
-        return null
+        return createInvalidCommand(errorMessages.logicErrorGeneric('programming error: expecting string at this point'))
     }
 
     const strings = allStrings[lang]
@@ -187,7 +154,7 @@ const parse = (lang, input) => {
     const allArgs = input.split(' ').filter(x => x !== '')
 
     if (allArgs.length < 2) {
-        return null
+        return createInvalidCommand(errorMessages.parser.tooFewArguments(input))
     }
 
     const first = allArgs[0]
@@ -195,38 +162,38 @@ const parse = (lang, input) => {
 
     switch (first) {
         case strings.circle:
-            return parseCircle(isValidName, args)
+            return parseCircle(isValidName, args, errorMessages)
 
         case strings.delete:
             if (args[0] === strings.name) {
-                return parseDeleteNames(isValidName, args.slice(1))
+                return parseDeleteNames(isValidName, args.slice(1), errorMessages)
             }
 
-            return parseDeleteItems(isValidName, args)
+            return parseDeleteItems(isValidName, args, errorMessages)
 
         case strings.line:
-            return parseLine(isValidName, args)
+            return parseLine(isValidName, args, errorMessages)
 
         case strings.name:
 
             // implementation note: alternative 'angle' is to come
             if (args[0] !== strings.intersection) {
-                return null
+                return createInvalidCommand(errorMessages.parser.featureNotAvailable(input))
             }
-            return parseIntersection(isValidName, args.slice(1))
+            return parseIntersection(isValidName, args.slice(1), errorMessages)
 
         case strings.point:
-            return parsePoint(isValidName, args)
+            return parsePoint(isValidName, args, errorMessages)
 
         case strings.ray:
-            return parseRay(isValidName, args)
+            return parseRay(isValidName, args, errorMessages)
 
         case strings.segment:
-            return parseSegment(isValidName, args)
+            return parseSegment(isValidName, args, errorMessages)
 
         default:
-            return null
+            return createInvalidCommand(errorMessages.parser.unknownCommand(input))
     }
 }
 
-export { parse, strings_de }
+export { parse }

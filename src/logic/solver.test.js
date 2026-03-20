@@ -18,12 +18,13 @@ import { solve } from './solver'
 
 // ~digits of precision
 const jestPrecision = 4
+const emptyErrorMessages = {}
 
 describe('solver logic unit tests', () => {
 
     describe('circle logic unit tests', () => {
 
-        test('duplicate name returns null', () => {
+        test('duplicate name returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const circleK = new ItemCircle('k', pointA, 3.0)
 
@@ -34,9 +35,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandCircle('k', 'A', 3.0), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandCircle('k', 'A', 3.0), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('k')
         })
 
         test('valid circle input returns extended state', () => {
@@ -48,7 +57,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandCircle('k', 'A', 3.0), state)
+            const result = solve(new CommandCircle('k', 'A', 3.0), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(6)
@@ -85,7 +94,7 @@ describe('solver logic unit tests', () => {
             expect(result.collection[5].y).toBeCloseTo(-1, jestPrecision)
         })
 
-        test('circle with reference to non-existent center point returns null', () => {
+        test('circle with reference to non-existent center point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
 
             const state = {
@@ -94,12 +103,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandCircle('k', 'B', 3.0), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandCircle('k', 'B', 3.0), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('B')
         })
 
-        test('circle with reference to center that is not a point returns null', () => {
+        test('circle with reference to center that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
@@ -112,12 +129,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandCircle('k', 'ab', 3.0), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandCircle('k', 'ab', 3.0), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('circle with too small radius returns null', () => {
+        test('circle with too small radius returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
 
             const state = {
@@ -126,19 +151,29 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandCircle('k', 'A', 0.0), state)
+            const errorMessages = {
+                solver: {
+                    circleRadiusTooSmall: x => x
+                }
+            }
 
-            expect(result1).toBeNull()
+            const result1 = solve(new CommandCircle('k', 'A', 0.0), state, errorMessages)
 
-            const result2 = solve(new CommandCircle('k', 'A', -1.0), state)
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(false)
+            expect(result1.errorMessage).toBe(0)
 
-            expect(result2).toBeNull()
+            const result2 = solve(new CommandCircle('k', 'A', -1.0), state, errorMessages)
+
+            expect(result2).not.toBeNull()
+            expect(result2.isValid).toBe(false)
+            expect(result2.errorMessage).toBe(-1)
         })
     })
 
     describe('delete item unit tests', () => {
 
-        test('deletion of non-existent item returns null', () => {
+        test('deletion of non-existent item returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
@@ -151,9 +186,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['z']), state)
+            const errorMessages = {
+                solver: {
+                    itemToDeleteNotFound: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandDeleteItems(['z']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('z')
         })
 
         test('trivial deletion of named point returns expected', () => {
@@ -167,7 +210,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['A']), state)
+            const result = solve(new CommandDeleteItems(['A']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -189,7 +232,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['§A']), state)
+            const result = solve(new CommandDeleteItems(['§A']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -211,7 +254,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['!A']), state)
+            const result = solve(new CommandDeleteItems(['!A']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -235,8 +278,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItems(['A']), state)
-            const result = solve(new CommandDeleteItems(['B']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['A']), state, emptyErrorMessages)
+            const result = solve(new CommandDeleteItems(['B']), intermediate, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(3)
@@ -262,7 +305,8 @@ describe('solver logic unit tests', () => {
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
 
-            const state = {
+            const state1 = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -270,12 +314,29 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItems(['A']), state)
-            expect(result1).toBeNull()
+            const state2 = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                ]
+            }
 
-            const result2 = solve(new CommandDeleteItems(['B']), state)
+            const errorMessages = {
+                solver: {
+                    unableToDeleteItem: x => x
+                }
+            }
 
+            const result1 = solve(new CommandDeleteItems(['A']), state1, errorMessages)
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(false)
+            expect(result1.errorMessage).toBe('A')
+
+            const result2 = solve(new CommandDeleteItems(['B']), state2, errorMessages)
             expect(result2).not.toBeNull()
+            expect(result2.isValid).toBe(true)
             expect(result2.collection.length).toBe(3)
 
             expect(result2.collection[0].type).toBe(registry.point)
@@ -307,10 +368,21 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItems(['A']), state)
-            expect(result1).toBeNull()
-            const result2 = solve(new CommandDeleteItems(['B']), state)
-            expect(result2).toBeNull()
+            const errorMessages = {
+                solver: {
+                    unableToDeleteItem: x => x
+                }
+            }
+
+            const result1 = solve(new CommandDeleteItems(['A']), state, errorMessages)
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(false)
+            expect(result1.errorMessage).toBe('A')
+
+            const result2 = solve(new CommandDeleteItems(['B']), state, errorMessages)
+            expect(result2).not.toBeNull()
+            expect(result2.isValid).toBe(false)
+            expect(result2.errorMessage).toBe('B')
         })
 
         test('deletion of points belonging to more than one line-like returns expected', () => {
@@ -320,7 +392,8 @@ describe('solver logic unit tests', () => {
             const segmentAB = new ItemSegment('ab', pointA, pointB)
             const rayCB = new ItemRay('cb', pointC, pointB)
 
-            const state = {
+            const state1 = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -330,12 +403,48 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result1 = solve(new CommandDeleteItems(['A']), state)
-            expect(result1).toBeNull()
-            const result2 = solve(new CommandDeleteItems(['B']), state)
-            expect(result2).toBeNull()
-            const result3 = solve(new CommandDeleteItems(['C']), state)
-            expect(result3).toBeNull()
+            const state2 = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentAB,
+                    rayCB,
+                ]
+            }
+
+            const state3 = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentAB,
+                    rayCB,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    unableToDeleteItem: x => x
+                }
+            }
+
+            const result1 = solve(new CommandDeleteItems(['A']), state1, errorMessages)
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(false)
+            expect(result1.errorMessage).toBe('A')
+
+            const result2 = solve(new CommandDeleteItems(['B']), state2, errorMessages)
+            expect(result2).not.toBeNull()
+            expect(result2.isValid).toBe(false)
+            expect(result2.errorMessage).toBe('B')
+
+            const result3 = solve(new CommandDeleteItems(['C']), state3, errorMessages)
+            expect(result3).not.toBeNull()
+            expect(result3.isValid).toBe(false)
+            expect(result3.errorMessage).toBe('C')
         })
 
         test('deletion of circle returns expected', () => {
@@ -357,7 +466,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['k']), state)
+            const result = solve(new CommandDeleteItems(['k']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -387,7 +496,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['A']), state)
+            const result = solve(new CommandDeleteItems(['A']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(6)
@@ -438,7 +547,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -467,7 +576,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -491,7 +600,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -510,7 +619,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -539,7 +648,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -563,7 +672,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -592,7 +701,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -616,7 +725,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab']), state)
+            const result = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -641,8 +750,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItems(['A']), state)
-            const result = solve(new CommandDeleteItems(['k']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['A']), state, emptyErrorMessages)
+            const result = solve(new CommandDeleteItems(['k']), intermediate, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -667,8 +776,8 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate = solve(new CommandDeleteItems(['k']), state)
-            const result = solve(new CommandDeleteItems(['A']), intermediate)
+            const intermediate = solve(new CommandDeleteItems(['k']), state, emptyErrorMessages)
+            const result = solve(new CommandDeleteItems(['A']), intermediate, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -683,6 +792,7 @@ describe('solver logic unit tests', () => {
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     circleK,
@@ -693,9 +803,12 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['A', 'k']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteItems(['A', 'k']), state, errorMessages)
 
             expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
             expect(result.collection.length).toBe(0)
         })
 
@@ -708,6 +821,7 @@ describe('solver logic unit tests', () => {
             const circleK = new ItemCircle('k', pointA, 3.0, [extremumPX, extremumNX, extremumPY, extremumNY])
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     circleK,
@@ -718,9 +832,12 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['k', 'A']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteItems(['k', 'A']), state, errorMessages)
 
             expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
             expect(result.collection.length).toBe(0)
         })
 
@@ -737,9 +854,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate1 = solve(new CommandDeleteItems(['ab']), state)
-            const intermediate2 = solve(new CommandDeleteItems(['A']), intermediate1)
-            const result = solve(new CommandDeleteItems(['B']), intermediate2)
+            const intermediate1 = solve(new CommandDeleteItems(['ab']), state, emptyErrorMessages)
+            const intermediate2 = solve(new CommandDeleteItems(['A']), intermediate1, emptyErrorMessages)
+            const result = solve(new CommandDeleteItems(['B']), intermediate2, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -758,9 +875,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const intermediate1 = solve(new CommandDeleteItems(['A']), state)
-            const intermediate2 = solve(new CommandDeleteItems(['B']), intermediate1)
-            const result = solve(new CommandDeleteItems(['ab']), intermediate2)
+            const intermediate1 = solve(new CommandDeleteItems(['A']), state, emptyErrorMessages)
+            const intermediate2 = solve(new CommandDeleteItems(['B']), intermediate1, emptyErrorMessages)
+            const result = solve(new CommandDeleteItems(['ab']), intermediate2, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(0)
@@ -772,6 +889,7 @@ describe('solver logic unit tests', () => {
             const segmentAB = new ItemSegment('ab', pointA, pointB)
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -779,9 +897,10 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['ab', 'A', 'B']), state)
+            const result = solve(new CommandDeleteItems(['ab', 'A', 'B']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
             expect(result.collection.length).toBe(0)
         })
 
@@ -791,6 +910,7 @@ describe('solver logic unit tests', () => {
             const lineAB = new ItemLine('ab', pointA, pointB)
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -798,16 +918,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteItems(['A', 'B', 'ab']), state)
+            const result = solve(new CommandDeleteItems(['A', 'B', 'ab']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
             expect(result.collection.length).toBe(0)
         })
     })
 
     describe('delete name unit tests', () => {
 
-        test('deletion of non-existent name returns null', () => {
+        test('deletion of non-existent name returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
@@ -820,9 +941,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['Z']), state)
+            const errorMessages = {
+                solver: {
+                    itemToDeleteNameNotFound: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandDeleteNames(['Z']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
         test('trivial deletion of point name returns expected', () => {
@@ -834,7 +963,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['A']), state)
+            const result = solve(new CommandDeleteNames(['A']), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(1)
@@ -854,6 +983,7 @@ describe('solver logic unit tests', () => {
             const segmentBC = new ItemSegment('bc', pointB, pointC)
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -864,7 +994,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['bc', 'ab', 'ac']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteNames(['bc', 'ab', 'ac']), state, errorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(6)
@@ -899,13 +1031,16 @@ describe('solver logic unit tests', () => {
             const circlek = new ItemCircle('k', pointA, 5, [])
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     circlek,
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['k']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteNames(['k']), state, errorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -928,6 +1063,7 @@ describe('solver logic unit tests', () => {
             const segmentBC = new ItemSegment('bc', pointB, pointC)
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     pointB,
@@ -938,7 +1074,9 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['C', 'B', 'A']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteNames(['C', 'B', 'A']), state, errorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(6)
@@ -979,13 +1117,16 @@ describe('solver logic unit tests', () => {
             const circlek = new ItemCircle('k', pointA, 5, [])
 
             const state = {
+                isValid: true,
                 collection: [
                     pointA,
                     circlek,
                 ]
             }
 
-            const result = solve(new CommandDeleteNames(['A']), state)
+            const errorMessages = {}
+
+            const result = solve(new CommandDeleteNames(['A']), state, errorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -1003,7 +1144,7 @@ describe('solver logic unit tests', () => {
 
     describe('name intersection unit tests', () => {
 
-        test('duplicate name (1) returns null', () => {
+        test('duplicate name (1) returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -1020,12 +1161,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandIntersection('ab', 'ac', ['B']), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandIntersection('ab', 'ac', ['B']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('B')
         })
 
-        test('duplicate name (2) returns null', () => {
+        test('duplicate name (2) returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -1042,9 +1191,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandIntersection('ab', 'ac', ['D', 'B']), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandIntersection('ab', 'ac', ['D', 'B']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('D,B')
         })
 
         describe('two lines unit tests', () => {
@@ -1068,7 +1225,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1098,7 +1255,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1128,7 +1285,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1158,7 +1315,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1188,7 +1345,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1213,7 +1370,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1238,7 +1395,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1263,7 +1420,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1291,7 +1448,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1321,7 +1478,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1346,7 +1503,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1376,7 +1533,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1401,7 +1558,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1431,7 +1588,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1456,7 +1613,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1481,7 +1638,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1506,7 +1663,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1534,7 +1691,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1564,7 +1721,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1589,7 +1746,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1619,7 +1776,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1644,7 +1801,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1674,7 +1831,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1699,7 +1856,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1729,7 +1886,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1754,7 +1911,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1779,7 +1936,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1804,7 +1961,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1829,7 +1986,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1857,7 +2014,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1887,7 +2044,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1915,7 +2072,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -1945,7 +2102,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1970,7 +2127,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state)
+                const result = solve(new CommandIntersection('la', 'lb', ['Iab']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -1996,7 +2153,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2019,7 +2176,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2047,7 +2204,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2075,7 +2232,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2108,7 +2265,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2141,7 +2298,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2174,7 +2331,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2207,7 +2364,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2240,7 +2397,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2273,7 +2430,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2306,7 +2463,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2339,7 +2496,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2375,7 +2532,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2398,7 +2555,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2426,7 +2583,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2449,7 +2606,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2477,7 +2634,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2505,7 +2662,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2533,7 +2690,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2566,7 +2723,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2599,7 +2756,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2632,7 +2789,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2655,7 +2812,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2683,7 +2840,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state)
+                const result = solve(new CommandIntersection('k', 'ba', ['Ikba1', 'Ikba2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2716,7 +2873,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikba1', 'Ikba2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikba1', 'Ikba2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2752,7 +2909,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2775,7 +2932,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2803,7 +2960,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2826,7 +2983,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -2854,7 +3011,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2877,7 +3034,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2910,7 +3067,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2933,7 +3090,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -2966,7 +3123,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -2989,7 +3146,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -3022,7 +3179,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3045,7 +3202,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(7)
@@ -3078,7 +3235,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3106,7 +3263,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state)
+                const result = solve(new CommandIntersection('k', 'ab', ['Ikab1', 'Ikab2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3129,7 +3286,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(4)
@@ -3150,7 +3307,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(4)
@@ -3171,7 +3328,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(4)
@@ -3192,7 +3349,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3218,7 +3375,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3244,7 +3401,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3270,7 +3427,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3296,7 +3453,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3322,7 +3479,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3348,7 +3505,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3374,7 +3531,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3400,7 +3557,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3426,7 +3583,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3452,7 +3609,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3478,7 +3635,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(5)
@@ -3504,7 +3661,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3535,7 +3692,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3566,7 +3723,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3597,7 +3754,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3628,7 +3785,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3659,7 +3816,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3690,7 +3847,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3721,7 +3878,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3752,7 +3909,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3783,7 +3940,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3814,7 +3971,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3845,7 +4002,7 @@ describe('solver logic unit tests', () => {
                     ]
                 }
 
-                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state)
+                const result = solve(new CommandIntersection('kR', 'kS', ['I1', 'I2']), state, emptyErrorMessages)
 
                 expect(result).not.toBeNull()
                 expect(result.collection.length).toBe(6)
@@ -3865,7 +4022,7 @@ describe('solver logic unit tests', () => {
 
     describe('line logic unit tests', () => {
 
-        test('duplicate name returns null', () => {
+        test('duplicate name returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const lineAB = new ItemLine('ab', pointA, pointB)
@@ -3878,9 +4035,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
         test('valid line input returns extended state', () => {
@@ -3898,7 +4063,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'A', 'C'), state)
+            const result = solve(new CommandLine('ac', 'A', 'C'), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(5)
@@ -3929,7 +4094,7 @@ describe('solver logic unit tests', () => {
             expect(result.collection[4].endPoint.name).toBe('C')
         })
 
-        test('line with identical start and end points returns null', () => {
+        test('line with identical start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -3944,12 +4109,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'A', 'A'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsCantBeIdentical: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ac', 'A', 'A'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A')
         })
 
-        test('line with reference to non-existent start point returns null', () => {
+        test('line with reference to non-existent start point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -3964,12 +4137,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'Z', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ac', 'Z', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('line with reference to start that is not a point returns null', () => {
+        test('line with reference to start that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -3984,12 +4165,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'ab', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ac', 'ab', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('line with reference to non-existent end point returns null', () => {
+        test('line with reference to non-existent end point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4004,12 +4193,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'A', 'Z'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ac', 'A', 'Z'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('line with reference to end that is not a point returns null', () => {
+        test('line with reference to end that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4024,12 +4221,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ac', 'A', 'ab'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ac', 'A', 'ab'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('line with very close start and end points returns null', () => {
+        test('line with very close start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
@@ -4040,26 +4245,42 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandLine('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsInvalid: (x1, x2) => `${x1}|${x2}`
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandLine('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A|B')
         })
     })
 
     describe('point logic unit tests', () => {
 
-        test('duplicate name returns null', () => {
+        test('duplicate name returns error state', () => {
             const state = { collection: [new ItemPoint('A', 1.0, 2.0)] }
 
-            const result = solve(new CommandPoint('A', 3.0, 4.0), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandPoint('A', 3.0, 4.0), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A')
         })
 
         test('valid point input returns extended state', () => {
             const state = { collection: [new ItemPoint('A', 1.0, 2.0)] }
 
-            const result = solve(new CommandPoint('B', 3.0, 4.0), state)
+            const result = solve(new CommandPoint('B', 3.0, 4.0), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(2)
@@ -4078,7 +4299,7 @@ describe('solver logic unit tests', () => {
 
     describe('ray logic unit tests', () => {
 
-        test('duplicate name returns null', () => {
+        test('duplicate name returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const rayAB = new ItemRay('ab', pointA, pointB)
@@ -4091,9 +4312,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
         test('valid ray input returns extended state', () => {
@@ -4111,7 +4340,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'A', 'C'), state)
+            const result = solve(new CommandRay('ac', 'A', 'C'), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(5)
@@ -4142,7 +4371,7 @@ describe('solver logic unit tests', () => {
             expect(result.collection[4].endPoint.name).toBe('C')
         })
 
-        test('ray with identical start and end points returns null', () => {
+        test('ray with identical start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4157,12 +4386,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'A', 'A'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsCantBeIdentical: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ac', 'A', 'A'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A')
         })
 
-        test('ray with reference to non-existent start point returns null', () => {
+        test('ray with reference to non-existent start point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4177,12 +4414,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'Z', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ac', 'Z', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('ray with reference to start that is not a point returns null', () => {
+        test('ray with reference to start that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4197,12 +4442,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'ab', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ac', 'ab', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('ray with reference to non-existent end point returns null', () => {
+        test('ray with reference to non-existent end point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4217,12 +4470,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'A', 'Z'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ac', 'A', 'Z'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('ray with reference to end that is not a point returns null', () => {
+        test('ray with reference to end that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4237,12 +4498,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ac', 'A', 'ab'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ac', 'A', 'ab'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('ray with very close start and end points returns null', () => {
+        test('ray with very close start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
@@ -4253,15 +4522,23 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandRay('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsInvalid: (x1, x2) => `${x1}|${x2}`
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandRay('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A|B')
         })
     })
 
     describe('segment logic unit tests', () => {
 
-        test('duplicate name returns null', () => {
+        test('duplicate name returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const segmentAB = new ItemSegment('ab', pointA, pointB)
@@ -4274,9 +4551,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
         test('valid segment input returns extended state', () => {
@@ -4294,7 +4579,7 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'A', 'C'), state)
+            const result = solve(new CommandSegment('ac', 'A', 'C'), state, emptyErrorMessages)
 
             expect(result).not.toBeNull()
             expect(result.collection.length).toBe(5)
@@ -4325,7 +4610,7 @@ describe('solver logic unit tests', () => {
             expect(result.collection[4].endPoint.name).toBe('C')
         })
 
-        test('segment with identical start and end points returns null', () => {
+        test('segment with identical start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4340,12 +4625,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'A', 'A'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsCantBeIdentical: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ac', 'A', 'A'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A')
         })
 
-        test('segment with reference to non-existent start point returns null', () => {
+        test('segment with reference to non-existent start point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4360,12 +4653,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'Z', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ac', 'Z', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('segment with reference to start that is not a point returns null', () => {
+        test('segment with reference to start that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4380,12 +4681,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'ab', 'C'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ac', 'ab', 'C'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('segment with reference to non-existent end point returns null', () => {
+        test('segment with reference to non-existent end point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4400,12 +4709,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'A', 'Z'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ac', 'A', 'Z'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
         })
 
-        test('segment with reference to end that is not a point returns null', () => {
+        test('segment with reference to end that is not a point returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 3.0, 4.0)
             const pointC = new ItemPoint('C', 5.0, 6.0)
@@ -4420,12 +4737,20 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ac', 'A', 'ab'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ac', 'A', 'ab'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
 
-        test('segment with very close start and end points returns null', () => {
+        test('segment with very close start and end points returns error state', () => {
             const pointA = new ItemPoint('A', 1.0, 2.0)
             const pointB = new ItemPoint('B', 1.0, 2.000001)
 
@@ -4436,9 +4761,17 @@ describe('solver logic unit tests', () => {
                 ]
             }
 
-            const result = solve(new CommandSegment('ab', 'A', 'B'), state)
+            const errorMessages = {
+                solver: {
+                    referencePointsInvalid: (x1, x2) => `${x1}|${x2}`
+                }
+            }
 
-            expect(result).toBeNull()
+            const result = solve(new CommandSegment('ab', 'A', 'B'), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A|B')
         })
     })
 })

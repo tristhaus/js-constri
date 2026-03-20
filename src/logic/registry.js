@@ -3,6 +3,7 @@ const registry = {
         de: 'de',
         en: 'en',
     },
+    invalid: 'invalid_t',
     circle: 'circle_t',
     deleteItems: 'deleteItems_t',
     deleteNames: 'deleteNames_t',

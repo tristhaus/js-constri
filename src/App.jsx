@@ -52,14 +52,31 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
 
 const strings = {}
 strings[registry.langs.de] = {
+    close: 'Schließen',
     defaultInput: 'punkt A 1 2\npunkt B 3 6\nstrecke ab A B',
     execute: 'Ausführen',
     help: 'Hilfe',
 }
 strings[registry.langs.en] = {
+    close: 'Close',
     defaultInput: 'point C 0 1\ncircle k C 3',
     execute: 'Execute',
     help: 'Help',
+}
+
+const ErrorBox = ({ errorMessage, closeButtonLabel, closeAction }) => {
+    return <>
+        <div className="smallOverlayBox">
+            <div className="overlayContent">
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <h4>{errorMessage}</h4>
+                </div>
+                <div>
+                    <button id="error_CloseButton" onClick={closeAction}>{closeButtonLabel}</button>
+                </div>
+            </div>
+        </div>
+    </>
 }
 
 function App() {
@@ -68,23 +85,23 @@ function App() {
     const [code, setCode] = useState(strings[lang].defaultInput)
     const [plotlyData, setPlotlyData] = useState([])
     const [auxPointsData, setAuxPointsData] = useState({ x: [], y: [] })
+    const [errorMessage, setErrorMessage] = useState('')
 
     const execute = () => {
-        const items = handleInput(lang, code)
+        const state = handleInput(lang, code)
 
-        if (items !== null) {
+        if (state.isValid) {
+            const items = state?.collection
             const [newPlotlyData, newAuxPointsData] = transform(items)
 
-            if (newPlotlyData !== null) {
-                setPlotlyData(newPlotlyData)
-            }
-
-            if (newAuxPointsData !== null) {
-                setAuxPointsData(newAuxPointsData)
-            }
+            setPlotlyData(newPlotlyData ?? [])
+            setAuxPointsData(newAuxPointsData ?? { x: [], y: [] })
+            setErrorMessage('')
         }
         else {
             setPlotlyData([])
+            setAuxPointsData({ x: [], y: [] })
+            setErrorMessage(state.errorMessage)
         }
     }
 
@@ -120,6 +137,7 @@ function App() {
         <>
             {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)} />}
             {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)} />}
+            {errorMessage.length !== 0 && <ErrorBox errorMessage={errorMessage} closeButtonLabel={strings[lang].close} closeAction={() => setErrorMessage('')}/>}
             <div style={{ textAlign: 'right' }}>
                 <button onClick={() => handleLanguageButtonPressed(registry.langs.de)}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z" /><path fill="#D00" d="M0 1h5v2H0z" /><path fill="#FFCE00" d="M0 2h5v1H0z" /></svg>

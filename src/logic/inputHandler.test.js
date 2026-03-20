@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
 import { handleInput } from './inputHandler'
-import { strings_de } from './parser'
+import { strings_de } from './langs'
 import { ItemPoint } from './ItemPoint'
 import { registry } from './registry'
 
@@ -10,38 +10,43 @@ describe('input handler tests', () => {
     const defaultLang = registry.langs.de
 
     test('empty string returns empty collection', () => {
-        const collection = handleInput(defaultLang, '')
+        const state = handleInput(defaultLang, '')
 
-        expect(collection).not.toBeNull()
-        expect(collection).toStrictEqual([])
+        expect(state).not.toBeNull()
+        expect(state.isValid).toBe(true)
+        expect(state.collection).toStrictEqual([])
     })
 
     test('one valid point returns valid collection', () => {
-        const collection = handleInput(defaultLang, `${strings_de.point} Z 1.2 2.0`)
+        const state = handleInput(defaultLang, `${strings_de.point} Z 1.2 2.0`)
 
-        expect(collection).not.toBeNull()
-        expect(collection).toStrictEqual([new ItemPoint('Z', 1.2, 2.0)])
+        expect(state).not.toBeNull()
+        expect(state.isValid).toBe(true)
+        expect(state.collection).toStrictEqual([new ItemPoint('Z', 1.2, 2.0)])
     })
 
     test('two valid points returns valid collection', () => {
-        const collection = handleInput(defaultLang, `
+        const state = handleInput(defaultLang, `
             ${strings_de.point} Z 1.2 2.0
             ${strings_de.point} Y 1.3 2.1
             `)
 
-        expect(collection).not.toBeNull()
-        expect(collection).toStrictEqual([
+        expect(state).not.toBeNull()
+        expect(state.isValid).toBe(true)
+        expect(state.collection).toStrictEqual([
             new ItemPoint('Z', 1.2, 2.0),
             new ItemPoint('Y', 1.3, 2.1),
         ])
     })
 
-    test('an invalid points returns null', () => {
-        const collection = handleInput(defaultLang, `
+    test('an invalid points returns error state', () => {
+        const state = handleInput(defaultLang, `
             ${strings_de.point} Z 1.2 2.0
             ### Y 1.3 2.1
             `)
 
-        expect(collection).toBeNull()
+        expect(state).not.toBeNull()
+        expect(state.isValid).toBe(false)
+        expect(state.collection).toStrictEqual([])
     })
 })

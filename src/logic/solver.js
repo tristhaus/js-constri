@@ -11,21 +11,29 @@ const epsilon = 1e-10
 const initState = () => {
     return {
         collection: [],
+        isValid: true,
+        errorMessage: '',
     }
+}
+
+const createErrorState = (state, errorMessage) => {
+    state.isValid = false
+    state.errorMessage = errorMessage
+    return state
 }
 
 const pointsSeemIdentical = (pointA, pointB) => {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2 < epsilon
 }
 
-const solveCircle = (commandCircle, state) => {
+const solveCircle = (commandCircle, state, errorMessages) => {
     const centerPoint = state.collection.find(x => x.name === commandCircle.centerName)
     if (centerPoint === undefined || centerPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandCircle.centerName))
     }
 
     if (commandCircle.radius < epsilon) {
-        return null
+        return createErrorState(state, errorMessages.solver.circleRadiusTooSmall(commandCircle.radius))
     }
 
     const extremaPoints = [
@@ -36,7 +44,7 @@ const solveCircle = (commandCircle, state) => {
     ]
 
     if (extremaPoints.some(p => state.collection.some(x => x.name === p.name))) {
-        return null
+        return createErrorState(state, errorMessages.solver.logicErrorGeneric('unable to create extrema points'))
     }
 
     const itemCircle = new ItemCircle(commandCircle.name, centerPoint, commandCircle.radius, extremaPoints)
@@ -251,7 +259,7 @@ const solveTwoCirclesIntersection = (names, circleR, circleS, state) => {
     return state
 }
 
-const solveIntersection = (commandIntersection, state) => {
+const solveIntersection = (commandIntersection, state, errorMessages) => {
     const itemA = state.collection.find(x => x.name === commandIntersection.itemAName)
     const itemB = state.collection.find(x => x.name === commandIntersection.itemBName)
 
@@ -277,26 +285,26 @@ const solveIntersection = (commandIntersection, state) => {
         return solveTwoCirclesIntersection(commandIntersection.names, itemA, itemB, state)
     }
 
-    return null
+    return createErrorState(state, errorMessages.logicErrorGeneric('unknown combination of objects in intersection'))
 }
 
-const solveLine = (commandLine, state) => {
+const solveLine = (commandLine, state, errorMessages) => {
     if (commandLine.startPointName === commandLine.endPointName) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsCantBeIdentical(commandLine.startPointName))
     }
 
     const startPoint = state.collection.find(x => x.name === commandLine.startPointName)
     if (startPoint === undefined || startPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandLine.startPointName))
     }
 
     const endPoint = state.collection.find(x => x.name === commandLine.endPointName)
     if (endPoint === undefined || endPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandLine.endPointName))
     }
 
     if (pointsSeemIdentical(startPoint, endPoint)) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsInvalid(commandLine.startPointName, commandLine.endPointName))
     }
 
     const itemLine = new ItemLine(commandLine.name, startPoint, endPoint)
@@ -310,23 +318,23 @@ const solvePoint = (commandPoint, state) => {
     return state
 }
 
-const solveRay = (commandRay, state) => {
+const solveRay = (commandRay, state, errorMessages) => {
     if (commandRay.startPointName === commandRay.endPointName) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsCantBeIdentical(commandRay.startPointName))
     }
 
     const startPoint = state.collection.find(x => x.name === commandRay.startPointName)
     if (startPoint === undefined || startPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandRay.startPointName))
     }
 
     const endPoint = state.collection.find(x => x.name === commandRay.endPointName)
     if (endPoint === undefined || endPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandRay.endPointName))
     }
 
     if (pointsSeemIdentical(startPoint, endPoint)) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsInvalid(commandRay.startPointName, commandRay.endPointName))
     }
 
     const itemRay = new ItemRay(commandRay.name, startPoint, endPoint)
@@ -336,23 +344,23 @@ const solveRay = (commandRay, state) => {
 
 // implementation note: when adding the `segment ab A B 6.0` form, we add points in here
 
-const solveSegment = (commandSegment, state) => {
+const solveSegment = (commandSegment, state, errorMessages) => {
     if (commandSegment.startPointName === commandSegment.endPointName) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsCantBeIdentical(commandSegment.startPointName))
     }
 
     const startPoint = state.collection.find(x => x.name === commandSegment.startPointName)
     if (startPoint === undefined || startPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandSegment.startPointName))
     }
 
     const endPoint = state.collection.find(x => x.name === commandSegment.endPointName)
     if (endPoint === undefined || endPoint.type !== registry.point) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandSegment.endPointName))
     }
 
     if (pointsSeemIdentical(startPoint, endPoint)) {
-        return null
+        return createErrorState(state, errorMessages.solver.referencePointsInvalid(commandSegment.startPointName, commandSegment.endPointName))
     }
 
     const itemSegment = new ItemSegment(commandSegment.name, startPoint, endPoint)
@@ -360,11 +368,11 @@ const solveSegment = (commandSegment, state) => {
     return state
 }
 
-const deleteObject = (targetName, state) => {
+const deleteObject = (targetName, state, errorMessages) => {
     const targetItem = state.collection.find(x => x.name === targetName)
 
     if (targetItem === undefined) {
-        return null
+        return createErrorState(state, errorMessages.solver.itemToDeleteNotFound(targetName))
     }
 
     let hasEffect = false
@@ -449,27 +457,27 @@ const deleteObject = (targetName, state) => {
         }
     }
 
-    return hasEffect ? state : null
+    return hasEffect ? state : createErrorState(state, errorMessages.solver.unableToDeleteItem(targetName))
 }
 
-const solveDeleteItems = (command, state) => {
+const solveDeleteItems = (command, state, errorMessages) => {
     let localState = state
 
     for (const targetName of command.targetNames) {
-        localState = deleteObject(targetName, localState)
-        if (localState === null) {
-            return null
+        localState = deleteObject(targetName, localState, errorMessages)
+        if (!localState.isValid) {
+            break
         }
     }
 
     return localState
 }
 
-const deleteName = (targetName, state) => {
+const deleteName = (targetName, state, errorMessages) => {
     const targetItem = state.collection.find(x => x.name === targetName)
 
     if (targetItem === undefined) {
-        return null
+        return createErrorState(state, errorMessages.solver.itemToDeleteNameNotFound(targetName))
     }
 
     targetItem.name = '§' + targetItem.name
@@ -495,58 +503,58 @@ const deleteName = (targetName, state) => {
     return state
 }
 
-const solveDeleteNames = (command, state) => {
+const solveDeleteNames = (command, state, errorMessages) => {
     let localState = state
 
     for (const targetName of command.targetNames) {
-        localState = deleteName(targetName, localState)
-        if (localState === null) {
-            return null
+        localState = deleteName(targetName, localState, errorMessages)
+        if (!localState.isValid) {
+            break
         }
     }
 
     return localState
 }
 
-const solveDeletion = (command, state) => {
+const solveDeletion = (command, state, errorMessages) => {
     switch (command.type) {
         case registry.deleteItems:
-            return solveDeleteItems(command, state)
+            return solveDeleteItems(command, state, errorMessages)
 
         case registry.deleteNames:
-            return solveDeleteNames(command, state)
+            return solveDeleteNames(command, state, errorMessages)
 
         default:
-            return null
+            return createErrorState(state, errorMessages.logicErrorUnknownType(command.type))
     }
 }
 
-const solveCreation = (command, state) => {
+const solveCreation = (command, state, errorMessages) => {
     if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name))) {
-        return null
+        return createErrorState(state, errorMessages.solver.duplicateName(command.name ?? command.names?.join() ?? 'no name'))
     }
 
     switch (command.type) {
         case registry.circle:
-            return solveCircle(command, state)
+            return solveCircle(command, state, errorMessages)
 
         case registry.intersection:
-            return solveIntersection(command, state)
+            return solveIntersection(command, state, errorMessages)
 
         case registry.line:
-            return solveLine(command, state)
+            return solveLine(command, state, errorMessages)
 
         case registry.point:
             return solvePoint(command, state)
 
         case registry.ray:
-            return solveRay(command, state)
+            return solveRay(command, state, errorMessages)
 
         case registry.segment:
-            return solveSegment(command, state)
+            return solveSegment(command, state, errorMessages)
 
         default:
-            return null
+            return createErrorState(state, errorMessages.logicErrorUnknownType(command.type))
     }
 }
 
@@ -555,12 +563,12 @@ const solveCreation = (command, state) => {
 //  - will not display names
 // points starting with '!'
 //  - will not be displayed
-const solve = (command, state) => {
+const solve = (command, state, errorMessages) => {
     if (command.type === registry.deleteItems || command.type === registry.deleteNames) {
-        return solveDeletion(command, state)
+        return solveDeletion(command, state, errorMessages)
     }
     else {
-        return solveCreation(command, state)
+        return solveCreation(command, state, errorMessages)
     }
 }
 

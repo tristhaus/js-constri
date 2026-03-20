@@ -78,6 +78,7 @@ export default [
             '@stylistic/quotes': [
                 'error',
                 'single',
+                { 'avoidEscape': true }
             ],
             '@stylistic/semi': [
                 'error',
