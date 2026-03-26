@@ -4,6 +4,7 @@ import { CommandDeleteNames } from './CommandDeleteNames'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
+import { CommandPolygon } from './CommandPolygon'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
 import { InvalidCommand } from './InvalidCommand'
@@ -109,6 +110,18 @@ const parsePoint = (isValidName, args, errorMessages) => {
     return new CommandPoint(name, x, y)
 }
 
+const parsePolygon = (isValidName, args, errorMessages) => {
+    if (args.length < 3) {
+        return createInvalidCommand(errorMessages.parser.tooFewArguments(args.join(', ')))
+    }
+
+    if (!args.every(x => isValidName(x))) {
+        return createInvalidCommand(errorMessages.parser.invalidNames(args))
+    }
+
+    return new CommandPolygon(args)
+}
+
 const parseRay = (isValidName, args, errorMessages) => {
     if (args.length !== 3) {
         return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(3, args))
@@ -184,6 +197,9 @@ const parse = (lang, input, errorMessages) => {
 
         case strings.point:
             return parsePoint(isValidName, args, errorMessages)
+
+        case strings.poly:
+            return parsePolygon(isValidName, args, errorMessages)
 
         case strings.ray:
             return parseRay(isValidName, args, errorMessages)

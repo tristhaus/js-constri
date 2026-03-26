@@ -115,6 +115,13 @@ describe('parser logic unit tests', () => {
             expect(result.type).toBe(registry.point)
         })
 
+        test('valid poly returns expected', () => {
+            const result = parse(lang, 'poly A1_b Z Y', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.polygon)
+        })
+
         test('valid ray returns expected', () => {
             const result = parse(lang, 'strahl ab A B', emptyErrorMessages)
 
@@ -202,6 +209,13 @@ describe('parser logic unit tests', () => {
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.point)
+        })
+
+        test('valid poly returns expected', () => {
+            const result = parse(lang, 'poly A1_b Z Y', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.polygon)
         })
 
         test('valid ray returns expected', () => {
@@ -680,6 +694,45 @@ describe('parser logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.invalid)
             expect(result.errorMessage).toBe('-0.1. a')
+        })
+    })
+
+    describe('poly', () => {
+
+        test('valid poly returns expected', () => {
+            const result = parse(defaultLang, strings_de.poly + ' A C B D', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.polygon)
+            expect(result.referenceNames).toStrictEqual(['A', 'C', 'B', 'D'])
+        })
+
+        test('poly: too few arguments returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    tooFewArguments: x => x
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.poly + ' A B', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('A, B')
+        })
+
+        test('poly: invalid name returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNames: (args) => `${args.join('. ')}`
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.poly + ' A -0.1 C', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('A. -0.1. C')
         })
     })
 

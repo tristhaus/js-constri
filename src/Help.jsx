@@ -46,6 +46,11 @@ const HelpDe = ({ closeAction }) => {
                                     <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>. Optional: ein weiterer Name.</td>
                                 </tr>
                                 <tr>
+                                    <td className="command">poly A D C B</td>
+                                    <td></td>
+                                    <td>Zeichne das Polygon durch mindestens 3 Punkte <span className="command">A</span>, <span className="command">D</span>, <span className="command">C</span>, <span className="command">B</span></td>
+                                </tr>
+                                <tr>
                                     <td className="command">loesche h Y</td>
                                     <td></td>
                                     <td>Lösche die Objekte <span className="command">h</span> und <span className="command">Y</span></td>
@@ -115,6 +120,11 @@ const HelpEn = ({ closeAction }) => {
                                     <td className="command">name inter c g Z</td>
                                     <td></td>
                                     <td>Consider the intersection of objects <span className="command">c</span> and <span className="command">g</span>: give it the name <span className="command">Z</span>. Two names are possible.</td>
+                                </tr>
+                                <tr>
+                                    <td className="command">poly A D C B</td>
+                                    <td></td>
+                                    <td>Draw the polygon through at least three points <span className="command">A</span>, <span className="command">D</span>, <span className="command">C</span>, <span className="command">B</span></td>
                                 </tr>
                                 <tr>
                                     <td className="command">delete h Y</td>

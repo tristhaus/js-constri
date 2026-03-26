@@ -5,6 +5,7 @@ import { ItemRay } from './ItemRay'
 import { ItemSegment } from './ItemSegment'
 import { registry } from './registry'
 import { getNameWithoutPossiblePrefix, isUserEnteredName } from './nameLogic'
+import { v4 as uuidv4 } from 'uuid'
 
 const epsilon = 1e-10
 
@@ -318,6 +319,42 @@ const solvePoint = (commandPoint, state) => {
     return state
 }
 
+const solvePolygon = (commandPolygon, state, errorMessages) => {
+    const names = commandPolygon.referenceNames
+    if ((new Set(names)).size !== names.length) {
+        return createErrorState(state, errorMessages.solver.duplicateReferenceName(names))
+    }
+
+    const points = []
+
+    for (const name of names) {
+        const itemCandidate = state.collection.filter(item => item.name === name)
+
+        if (itemCandidate.length === 0) {
+            return createErrorState(state, errorMessages.solver.referencePointMissing(name))
+        }
+
+        const item = itemCandidate[0]
+
+        if (item.type !== registry.point) {
+            return createErrorState(state, errorMessages.solver.itemIsNotAPoint(name))
+        }
+
+        points.push(item)
+    }
+
+    const uuid = uuidv4().replaceAll('-', '')
+
+    for (let index = 0; index < points.length; index++) {
+        const startPoint = points[index]
+        const endPoint = points[(index + 1) % points.length]
+        const name = `§${startPoint.name}.${endPoint.name}.${uuid}`
+        state.collection.push(new ItemSegment(name, startPoint, endPoint))
+    }
+
+    return state
+}
+
 const solveRay = (commandRay, state, errorMessages) => {
     if (commandRay.startPointName === commandRay.endPointName) {
         return createErrorState(state, errorMessages.solver.referencePointsCantBeIdentical(commandRay.startPointName))
@@ -530,7 +567,7 @@ const solveDeletion = (command, state, errorMessages) => {
 }
 
 const solveCreation = (command, state, errorMessages) => {
-    if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name))) {
+    if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name)) || false) {
         return createErrorState(state, errorMessages.solver.duplicateName(command.name ?? command.names?.join() ?? 'no name'))
     }
 
@@ -547,6 +584,9 @@ const solveCreation = (command, state, errorMessages) => {
         case registry.point:
             return solvePoint(command, state)
 
+        case registry.polygon:
+            return solvePolygon(command, state, errorMessages)
+
         case registry.ray:
             return solveRay(command, state, errorMessages)
 
@@ -559,9 +599,9 @@ const solveCreation = (command, state, errorMessages) => {
 }
 
 // this may create items with names not matching allowed user input
-// points starting with '§'
+// items starting with '§'
 //  - will not display names
-// points starting with '!'
+// items starting with '!'
 //  - will not be displayed
 const solve = (command, state, errorMessages) => {
     if (command.type === registry.deleteItems || command.type === registry.deleteNames) {

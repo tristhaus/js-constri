@@ -6,6 +6,7 @@ import { CommandDeleteNames } from './CommandDeleteNames'
 import { CommandIntersection } from './CommandIntersection'
 import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
+import { CommandPolygon } from './CommandPolygon'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
 import { ItemCircle } from './ItemCircle'
@@ -4294,6 +4295,111 @@ describe('solver logic unit tests', () => {
             expect(result.collection[1].name).toBe('B')
             expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
             expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+        })
+    })
+
+    describe('point logic unit tests', () => {
+
+        test('valid polygon input returns extended state', () => {
+            const state = {
+                isValid: true,
+                collection: [
+                    new ItemPoint('A', 1.0, 2.0),
+                    new ItemPoint('B', 3.0, 4.0),
+                    new ItemPoint('C', 5.0, 6.0),
+                ]
+            }
+
+            const result = solve(new CommandPolygon(['A', 'B', 'C']), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[3].type).toBe(registry.segment)
+            expect(result.collection[3].name).toMatch(/§A.B.[0-9a-f]{32}/)
+            expect(result.collection[3].startPoint.name).toBe('A')
+            expect(result.collection[3].endPoint.name).toBe('B')
+
+            expect(result.collection[4].type).toBe(registry.segment)
+            expect(result.collection[4].name).toMatch(/§B.C.[0-9a-f]{32}/)
+            expect(result.collection[4].startPoint.name).toBe('B')
+            expect(result.collection[4].endPoint.name).toBe('C')
+
+            expect(result.collection[5].type).toBe(registry.segment)
+            expect(result.collection[5].name).toMatch(/§C.A.[0-9a-f]{32}/)
+            expect(result.collection[5].startPoint.name).toBe('C')
+            expect(result.collection[5].endPoint.name).toBe('A')
+        })
+
+        test('duplicate reference name returns error state', () => {
+            const state = {
+                collection: [
+                    new ItemPoint('A', 1.0, 2.0),
+                    new ItemPoint('B', 3.0, 4.0),
+                    new ItemPoint('C', 5.0, 6.0),
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    duplicateReferenceName: x => x.join('. ')
+                }
+            }
+
+            const result = solve(new CommandPolygon(['A', 'B', 'C', 'A']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('A. B. C. A')
+        })
+
+        test('reference point missing returns error state', () => {
+            const state = {
+                collection: [
+                    new ItemPoint('A', 1.0, 2.0),
+                    new ItemPoint('B', 3.0, 4.0),
+                    new ItemPoint('C', 5.0, 6.0),
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
+
+            const result = solve(new CommandPolygon(['A', 'B', 'C', 'D']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('D')
+        })
+
+        test('reference point missing returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    new ItemPoint('C', 5.0, 6.0),
+                    new ItemLine('ab', pointA, pointB)
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    itemIsNotAPoint: x => x
+                }
+            }
+
+            const result = solve(new CommandPolygon(['A', 'B', 'C', 'ab']), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('ab')
         })
     })
 

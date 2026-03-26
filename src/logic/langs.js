@@ -10,6 +10,7 @@ const strings_de = {
     line: 'gerade',
     name: 'bez',
     point: 'punkt',
+    poly: 'poly',
     ray: 'strahl',
     segment: 'strecke',
     errorMessages: {
@@ -26,6 +27,8 @@ const strings_de = {
         solver: {
             circleRadiusTooSmall: radius => `Der Radius '${radius}' ist zu klein`,
             duplicateName: nameOrNames => `Name(n) '${nameOrNames}' existieren bereits`,
+            duplicateReferenceName: names => `Doppelnennung von Namen nicht erlaubt: ${names.join(', ')}`,
+            itemIsNotAPoint: name => `Objekt '${name}' ist kein Punkt`,
             itemToDeleteNameNotFound: itemName => `Zu löschender Objektname '${itemName}' nicht auffindbar`,
             itemToDeleteNotFound: itemName => `Zu löschendes Objekt '${itemName}' nicht auffindbar`,
             referencePointMissing: pointName => `Referenzpunkt '${pointName}' nicht auffindbar`,
@@ -44,6 +47,7 @@ const strings_en = {
     line: 'line',
     name: 'name',
     point: 'point',
+    poly: 'poly',
     ray: 'ray',
     segment: 'segment',
     errorMessages: {
@@ -60,6 +64,8 @@ const strings_en = {
         solver: {
             circleRadiusTooSmall: radius => `Radius '${radius}' is too small`,
             duplicateName: nameOrNames => `Name(s) '${nameOrNames}' already exist`,
+            duplicateReferenceName: names => `Duplicate reference to a name not allowed: ${names.join(', ')}`,
+            itemIsNotAPoint: name => `Item '${name}' is not a point`,
             itemToDeleteNameNotFound: itemName => `Unable to find object name to delete '${itemName}'`,
             itemToDeleteNotFound: itemName => `Unable to find object to delete '${itemName}'`,
             referencePointMissing: pointName => `Unable to find reference point '${pointName}'`,
