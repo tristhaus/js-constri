@@ -1,4 +1,5 @@
 import { CommandCircle } from './CommandCircle'
+import { CommandColor } from './CommandColor'
 import { CommandDeleteItems } from './CommandDeleteItems'
 import { CommandDeleteNames } from './CommandDeleteNames'
 import { CommandIntersection } from './CommandIntersection'
@@ -35,6 +36,20 @@ const parseCircle = (isValidName, args, errorMessages) => {
     }
 
     return new CommandCircle(name, centerName, radius)
+}
+
+const parseColor = (colors, args, errorMessages) => {
+    if (args.length !== 1) {
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(1, args))
+    }
+
+    const color = colors[args[0]]
+
+    if (color === undefined) {
+        return createInvalidCommand(errorMessages.parser.unknownColor(args[0]))
+    }
+
+    return new CommandColor(color)
 }
 
 const parseDeleteItems = (isValidName, args, errorMessages) => {
@@ -176,6 +191,9 @@ const parse = (lang, input, errorMessages) => {
     switch (first) {
         case strings.circle:
             return parseCircle(isValidName, args, errorMessages)
+
+        case strings.color:
+            return parseColor(strings.colors, args, errorMessages)
 
         case strings.delete:
             if (args[0] === strings.name) {

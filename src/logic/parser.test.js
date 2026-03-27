@@ -80,6 +80,15 @@ describe('parser logic unit tests', () => {
             expect(result.type).toBe(registry.circle)
         })
 
+        test('valid color returns expected', () => {
+            for (const color of ['schwarz', 'blau', 'gruen', 'rot', 'gelb']) {
+                const result = parse(lang, `farbe ${color}`, emptyErrorMessages)
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.color)
+            }
+        })
+
         test('valid delete item returns expected', () => {
             const result = parse(lang, 'loesche A', emptyErrorMessages)
 
@@ -174,6 +183,15 @@ describe('parser logic unit tests', () => {
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.circle)
+        })
+
+        test('valid color returns expected', () => {
+            for (const color of ['black', 'blue', 'green', 'red', 'yellow']) {
+                const result = parse(lang, `color ${color}`, emptyErrorMessages)
+
+                expect(result).not.toBeNull()
+                expect(result.type).toBe(registry.color)
+            }
         })
 
         test('valid delete item returns expected', () => {
@@ -327,6 +345,31 @@ describe('parser logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.invalid)
             expect(result.errorMessage).toBe('B')
+        })
+    })
+
+    describe('color', () => {
+
+        test('valid color returns expected', () => {
+            const result = parse(defaultLang, strings_de.color + ' blau', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.color)
+            expect(result.color).toBe(registry.colors.blue)
+        })
+
+        test('non-existent color returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    unknownColor: x => x
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.color + ' keineFarbe', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('keineFarbe')
         })
     })
 

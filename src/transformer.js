@@ -1,6 +1,14 @@
 import { isUserEnteredName } from './logic/nameLogic'
 import { registry } from './logic/registry'
 
+const colorMap = {
+    'black_t': '#000000',
+    'blue_t': '#0000ff',
+    'green_t': '#00c400',
+    'red_t': '#ff0000',
+    'yellow_t': '#cee21d',
+}
+
 const findExtrema = points => {
     const allX = points.map(p => p.x)
     const allY = points.map(p => p.y)
@@ -106,7 +114,7 @@ const createPlotlyDataFromSegment = (segment, currentColor) => {
 }
 
 const transform = items => {
-    const currentColor = registry.colors.black
+    let currentColor = colorMap.black_t
 
     const extrema = findExtrema(items.filter(x => x.type === registry.point))
 
@@ -117,7 +125,7 @@ const transform = items => {
     const fakePointsX = []
     const fakePointsY = []
 
-    const cirlePlotlyDatas = []
+    const circlePlotlyDatas = []
     const linesPlotlyDatas = []
     const raysPlotlyDatas = []
     const segmentsPlotlyDatas = []
@@ -125,7 +133,11 @@ const transform = items => {
     for (const item of items) {
         switch (item.type) {
             case registry.circle:
-                cirlePlotlyDatas.push(createPlotlyDataFromCircle(item, currentColor))
+                circlePlotlyDatas.push(createPlotlyDataFromCircle(item, currentColor))
+                break
+
+            case registry.color:
+                currentColor = colorMap[item.color]
                 break
 
             case registry.line:
@@ -173,7 +185,7 @@ const transform = items => {
         y: fakePointsY,
     }
 
-    return [[pointsPlotlyData, ...cirlePlotlyDatas, ...linesPlotlyDatas, ...raysPlotlyDatas, ...segmentsPlotlyDatas], fakePointsPlotlyData]
+    return [[pointsPlotlyData, ...circlePlotlyDatas, ...linesPlotlyDatas, ...raysPlotlyDatas, ...segmentsPlotlyDatas], fakePointsPlotlyData]
 }
 
 export { transform }

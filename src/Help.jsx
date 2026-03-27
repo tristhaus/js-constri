@@ -51,6 +51,11 @@ const HelpDe = ({ closeAction }) => {
                                     <td>Zeichne das Polygon durch mindestens 3 Punkte <span className="command">A</span>, <span className="command">D</span>, <span className="command">C</span>, <span className="command">B</span></td>
                                 </tr>
                                 <tr>
+                                    <td className="command">farbe gruen</td>
+                                    <td></td>
+                                    <td>Wechsel die Zeichenfarbe zu <span className="command">gruen</span>. Verfügbar: <span className="command">schwarz</span>, <span className="command">rot</span>, <span className="command">blau</span>, <span className="command">gruen</span>, <span className="command">gelb</span>.</td>
+                                </tr>
+                                <tr>
                                     <td className="command">loesche h Y</td>
                                     <td></td>
                                     <td>Lösche die Objekte <span className="command">h</span> und <span className="command">Y</span></td>
@@ -125,6 +130,11 @@ const HelpEn = ({ closeAction }) => {
                                     <td className="command">poly A D C B</td>
                                     <td></td>
                                     <td>Draw the polygon through at least three points <span className="command">A</span>, <span className="command">D</span>, <span className="command">C</span>, <span className="command">B</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">color green</td>
+                                    <td></td>
+                                    <td>Change the drawing color to <span className="command">green</span>. Available: <span className="command">black</span>, <span className="command">red</span>, <span className="command">blue</span>, <span className="command">green</span>, <span className="command">yellow</span>.</td>
                                 </tr>
                                 <tr>
                                     <td className="command">delete h Y</td>

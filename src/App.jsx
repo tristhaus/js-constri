@@ -137,7 +137,7 @@ function App() {
         <>
             {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)} />}
             {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)} />}
-            {errorMessage.length !== 0 && <ErrorBox errorMessage={errorMessage} closeButtonLabel={strings[lang].close} closeAction={() => setErrorMessage('')}/>}
+            {errorMessage.length !== 0 && <ErrorBox errorMessage={errorMessage} closeButtonLabel={strings[lang].close} closeAction={() => setErrorMessage('')} />}
             <div style={{ textAlign: 'right' }}>
                 <button onClick={() => handleLanguageButtonPressed(registry.langs.de)}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z" /><path fill="#D00" d="M0 1h5v2H0z" /><path fill="#FFCE00" d="M0 2h5v1H0z" /></svg>

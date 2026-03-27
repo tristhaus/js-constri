@@ -16,6 +16,7 @@ import { ItemRay } from './ItemRay'
 import { ItemSegment } from './ItemSegment'
 import { registry } from './registry'
 import { solve } from './solver'
+import { CommandColor } from './CommandColor'
 
 // ~digits of precision
 const jestPrecision = 4
@@ -169,6 +170,32 @@ describe('solver logic unit tests', () => {
             expect(result2).not.toBeNull()
             expect(result2.isValid).toBe(false)
             expect(result2.errorMessage).toBe(-1)
+        })
+    })
+
+    describe('color logic unit tests', () => {
+
+        test('valid color input returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+
+            const state = {
+                collection: [
+                    pointA,
+                ]
+            }
+
+            const result = solve(new CommandColor(registry.colors.yellow), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(2)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.color)
+            expect(result.collection[1].color).toBe(registry.colors.yellow)
         })
     })
 
@@ -4317,17 +4344,17 @@ describe('solver logic unit tests', () => {
             expect(result.collection.length).toBe(6)
 
             expect(result.collection[3].type).toBe(registry.segment)
-            expect(result.collection[3].name).toMatch(/§A.B.[0-9a-f]{32}/)
+            expect(result.collection[3].name).toMatch(/^§A.B.[0-9a-f]{32}$/)
             expect(result.collection[3].startPoint.name).toBe('A')
             expect(result.collection[3].endPoint.name).toBe('B')
 
             expect(result.collection[4].type).toBe(registry.segment)
-            expect(result.collection[4].name).toMatch(/§B.C.[0-9a-f]{32}/)
+            expect(result.collection[4].name).toMatch(/^§B.C.[0-9a-f]{32}$/)
             expect(result.collection[4].startPoint.name).toBe('B')
             expect(result.collection[4].endPoint.name).toBe('C')
 
             expect(result.collection[5].type).toBe(registry.segment)
-            expect(result.collection[5].name).toMatch(/§C.A.[0-9a-f]{32}/)
+            expect(result.collection[5].name).toMatch(/^§C.A.[0-9a-f]{32}$/)
             expect(result.collection[5].startPoint.name).toBe('C')
             expect(result.collection[5].endPoint.name).toBe('A')
         })

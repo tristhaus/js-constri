@@ -5,6 +5,7 @@ const registry = {
     },
     invalid: 'invalid_t',
     circle: 'circle_t',
+    color: 'color_t',
     deleteItems: 'deleteItems_t',
     deleteNames: 'deleteNames_t',
     intersection: 'intersection_t',
@@ -13,9 +14,12 @@ const registry = {
     polygon: 'polygon_t',
     ray: 'ray_t',
     segment: 'segment_t',
-
     colors: {
-        black: '#000000',
+        black: 'black_t',
+        blue: 'blue_t',
+        green: 'green_t',
+        red: 'red_t',
+        yellow: 'yellow_t',
     },
 }
 

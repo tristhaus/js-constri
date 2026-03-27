@@ -6,6 +6,8 @@ import { ItemPoint } from './logic/ItemPoint'
 import { ItemRay } from './logic/ItemRay'
 import { ItemSegment } from './logic/ItemSegment'
 import { transform } from './transformer'
+import { CommandColor } from './logic/CommandColor'
+import { registry } from './logic/registry'
 
 // ~digits of precision
 const jestPrecision = 4
@@ -100,6 +102,39 @@ describe('transformer tests', () => {
         expect(aux.y[1]).toBeCloseTo(2, jestPrecision)
         expect(aux.y[2]).toBeCloseTo(5, jestPrecision)
         expect(aux.y[3]).toBeCloseTo(-1, jestPrecision)
+    })
+
+    test('items collection with color and segment returns data', () => {
+        const pointA = new ItemPoint('A', 1, 2)
+        const pointB = new ItemPoint('B', 3, 4)
+        const segmentab = new ItemSegment('ab', pointA, pointB)
+
+        const extremaPoints = []
+
+        const [collection, aux] = transform([
+            new CommandColor(registry.colors.red),
+            pointA,
+            pointB,
+            segmentab,
+            ...extremaPoints,
+        ])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual(['A', 'B'])
+        expect(collection[0].x).toStrictEqual([1, 3])
+        expect(collection[0].y).toStrictEqual([2, 4])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines')
+        expect(collection[1].x).toStrictEqual([1, 3])
+        expect(collection[1].y).toStrictEqual([2, 4])
+        expect(collection[1].line.color).toStrictEqual('#ff0000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
     })
 
     test('items collection with points and segment returns data', () => {

@@ -567,13 +567,23 @@ const solveDeletion = (command, state, errorMessages) => {
 }
 
 const solveCreation = (command, state, errorMessages) => {
-    if (state.collection.some(x => x.name === command.name || command.names?.some(y => y === x.name)) || false) {
-        return createErrorState(state, errorMessages.solver.duplicateName(command.name ?? command.names?.join() ?? 'no name'))
+    const nameKey = 'name'
+    if (nameKey in command && state.collection.some(x => x.name === command[nameKey])) {
+        return createErrorState(state, errorMessages.solver.duplicateName(command.name))
+    }
+
+    const namesKey = 'names'
+    if (namesKey in command && state.collection.some(x => command[namesKey].some(y => y === x.name))) {
+        return createErrorState(state, errorMessages.solver.duplicateName(command.names.join()))
     }
 
     switch (command.type) {
         case registry.circle:
             return solveCircle(command, state, errorMessages)
+
+        case registry.color:
+            state.collection.push(command)
+            return state
 
         case registry.intersection:
             return solveIntersection(command, state, errorMessages)

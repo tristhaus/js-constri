@@ -5,6 +5,14 @@ const allStrings = {}
 const strings_de = {
     id: registry.langs.de,
     circle: 'kreis',
+    color: 'farbe',
+    colors: {
+        'schwarz': registry.colors.black,
+        'blau': registry.colors.blue,
+        'gruen': registry.colors.green,
+        'rot': registry.colors.red,
+        'gelb': registry.colors.yellow,
+    },
     delete: 'loesche',
     intersection: 'sp',
     line: 'gerade',
@@ -22,6 +30,7 @@ const strings_de = {
             invalidNames: names => `Invalide Namen: ${names.join(', ')}`,
             invalidNumbers: numbers => `Invalide Zahlen: ${numbers.join(', ')}`,
             tooFewArguments: argumentString => `Zu wenige Argumente: ${argumentString}`,
+            unknownColor: colorName => `Unbekannte Farbe: ${colorName}`,
             unknownCommand: input => `Unbekanntes Kommando: ${input}`,
         },
         solver: {
@@ -42,6 +51,14 @@ const strings_de = {
 const strings_en = {
     id: registry.langs.en,
     circle: 'circle',
+    color: 'color',
+    colors: {
+        'black': registry.colors.black,
+        'blue': registry.colors.blue,
+        'green': registry.colors.green,
+        'red': registry.colors.red,
+        'yellow': registry.colors.yellow,
+    },
     delete: 'delete',
     intersection: 'inter',
     line: 'line',
@@ -59,6 +76,7 @@ const strings_en = {
             invalidNumbers: numbers => `Invalid numbers: ${numbers.join(', ')}`,
             incorrectNumberOfArguments: (expected, args) => `Must be ${expected} argument(s): ${args.join(', ')}.`,
             tooFewArguments: argumentString => `Too few arguments: ${argumentString}`,
+            unknownColor: colorName => `Unknown color: ${colorName}`,
             unknownCommand: input => `Unknown command: ${input}`,
         },
         solver: {
