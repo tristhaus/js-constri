@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Plot from 'react-plotly.js'
 
 import { HelpDe, HelpEn } from './Help'
 import { handleInput } from './logic/inputHandler'
 import { transform } from './transformer'
 import { registry } from './logic/registry'
+import { allStrings } from './logic/langs'
 
 const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
     const maxX = Math.max(...pointDataX)
@@ -50,25 +51,11 @@ const calculateRanges = (pointDataX, pointDataY, aspectRatio) => {
     return [xRange, yRange]
 }
 
-const strings = {}
-strings[registry.langs.de] = {
-    close: 'Schließen',
-    defaultInput: 'punkt A 1 2\npunkt B 3 6\nstrecke ab A B',
-    execute: 'Ausführen',
-    help: 'Hilfe',
-}
-strings[registry.langs.en] = {
-    close: 'Close',
-    defaultInput: 'point C 0 1\ncircle k C 3',
-    execute: 'Execute',
-    help: 'Help',
-}
-
 const ErrorBox = ({ errorMessage, closeButtonLabel, closeAction }) => {
     return <>
         <div className="smallOverlayBox">
             <div className="overlayContent">
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div id='errorBox' style={{ display: 'flex', justifyContent: 'center' }}>
                     <h4>{errorMessage}</h4>
                 </div>
                 <div>
@@ -79,16 +66,27 @@ const ErrorBox = ({ errorMessage, closeButtonLabel, closeAction }) => {
     </>
 }
 
+const toCodeArray = codeString => {
+    return codeString.split('\n').map(x => x.trim()).filter(x => x !== '')
+}
+
+const toCodeString = codeArray => {
+    return codeArray.join('\n')
+}
+
 function App() {
     const [lang, setLang] = useState(registry.langs.de)
     const [showHelp, setShowHelp] = useState(false)
-    const [code, setCode] = useState(strings[lang].defaultInput)
+    const [code, setCode] = useState(allStrings[lang].ui.defaultInput)
+    const [splitCode, setSplitCode] = useState(toCodeArray(allStrings[lang].ui.defaultInput))
     const [plotlyData, setPlotlyData] = useState([])
     const [auxPointsData, setAuxPointsData] = useState({ x: [], y: [] })
     const [errorMessage, setErrorMessage] = useState('')
+    const [animationCounter, setAnimationCounter] = useState(0)
+    const [animationRunning, setAnimationRunning] = useState(false)
 
-    const execute = () => {
-        const state = handleInput(lang, code)
+    const runInput = currentInput => {
+        const state = handleInput(lang, currentInput)
 
         if (state.isValid) {
             const items = state?.collection
@@ -104,6 +102,63 @@ function App() {
             setErrorMessage(state.errorMessage)
         }
     }
+
+    const handleSetCode = newCode => {
+        const newSplitCode = toCodeArray(newCode)
+        setCode(newCode)
+        setSplitCode(newSplitCode)
+    }
+
+    const timeOut = useRef(null)
+
+    const execute = () => {
+        runInput(code)
+        setAnimationCounter(0)
+        setAnimationRunning(false)
+    }
+
+    const animateStep = () => {
+        if (animationCounter !== 0 && errorMessage.length !== 0) {
+            if (animationRunning) {
+                setAnimationRunning(false)
+            }
+
+            return
+        }
+
+        const newAnimationCounter = animationCounter + 1
+        const joinedInput = toCodeString(splitCode.slice(0, newAnimationCounter))
+        runInput(joinedInput)
+        const temp = newAnimationCounter % (splitCode.length || 1)
+        setAnimationCounter(temp)
+        if (animationRunning && temp === 0) {
+            setAnimationRunning(false)
+        }
+    }
+
+    const animateAll = () => {
+        setAnimationRunning(!animationRunning)
+    }
+
+    const handleAnimateStepButtonClicked = () => {
+        setAnimationRunning(false)
+        animateStep()
+    }
+
+    useEffect(() => {
+        if (animationRunning) {
+            timeOut.current = setInterval(() => {
+                animateStep()
+            }, 500)
+
+            return () => clearInterval(timeOut.current)
+        }
+        else {
+            clearInterval(timeOut.current)
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [animationRunning, animationCounter])
 
     const [width, setWidth] = useState(window.innerWidth)
     const [height, setHeight] = useState(window.innerHeight)
@@ -128,21 +183,30 @@ function App() {
         ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x), plotlyData[0].y.concat(auxPointsData.y), aspectRatio)
         : calculateRanges([0, 5], [0, 5], aspectRatio)
 
-    const handleLanguageButtonPressed = newLang => {
+    const handleLanguageButtonClicked = newLang => {
         setLang(newLang)
-        setCode(strings[newLang].defaultInput)
+        handleSetCode(allStrings[newLang].ui.defaultInput)
     }
+
+    const handleInputChanged = e => {
+        setAnimationCounter(0)
+        setAnimationRunning(false)
+        handleSetCode(e.target.value)
+    }
+
+    const animateAllButtonText = animationRunning ? '⏸' : '▶'
+    const animateStepButtonText = animationCounter === 0 ? '⟲' : '➙'
 
     return (
         <>
             {showHelp && lang === registry.langs.de && <HelpDe closeAction={() => setShowHelp(false)} />}
             {showHelp && lang === registry.langs.en && <HelpEn closeAction={() => setShowHelp(false)} />}
-            {errorMessage.length !== 0 && <ErrorBox errorMessage={errorMessage} closeButtonLabel={strings[lang].close} closeAction={() => setErrorMessage('')} />}
+            {errorMessage.length !== 0 && <ErrorBox errorMessage={errorMessage} closeButtonLabel={allStrings[lang].ui.close} closeAction={() => setErrorMessage('')} />}
             <div style={{ textAlign: 'right' }}>
-                <button onClick={() => handleLanguageButtonPressed(registry.langs.de)}>
+                <button id='chooseLangDe' onClick={() => handleLanguageButtonClicked(registry.langs.de)}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 5 3"><path d="M0 0h5v3H0z" /><path fill="#D00" d="M0 1h5v2H0z" /><path fill="#FFCE00" d="M0 2h5v1H0z" /></svg>
                 </button>
-                <button onClick={() => handleLanguageButtonPressed(registry.langs.en)}>
+                <button id='chooseLangEn' onClick={() => handleLanguageButtonClicked(registry.langs.en)}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z" /></clipPath><clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z" /></clipPath><g clipPath="url(#a)"><path d="M0 0v30h60V0z" fill="#012169" /><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" /><path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4" /><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" /><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" /></g></svg>
                 </button>
             </div>
@@ -187,11 +251,13 @@ function App() {
                 />
             </div>
             <div>
-                <textarea value={code} onChange={e => setCode(e.target.value)} />
+                <textarea id='input' value={code} onChange={e => handleInputChanged(e)} />
             </div>
             <div>
-                <button onClick={() => execute()}>{strings[lang].execute}</button>
-                <button onClick={() => setShowHelp(true)}>{strings[lang].help}</button>
+                <button onClick={() => execute()}>{allStrings[lang].ui.execute}</button>
+                <button onClick={() => setShowHelp(true)}>{allStrings[lang].ui.help}</button>
+                <button id='animateAllButton' onClick={() => animateAll()}>{animateAllButtonText}</button>
+                <button id='animateStepButton' onClick={() => handleAnimateStepButtonClicked()}>{animateStepButtonText}</button>
             </div>
         </>
     )

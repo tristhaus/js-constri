@@ -3,7 +3,7 @@ const HelpDe = ({ closeAction }) => {
         <div className="darkBG" onClick={closeAction} />
         <div className="overlayBox">
             <div className="overlayContent">
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div id='helpBoxDe' style={{ display: 'flex', justifyContent: 'center' }}>
                     <div>
                         <h4>Hilfe</h4>
                         <table className="commandListing">
@@ -84,7 +84,7 @@ const HelpEn = ({ closeAction }) => {
         <div className="darkBG" onClick={closeAction} />
         <div className="overlayBox">
             <div className="overlayContent">
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div id='helpBoxEn' style={{ display: 'flex', justifyContent: 'center' }}>
                     <div>
                         <h4>Help</h4>
                         <table className="commandListing">

@@ -46,6 +46,12 @@ const strings_de = {
             unableToDeleteItem: itemName => `Zu löschendes Objekt '${itemName}' nicht löschbar`,
         },
     },
+    ui: {
+        close: 'Schließen',
+        defaultInput: 'punkt A 1 2\npunkt B 3 6\nstrecke ab A B',
+        execute: 'Ausführen',
+        help: 'Hilfe',
+    }
 }
 
 const strings_en = {
@@ -92,6 +98,12 @@ const strings_en = {
             unableToDeleteItem: itemName => `Unable to delete object '${itemName}'`,
         },
     },
+    ui: {
+        close: 'Close',
+        defaultInput: 'point C 0 1\ncircle k C 3',
+        execute: 'Execute',
+        help: 'Help',
+    }
 }
 
 // some words are not valid as names, otherwise parsing becomes a pain
