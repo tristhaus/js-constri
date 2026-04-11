@@ -21,6 +21,63 @@ const findExtrema = points => {
     }
 }
 
+const getAngleRadiusFromExtrema = extrema => {
+    const deltaX = extrema.maxX - extrema.minX
+    const deltaY = extrema.maxY - extrema.minY
+
+    const delta = Math.min(deltaX, deltaY)
+
+    return Math.max(0.1, delta / 8)
+}
+
+// recursively put an angle into the interval [ 0, 2 * Math.PI [
+const normalizeAngle = angle => {
+    if (angle >= 2 * Math.PI) {
+        return normalizeAngle(angle - 2 * Math.PI)
+    }
+
+    if (angle < 0) {
+        return normalizeAngle(angle + 2 * Math.PI)
+    }
+
+    return angle
+}
+
+const createPlotlyDataFromAngle = (angle, extrema, currentColor) => {
+    const xData = []
+    const yData = []
+
+    const radius = getAngleRadiusFromExtrema(extrema)
+
+    const intervals = 200
+    const squaredRadius = radius ** 2
+
+    // be sure to get `... + interval / interval * value`
+    for (let i = 0; i <= intervals; i++) {
+        // 'local' variables are with origin = angle.vertex, i.e.
+        // before translating to true coordinate system
+        const normalizedTheta = normalizeAngle(angle.startAngle + angle.value * i / intervals)
+        const localX = Math.cos(normalizedTheta) * radius
+        const signY = normalizedTheta < Math.PI ? 1 : -1
+        const localY = signY * Math.sqrt(squaredRadius - localX * localX)
+
+        xData.push(localX + angle.vertex.x)
+        yData.push(localY + angle.vertex.y)
+    }
+
+    const circlePlotlyData = {
+        x: xData,
+        y: yData,
+        text: [`    ${angle.name}`],
+        textposition: 'middleright',
+        type: 'scatter',
+        mode: 'lines+text',
+        line: { color: currentColor },
+    }
+
+    return circlePlotlyData
+}
+
 const createPlotlyDataFromCircle = (circle, currentColor) => {
     const xData = []
     const yPositiveBranch = []
@@ -125,6 +182,7 @@ const transform = items => {
     const fakePointsX = []
     const fakePointsY = []
 
+    const anglePlotlyDatas = []
     const circlePlotlyDatas = []
     const linesPlotlyDatas = []
     const raysPlotlyDatas = []
@@ -132,6 +190,10 @@ const transform = items => {
 
     for (const item of items) {
         switch (item.type) {
+            case registry.angle:
+                anglePlotlyDatas.push(createPlotlyDataFromAngle(item, extrema, currentColor))
+                break
+
             case registry.circle:
                 circlePlotlyDatas.push(createPlotlyDataFromCircle(item, currentColor))
                 break
@@ -185,7 +247,16 @@ const transform = items => {
         y: fakePointsY,
     }
 
-    return [[pointsPlotlyData, ...circlePlotlyDatas, ...linesPlotlyDatas, ...raysPlotlyDatas, ...segmentsPlotlyDatas], fakePointsPlotlyData]
+    return [
+        [
+            pointsPlotlyData,
+            ...anglePlotlyDatas,
+            ...circlePlotlyDatas,
+            ...linesPlotlyDatas,
+            ...raysPlotlyDatas,
+            ...segmentsPlotlyDatas
+        ],
+        fakePointsPlotlyData]
 }
 
 export { transform }

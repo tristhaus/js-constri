@@ -73,6 +73,13 @@ describe('parser logic unit tests', () => {
             expect(result.errorMessage).toBe('xyz a b c d')
         })
 
+        test('valid angle returns expected', () => {
+            const result = parse(lang, 'winkel alpha ab A ac 44', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.angle)
+        })
+
         test('valid circle returns expected', () => {
             const result = parse(lang, 'kreis k A 5', emptyErrorMessages)
 
@@ -178,6 +185,13 @@ describe('parser logic unit tests', () => {
             expect(result.errorMessage).toBe('xyz a b c d')
         })
 
+        test('valid angle returns expected', () => {
+            const result = parse(lang, 'angle alpha ab A ac 44', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.angle)
+        })
+
         test('valid circle returns expected', () => {
             const result = parse(lang, 'circle k A 5', emptyErrorMessages)
 
@@ -262,6 +276,105 @@ describe('parser logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.invalid)
             expect(result.errorMessage).toBe('name. a. b')
+        })
+    })
+
+    describe('angle', () => {
+
+        test('valid angle returns expected', () => {
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab A ac -30', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.angle)
+            expect(result.name).toBe('alpha')
+            expect(result.startLineLikeName).toBe('ab')
+            expect(result.vertexName).toBe('A')
+            expect(result.endRayName).toBe('ac')
+            expect(result.value).toBeCloseTo(-0.523599, jestPrecision)
+        })
+
+        test('angle: too few arguments returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    incorrectNumberOfArguments: (n, args) => `${n}:${args.join('. ')}`
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab A ac', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('5:alpha. ab. A. ac')
+        })
+
+        test('angle: too many arguments returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    incorrectNumberOfArguments: (n, args) => `${n}:${args.join('. ')}`
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab A ac 30 60', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('5:alpha. ab. A. ac. 30. 60')
+        })
+
+        test('angle: invalid name returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNames: x => x.join('. ')
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' 0.1 ab A ac -30', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('0.1. ab. A. ac')
+        })
+
+        test('angle: invalid vertexName returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNames: x => x.join('. ')
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab 0.3 ac -30', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('alpha. ab. 0.3. ac')
+        })
+
+        test('angle: invalid endRayName returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNames: x => x.join('. ')
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab A 0.4 -30', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('alpha. ab. A. 0.4')
+        })
+
+        test('angle: invalid value returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNumbers: x => x.join('. ')
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.angle + ' alpha ab A ac Z', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('Z')
         })
     })
 

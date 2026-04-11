@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
+import { ItemAngle } from './logic/ItemAngle'
 import { ItemCircle } from './logic/ItemCircle'
 import { ItemLine } from './logic/ItemLine'
 import { ItemPoint } from './logic/ItemPoint'
@@ -189,7 +190,7 @@ describe('transformer tests', () => {
         expect(collection[1].type).toStrictEqual('scatter')
         expect(collection[1].mode).toStrictEqual('lines')
         const slope = (collection[1].y[0] - collection[1].y[1]) / (collection[1].x[0] - collection[1].x[1])
-        expect(slope).toBeCloseTo(2)
+        expect(slope).toBeCloseTo(2, jestPrecision)
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
@@ -218,7 +219,255 @@ describe('transformer tests', () => {
         expect(collection[1].type).toStrictEqual('scatter')
         expect(collection[1].mode).toStrictEqual('lines')
         const slope = (collection[1].y[0] - collection[1].y[1]) / (collection[1].x[0] - collection[1].x[1])
-        expect(slope).toBeCloseTo(2)
+        expect(slope).toBeCloseTo(2, jestPrecision)
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q1, cw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeGreaterThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q2, cw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeLessThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q3, cw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeLessThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q4, cw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeGreaterThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q1, ccw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, -Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeGreaterThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q2, ccw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, -Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeGreaterThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q3, ccw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, -Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeLessThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeGreaterThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+    })
+
+    test('items collection with angle returns data (Q4, ccw)', () => {
+        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, -Math.PI / 2)])
+
+        expect(collection.length).toBe(2)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual([])
+        expect(collection[0].x).toStrictEqual([])
+        expect(collection[0].y).toStrictEqual([])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines+text')
+
+        const maxX = Math.max(...collection[1].x)
+        const minX = Math.min(...collection[1].x)
+        const maxY = Math.max(...collection[1].y)
+        const minY = Math.min(...collection[1].y)
+
+        expect(maxX).toBeGreaterThan(0)
+        expect(minX).toBeLessThan(0)
+        expect(maxY).toBeLessThan(0)
+        expect(minY).toBeLessThan(0)
+
+        expect(collection[1].text[0]).toStrictEqual('    omega')
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })

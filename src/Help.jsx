@@ -41,6 +41,11 @@ const HelpDe = ({ closeAction }) => {
                                     <td>Zeichne den Kreis <span className="command">k</span> um den Mittelpunkt <span className="command">A</span> mit dem Radius <span className="command">6.0</span></td>
                                 </tr>
                                 <tr>
+                                    <td className="command">winkel alpha ab A ac -30</td>
+                                    <td></td>
+                                    <td>Zeichne den Winkel <span className="command">alpha</span> an dem vorhandenen Objekt <span className="command">ab</span> mit dem Scheitelpunkt <span className="command">A</span> zum Strahl <span className="command">ac</span> mit <span className="command">30</span>° mit dem Uhrzeigersinn</td>
+                                </tr>
+                                <tr>
                                     <td className="command">bez sp c g Z</td>
                                     <td></td>
                                     <td>Bezeichne den Schnittpunkt des Objekts <span className="command">c</span> mit Objekt <span className="command">g</span> als <span className="command">Z</span>. Optional: ein weiterer Name.</td>
@@ -120,6 +125,11 @@ const HelpEn = ({ closeAction }) => {
                                     <td className="command">circle k A 6.0</td>
                                     <td></td>
                                     <td>Draw the circle <span className="command">k</span> centered on point <span className="command">A</span> with radius <span className="command">6.0</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="command">angle alpha ab A ac -30</td>
+                                    <td></td>
+                                    <td>Draw the angle <span className="command">alpha</span> starting at existing object <span className="command">ab</span> at vertex <span className="command">A</span> ending at new ray <span className="command">ac</span> with <span className="command">30</span>°, clockwise</td>
                                 </tr>
                                 <tr>
                                     <td className="command">name inter c g Z</td>

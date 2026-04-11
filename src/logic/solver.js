@@ -1,3 +1,4 @@
+import { ItemAngle } from './ItemAngle'
 import { ItemCircle } from './ItemCircle'
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
@@ -27,32 +28,6 @@ const pointsSeemIdentical = (pointA, pointB) => {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2 < epsilon
 }
 
-const solveCircle = (commandCircle, state, errorMessages) => {
-    const centerPoint = state.collection.find(x => x.name === commandCircle.centerName)
-    if (centerPoint === undefined || centerPoint.type !== registry.point) {
-        return createErrorState(state, errorMessages.solver.referencePointMissing(commandCircle.centerName))
-    }
-
-    if (commandCircle.radius < epsilon) {
-        return createErrorState(state, errorMessages.solver.circleRadiusTooSmall(commandCircle.radius))
-    }
-
-    const extremaPoints = [
-        new ItemPoint(`!${commandCircle.name}.circle.px`, centerPoint.x + commandCircle.radius, centerPoint.y),
-        new ItemPoint(`!${commandCircle.name}.circle.nx`, centerPoint.x - commandCircle.radius, centerPoint.y),
-        new ItemPoint(`!${commandCircle.name}.circle.py`, centerPoint.x, centerPoint.y + commandCircle.radius),
-        new ItemPoint(`!${commandCircle.name}.circle.ny`, centerPoint.x, centerPoint.y - commandCircle.radius),
-    ]
-
-    if (extremaPoints.some(p => state.collection.some(x => x.name === p.name))) {
-        return createErrorState(state, errorMessages.solver.logicErrorGeneric('unable to create extrema points'))
-    }
-
-    const itemCircle = new ItemCircle(commandCircle.name, centerPoint, commandCircle.radius, extremaPoints)
-    state.collection.push(itemCircle, ...extremaPoints)
-    return state
-}
-
 // returns [a, b, c] of a*x + b*y = c
 const findNormalLineEquation = lineLike => {
     const a = -(lineLike.endPoint.y - lineLike.startPoint.y)
@@ -63,6 +38,13 @@ const findNormalLineEquation = lineLike => {
     const c = lineLike.startPoint.y * lineLike.endPoint.x - lineLike.startPoint.x * lineLike.endPoint.y
 
     return [a / norm, b / norm, c / norm]
+}
+
+// treat as line no matter what
+const calculateDistanceLinePoint = (normalParametersLine, point) => {
+    const [La, Lb, Lc] = normalParametersLine
+
+    return Math.abs(La * point.x + Lb * point.y - Lc)
 }
 
 const findInterval = lineLike => {
@@ -102,6 +84,93 @@ const findInterval = lineLike => {
     }
 }
 
+const calculatePointPointDistance = (pointA, pointB) => Math.sqrt((pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2)
+
+const solveAngle = (commandAngle, state, errorMessages) => {
+
+    const startLineLike = state.collection.find(x => x.name === commandAngle.startLineLikeName)
+    if (startLineLike === undefined || (startLineLike.type !== registry.line && startLineLike.type !== registry.ray && startLineLike.type !== registry.segment)) {
+        return createErrorState(state, errorMessages.solver.referenceLineLikeMissing(commandAngle.startLineLikeName))
+    }
+
+    const vertexPoint = state.collection.find(x => x.name === commandAngle.vertexName)
+    if (vertexPoint === undefined || vertexPoint.type !== registry.point) {
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandAngle.vertexName))
+    }
+
+    if (state.collection.some(x => commandAngle.endRayName === x.name)) {
+        return createErrorState(state, errorMessages.solver.duplicateName(commandAngle.endRayName))
+    }
+
+    if (Math.abs(commandAngle.value) < epsilon || Math.abs(commandAngle.value) + epsilon >= 2 * Math.PI) {
+        return createErrorState(state, errorMessages.solver.angleValueCannotBeUsed(commandAngle.value))
+    }
+
+    const normalParametersFirst = findNormalLineEquation(startLineLike)
+    const distanceVertexFirst = calculateDistanceLinePoint(normalParametersFirst, vertexPoint)
+
+    if (distanceVertexFirst > epsilon) {
+        return createErrorState(state, errorMessages.solver.vertexNotValid(commandAngle.vertexName, commandAngle.startLineLikeName))
+    }
+
+    const intervalFirst = findInterval(startLineLike)
+
+    if (intervalFirst.xMin > vertexPoint.x
+        || intervalFirst.xMax < vertexPoint.x
+        || intervalFirst.yMin > vertexPoint.y
+        || intervalFirst.yMax < vertexPoint.y) {
+        return createErrorState(state, errorMessages.solver.vertexNotValid(commandAngle.vertexName, commandAngle.startLineLikeName))
+    }
+
+    const distVertexFirstStart = calculatePointPointDistance(startLineLike.startPoint, vertexPoint)
+    const distVertexFirstEnd = calculatePointPointDistance(startLineLike.endPoint, vertexPoint)
+
+    const refPoint = distVertexFirstStart > distVertexFirstEnd ? startLineLike.startPoint : startLineLike.endPoint
+
+    const startVector = [refPoint.x - vertexPoint.x, refPoint.y - vertexPoint.y]
+    const startOrientationAngle = Math.atan2(startVector[1], startVector[0])
+
+    const itemAngle = new ItemAngle(commandAngle.name, vertexPoint, startOrientationAngle, commandAngle.value)
+
+    const endOrientationAngle = startOrientationAngle + commandAngle.value
+    const endAuxPoint = new ItemPoint(`!${commandAngle.name}.point.${commandAngle.endRayName}`, vertexPoint.x + Math.cos(endOrientationAngle), vertexPoint.y + Math.sin(endOrientationAngle))
+
+    if (state.collection.some(x => x.name === endAuxPoint.name)) {
+        return createErrorState(state, errorMessages.solver.logicErrorGeneric('unable to create aux point for angle ray'))
+    }
+
+    const endRay = new ItemRay(commandAngle.endRayName, vertexPoint, endAuxPoint)
+
+    state.collection.push(itemAngle, endAuxPoint, endRay)
+    return state
+}
+
+const solveCircle = (commandCircle, state, errorMessages) => {
+    const centerPoint = state.collection.find(x => x.name === commandCircle.centerName)
+    if (centerPoint === undefined || centerPoint.type !== registry.point) {
+        return createErrorState(state, errorMessages.solver.referencePointMissing(commandCircle.centerName))
+    }
+
+    if (commandCircle.radius < epsilon) {
+        return createErrorState(state, errorMessages.solver.circleRadiusTooSmall(commandCircle.radius))
+    }
+
+    const extremaPoints = [
+        new ItemPoint(`!${commandCircle.name}.circle.px`, centerPoint.x + commandCircle.radius, centerPoint.y),
+        new ItemPoint(`!${commandCircle.name}.circle.nx`, centerPoint.x - commandCircle.radius, centerPoint.y),
+        new ItemPoint(`!${commandCircle.name}.circle.py`, centerPoint.x, centerPoint.y + commandCircle.radius),
+        new ItemPoint(`!${commandCircle.name}.circle.ny`, centerPoint.x, centerPoint.y - commandCircle.radius),
+    ]
+
+    if (extremaPoints.some(p => state.collection.some(x => x.name === p.name))) {
+        return createErrorState(state, errorMessages.solver.logicErrorGeneric('unable to create extrema points'))
+    }
+
+    const itemCircle = new ItemCircle(commandCircle.name, centerPoint, commandCircle.radius, extremaPoints)
+    state.collection.push(itemCircle, ...extremaPoints)
+    return state
+}
+
 const filterByInterval = (points, lineLikes) => {
     const intervals = lineLikes.map(lineLike => findInterval(lineLike))
 
@@ -136,13 +205,6 @@ const solveTwoLineLikesIntersection = (pointName, lineLikeR, lineLikeS, state) =
 
     state.collection.push(...filtered)
     return state
-}
-
-// treat as line no matter what
-const calculateDistanceLinePoint = (normalParametersLine, point) => {
-    const [La, Lb, Lc] = normalParametersLine
-
-    return Math.abs(La * point.x + Lb * point.y - Lc)
 }
 
 // D is M or C, depending
@@ -492,6 +554,10 @@ const deleteObject = (targetName, state, errorMessages) => {
             state.collection = state.collection.filter(x => x.name !== currentItemToBeRemoved.name)
             hasEffect = true
         }
+        else if (currentItemToBeRemoved.type === registry.angle) {
+            state.collection = state.collection.filter(x => x.name !== currentItemToBeRemoved.name)
+            hasEffect = true
+        }
     }
 
     return hasEffect ? state : createErrorState(state, errorMessages.solver.unableToDeleteItem(targetName))
@@ -578,6 +644,9 @@ const solveCreation = (command, state, errorMessages) => {
     }
 
     switch (command.type) {
+        case registry.angle:
+            return solveAngle(command, state, errorMessages)
+
         case registry.circle:
             return solveCircle(command, state, errorMessages)
 

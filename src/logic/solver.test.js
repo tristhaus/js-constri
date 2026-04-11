@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
+import { CommandAngle } from './CommandAngle'
 import { CommandCircle } from './CommandCircle'
 import { CommandDeleteItems } from './CommandDeleteItems'
 import { CommandDeleteNames } from './CommandDeleteNames'
@@ -9,6 +10,7 @@ import { CommandPoint } from './CommandPoint'
 import { CommandPolygon } from './CommandPolygon'
 import { CommandRay } from './CommandRay'
 import { CommandSegment } from './CommandSegment'
+import { ItemAngle } from './ItemAngle'
 import { ItemCircle } from './ItemCircle'
 import { ItemLine } from './ItemLine'
 import { ItemPoint } from './ItemPoint'
@@ -23,6 +25,1202 @@ const jestPrecision = 4
 const emptyErrorMessages = {}
 
 describe('solver logic unit tests', () => {
+
+    describe('angle logic unit tests', () => {
+
+        test('duplicate name of angle returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayq = new ItemRay('q', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    anglealpha,
+                    rayq,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('alpha', 'ab', 'A', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('alpha')
+        })
+
+        test('valid angle input returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, 4.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(Math.PI / 2, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(Math.PI / 4, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(-0.7071067811865475, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(0.7071067811865476, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (with vertex not start/end) returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, 4.0)
+            const pointC = new ItemPoint('C', 0.0, 1.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    pointC,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'C', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(7)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.point)
+            expect(result.collection[2].name).toBe('C')
+            expect(result.collection[2].x).toBeCloseTo(0, jestPrecision)
+            expect(result.collection[2].y).toBeCloseTo(1, jestPrecision)
+
+            expect(result.collection[3].type).toBe(registry.segment)
+            expect(result.collection[3].name).toBe('ab')
+            expect(result.collection[3].startPoint.name).toBe('A')
+            expect(result.collection[3].endPoint.name).toBe('B')
+
+            expect(result.collection[4].type).toBe(registry.angle)
+            expect(result.collection[4].name).toBe('beta')
+            expect(result.collection[4].vertex.name).toBe('C')
+            expect(result.collection[4].startAngle).toBeCloseTo(Math.PI / 2, jestPrecision)
+            expect(result.collection[4].value).toBeCloseTo(Math.PI / 4, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.point)
+            expect(result.collection[5].name).toBe('!beta.point.r')
+            expect(result.collection[5].x).toBeCloseTo(-0.7071067811865475, jestPrecision)
+            expect(result.collection[5].y).toBeCloseTo(1.7071067811865475, jestPrecision)
+
+            expect(result.collection[6].type).toBe(registry.ray)
+            expect(result.collection[6].name).toBe('r')
+            expect(result.collection[6].startPoint.name).toBe('C')
+            expect(result.collection[6].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('angle with reference to non-existent startLineLike returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayr = new ItemRay('r', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    anglealpha,
+                    rayr,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    referenceLineLikeMissing: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'cd', 'A', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('cd')
+        })
+
+        test('angle with reference to startLineLike that is not a lineLike returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayr = new ItemRay('r', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    anglealpha,
+                    rayr,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    referenceLineLikeMissing: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'Z', 'A', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('Z')
+        })
+
+        test('angle with reference to non-existent vertex returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayr = new ItemRay('r', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    anglealpha,
+                    rayr,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'C', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('C')
+        })
+
+        test('angle with reference to vertex that is not a point returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const segmentaz = new ItemSegment('az', pointA, pointZ)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayr = new ItemRay('r', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    segmentaz,
+                    anglealpha,
+                    rayr,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    referencePointMissing: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'az', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('az')
+        })
+
+        test('angle with duplicate name of ray returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointZ = new ItemPoint('Z', 5.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const anglealpha = new ItemAngle('alpha', pointA, 0.25, 0.5)
+            const rayr = new ItemRay('r', pointA, pointZ)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    pointZ,
+                    segmentab,
+                    anglealpha,
+                    rayr,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    duplicateName: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('r')
+        })
+
+        test('angle value of 0 returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    angleValueCannotBeUsed: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', 0.0), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBeCloseTo(0.0, jestPrecision)
+        })
+
+        test('angle value of 360 returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    angleValueCannotBeUsed: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', 2 * Math.PI), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBeCloseTo(2 * Math.PI, jestPrecision)
+        })
+
+        test('angle value of 540 returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    angleValueCannotBeUsed: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', 3 * Math.PI), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBeCloseTo(3 * Math.PI, jestPrecision)
+        })
+
+        test('angle value of -360 returns error state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    angleValueCannotBeUsed: x => x
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', -2 * Math.PI), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBeCloseTo(-2 * Math.PI, jestPrecision)
+        })
+
+        test('angle with vertex not on line returns error state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, 4.0)
+            const pointC = new ItemPoint('C', 1.0, 2.0)
+            const lineab = new ItemLine('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    lineab,
+                    pointC,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    vertexNotValid: (vn, lln) => `${vn}|${lln}`
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'C', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('C|ab')
+        })
+
+        test('angle with vertex not on segment returns error state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, 4.0)
+            const pointC = new ItemPoint('C', 0.0, -2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                    pointC,
+                ]
+            }
+
+            const errorMessages = {
+                solver: {
+                    vertexNotValid: (vn, lln) => `${vn}|${lln}`
+                }
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'C', 'r', Math.PI / 4), state, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(false)
+            expect(result.errorMessage).toBe('C|ab')
+        })
+
+        test('valid angle input (second quadrant, positive) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', -3.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(2.356194490192345, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.0340741737109318, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(2.258819045102521, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (second quadrant, negative) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', -3.0, 6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', -Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(2.356194490192345, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(-0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.7411809548974791, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(2.965925826289068, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (third quadrant, positive) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', -3.0, -6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-2.0344439357957027, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(1.0599152608792162, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(1.0017965330085377, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (third quadrant, negative) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', -3.0, -6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', -Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-2.0344439357957027, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(-0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.16548806987930054, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(1.4490101285084953, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (fourth quadrant, positive) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, -6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-1.3258176636680326, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(1.6951132626768675, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(1.2810997621013605, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input (fourth quadrant, negative) returns extended state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, -6.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', -Math.PI / 6), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-6.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-1.3258176636680326, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(-0.5235987755982988, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.7249707625315354, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(1.0385641370650278, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 0° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 2.0, 0.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.7071067811865476, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(0.7071067811865475, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 45° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 2.0, 2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(0.7853981633974483, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(1.0, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 90° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, 2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(1.5707963267948966, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(-0.7071067811865475, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(0.7071067811865476, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 135° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', -2.0, 2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(2.356194490192345, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(-1.0, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 180° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', -2.0, 0.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(3.141592653589793, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(-0.7071067811865477, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(-0.7071067811865475, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 225° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', -2.0, -2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(-2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-2.356194490192345, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(-1.0, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 270° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 0.0, -2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-1.5707963267948966, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(0.7071067811865476, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(-0.7071067811865475, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('valid angle input starting at 315° returns extended state', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 2.0, -2.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                ]
+            }
+
+            const result = solve(new CommandAngle('beta', 'ab', 'A', 'r', Math.PI / 4), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.isValid).toBe(true)
+            expect(result.collection.length).toBe(6)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(2.0, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-2.0, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.segment)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.angle)
+            expect(result.collection[3].name).toBe('beta')
+            expect(result.collection[3].vertex.name).toBe('A')
+            expect(result.collection[3].startAngle).toBeCloseTo(-0.7853981633974483, jestPrecision)
+            expect(result.collection[3].value).toBeCloseTo(0.7853981633974483, jestPrecision)
+
+            expect(result.collection[4].type).toBe(registry.point)
+            expect(result.collection[4].name).toBe('!beta.point.r')
+            expect(result.collection[4].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result.collection[4].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result.collection[5].type).toBe(registry.ray)
+            expect(result.collection[5].name).toBe('r')
+            expect(result.collection[5].startPoint.name).toBe('A')
+            expect(result.collection[5].endPoint.name).toBe('!beta.point.r')
+        })
+    })
 
     describe('circle logic unit tests', () => {
 
@@ -951,6 +2149,100 @@ describe('solver logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.isValid).toBe(true)
             expect(result.collection.length).toBe(0)
+        })
+
+        test('angle can be deleted alone', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 2.0, 0.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const angleBeta = new ItemAngle('beta', pointA, 0.2, 0.3)
+            const pointHelper = new ItemPoint('!beta.point.r', 1.0, 2.0)
+            const rayr = new ItemRay('r', pointA, pointHelper)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                    angleBeta,
+                    pointHelper,
+                    rayr,
+                ]
+            }
+
+            const result1 = solve(new CommandDeleteItems(['beta']), state, emptyErrorMessages)
+
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(true)
+            expect(result1.collection.length).toBe(5)
+
+            expect(result1.collection[0].type).toBe(registry.point)
+            expect(result1.collection[0].name).toBe('A')
+            expect(result1.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result1.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result1.collection[1].type).toBe(registry.point)
+            expect(result1.collection[1].name).toBe('B')
+            expect(result1.collection[1].x).toBeCloseTo(2.0, jestPrecision)
+            expect(result1.collection[1].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result1.collection[2].type).toBe(registry.segment)
+            expect(result1.collection[2].name).toBe('ab')
+            expect(result1.collection[2].startPoint.name).toBe('A')
+            expect(result1.collection[2].endPoint.name).toBe('B')
+
+            expect(result1.collection[3].type).toBe(registry.point)
+            expect(result1.collection[3].name).toBe('!beta.point.r')
+            expect(result1.collection[3].x).toBeCloseTo(1.0, jestPrecision)
+            expect(result1.collection[3].y).toBeCloseTo(2.0, jestPrecision)
+
+            expect(result1.collection[4].type).toBe(registry.ray)
+            expect(result1.collection[4].name).toBe('r')
+            expect(result1.collection[4].startPoint.name).toBe('A')
+            expect(result1.collection[4].endPoint.name).toBe('!beta.point.r')
+        })
+
+        test('angle and ray can be deleted together', () => {
+            const pointA = new ItemPoint('A', 0.0, 0.0)
+            const pointB = new ItemPoint('B', 2.0, 0.0)
+            const segmentab = new ItemSegment('ab', pointA, pointB)
+            const angleBeta = new ItemAngle('beta', pointA, 0.2, 0.3)
+            const pointHelper = new ItemPoint('!beta.point.r', 1.0, 2.0)
+            const rayr = new ItemRay('r', pointA, pointHelper)
+
+            const state = {
+                isValid: true,
+                collection: [
+                    pointA,
+                    pointB,
+                    segmentab,
+                    angleBeta,
+                    pointHelper,
+                    rayr,
+                ]
+            }
+
+            const result1 = solve(new CommandDeleteItems(['beta', 'r']), state, emptyErrorMessages)
+
+            expect(result1).not.toBeNull()
+            expect(result1.isValid).toBe(true)
+            expect(result1.collection.length).toBe(3)
+
+            expect(result1.collection[0].type).toBe(registry.point)
+            expect(result1.collection[0].name).toBe('A')
+            expect(result1.collection[0].x).toBeCloseTo(0.0, jestPrecision)
+            expect(result1.collection[0].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result1.collection[1].type).toBe(registry.point)
+            expect(result1.collection[1].name).toBe('B')
+            expect(result1.collection[1].x).toBeCloseTo(2.0, jestPrecision)
+            expect(result1.collection[1].y).toBeCloseTo(0.0, jestPrecision)
+
+            expect(result1.collection[2].type).toBe(registry.segment)
+            expect(result1.collection[2].name).toBe('ab')
+            expect(result1.collection[2].startPoint.name).toBe('A')
+            expect(result1.collection[2].endPoint.name).toBe('B')
         })
     })
 

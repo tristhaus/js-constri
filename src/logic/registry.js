@@ -4,6 +4,7 @@ const registry = {
         en: 'en',
     },
     invalid: 'invalid_t',
+    angle: 'angle_t',
     circle: 'circle_t',
     color: 'color_t',
     deleteItems: 'deleteItems_t',

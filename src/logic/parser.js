@@ -1,3 +1,4 @@
+import { CommandAngle } from './CommandAngle'
 import { CommandCircle } from './CommandCircle'
 import { CommandColor } from './CommandColor'
 import { CommandDeleteItems } from './CommandDeleteItems'
@@ -16,6 +17,32 @@ const createInvalidCommand = errorMessage => new InvalidCommand(errorMessage)
 
 const toNumber = candidate => {
     return Number.parseFloat(candidate)
+}
+
+const toRadians = valueInDegrees => {
+    return valueInDegrees / 180.0 * Math.PI
+}
+
+const parseAngle = (isValidName, args, errorMessages) => {
+    if (args.length !== 5) {
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(5, args))
+    }
+
+    if (!isValidName(args[0]) || !isValidName(args[1]) || !isValidName(args[2]) || !isValidName(args[3])) {
+        return createInvalidCommand(errorMessages.parser.invalidNames(args.slice(0, 4)))
+    }
+
+    const name = args[0]
+    const startLineLikeName = args[1]
+    const vertexName = args[2]
+    const endRayName = args[3]
+    const value = toNumber(args[4])
+
+    if (Number.isNaN(value)) {
+        return createInvalidCommand(errorMessages.parser.invalidNumbers(args.slice(4, 5)))
+    }
+
+    return new CommandAngle(name, startLineLikeName, vertexName, endRayName, toRadians(value))
 }
 
 const parseCircle = (isValidName, args, errorMessages) => {
@@ -189,6 +216,9 @@ const parse = (lang, input, errorMessages) => {
     const args = allArgs.slice(1)
 
     switch (first) {
+        case strings.angle:
+            return parseAngle(isValidName, args, errorMessages)
+
         case strings.circle:
             return parseCircle(isValidName, args, errorMessages)
 
