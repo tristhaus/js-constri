@@ -145,6 +145,13 @@ describe('parser logic unit tests', () => {
             expect(result.type).toBe(registry.ray)
         })
 
+        test('valid rotate returns expected', () => {
+            const result = parse(lang, 'drehe 77', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.rotate)
+        })
+
         test('valid segment returns expected', () => {
             const result = parse(lang, 'strecke ab A B', emptyErrorMessages)
 
@@ -255,6 +262,13 @@ describe('parser logic unit tests', () => {
 
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.ray)
+        })
+
+        test('valid rotate returns expected', () => {
+            const result = parse(lang, 'rotate 77', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.rotate)
         })
 
         test('valid segment returns expected', () => {
@@ -577,6 +591,59 @@ describe('parser logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.type).toBe(registry.invalid)
             expect(result.errorMessage).toBe('A. 0.1. C')
+        })
+    })
+
+    describe('rotate', () => {
+
+        test('valid rotate returns expected', () => {
+            const result = parse(defaultLang, strings_de.rotate + ' -30', emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.rotate)
+            expect(result.value).toBeCloseTo(-0.523599, jestPrecision)
+        })
+
+        test('rotate: too few arguments returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    tooFewArguments: x => x,
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.rotate, errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('drehe')
+        })
+
+        test('rotate: too many arguments returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    incorrectNumberOfArguments: (n, args) => `${n}:${args.join('. ')}`
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.rotate + ' 30 60', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('1:30. 60')
+        })
+
+        test('rotate: invalid value returns invalid command', () => {
+            const errorMessages = {
+                parser: {
+                    invalidNumbers: x => x.join('. ')
+                }
+            }
+
+            const result = parse(defaultLang, strings_de.rotate + ' Z', errorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.type).toBe(registry.invalid)
+            expect(result.errorMessage).toBe('Z')
         })
     })
 

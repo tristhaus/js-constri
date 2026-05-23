@@ -14,6 +14,7 @@ const registry = {
     point: 'point_t',
     polygon: 'polygon_t',
     ray: 'ray_t',
+    rotate: 'rotate_t',
     segment: 'segment_t',
     colors: {
         black: 'black_t',

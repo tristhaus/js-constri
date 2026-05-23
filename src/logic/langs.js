@@ -21,6 +21,7 @@ const strings_de = {
     point: 'punkt',
     poly: 'poly',
     ray: 'strahl',
+    rotate: 'drehe',
     segment: 'strecke',
     errorMessages: {
         logicErrorGeneric: message => `logic error: ${message}`,
@@ -77,6 +78,7 @@ const strings_en = {
     point: 'point',
     poly: 'poly',
     ray: 'ray',
+    rotate: 'rotate',
     segment: 'segment',
     errorMessages: {
         logicErrorGeneric: message => `logic error: ${message}`,

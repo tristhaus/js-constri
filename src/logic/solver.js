@@ -632,6 +632,23 @@ const solveDeletion = (command, state, errorMessages) => {
     }
 }
 
+const solveRotation = (command, state) => {
+
+    const trafo = point => {
+        const newX = point.x * Math.cos(command.value) - point.y * Math.sin(command.value)
+        const newY = point.x * Math.sin(command.value) + point.y * Math.cos(command.value)
+
+        point.x = newX
+        point.y = newY
+    }
+
+    for (const point of state.collection.filter(x => x.type === registry.point)) {
+        trafo(point)
+    }
+
+    return state
+}
+
 const solveCreation = (command, state, errorMessages) => {
     const nameKey = 'name'
     if (nameKey in command && state.collection.some(x => x.name === command[nameKey])) {
@@ -685,6 +702,9 @@ const solveCreation = (command, state, errorMessages) => {
 const solve = (command, state, errorMessages) => {
     if (command.type === registry.deleteItems || command.type === registry.deleteNames) {
         return solveDeletion(command, state, errorMessages)
+    }
+    else if (command.type === registry.rotate) {
+        return solveRotation(command, state)
     }
     else {
         return solveCreation(command, state, errorMessages)

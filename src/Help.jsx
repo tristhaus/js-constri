@@ -61,6 +61,11 @@ const HelpDe = ({ closeAction }) => {
                                     <td>Wechsel die Zeichenfarbe zu <span className="command">gruen</span>. Verfügbar: <span className="command">schwarz</span>, <span className="command">rot</span>, <span className="command">blau</span>, <span className="command">gruen</span>, <span className="command">gelb</span>.</td>
                                 </tr>
                                 <tr>
+                                    <td className="command">drehe -40</td>
+                                    <td></td>
+                                    <td>Drehe die Zeichnung um <span className="command">40</span>° mit dem Uhrzeigersinn um den Ursprung.</td>
+                                </tr>
+                                <tr>
                                     <td className="command">loesche h Y</td>
                                     <td></td>
                                     <td>Lösche die Objekte <span className="command">h</span> und <span className="command">Y</span></td>
@@ -145,6 +150,11 @@ const HelpEn = ({ closeAction }) => {
                                     <td className="command">color green</td>
                                     <td></td>
                                     <td>Change the drawing color to <span className="command">green</span>. Available: <span className="command">black</span>, <span className="command">red</span>, <span className="command">blue</span>, <span className="command">green</span>, <span className="command">yellow</span>.</td>
+                                </tr>
+                                <tr>
+                                    <td className="command">rotate -40</td>
+                                    <td></td>
+                                    <td>Rotate the drawing by <span className="command">40</span>°, clock-wise, about the origin</td>
                                 </tr>
                                 <tr>
                                     <td className="command">delete h Y</td>

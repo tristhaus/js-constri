@@ -8,6 +8,7 @@ import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandPolygon } from './CommandPolygon'
 import { CommandRay } from './CommandRay'
+import { CommandRotate } from './CommandRotate'
 import { CommandSegment } from './CommandSegment'
 import { InvalidCommand } from './InvalidCommand'
 import { allStrings } from './langs'
@@ -101,6 +102,20 @@ const parseDeleteNames = (isValidName, args, errorMessages) => {
     }
 
     return new CommandDeleteNames(args)
+}
+
+const parseRotate = (isValidName, args, errorMessages) => {
+    if (args.length !== 1) {
+        return createInvalidCommand(errorMessages.parser.incorrectNumberOfArguments(1, args))
+    }
+
+    const value = toNumber(args[0])
+
+    if (Number.isNaN(value)) {
+        return createInvalidCommand(errorMessages.parser.invalidNumbers(args.slice(0, 1)))
+    }
+
+    return new CommandRotate(toRadians(value))
 }
 
 const parseIntersection = (isValidName, args, errorMessages) => {
@@ -248,6 +263,9 @@ const parse = (lang, input, errorMessages) => {
 
         case strings.poly:
             return parsePolygon(isValidName, args, errorMessages)
+
+        case strings.rotate:
+            return parseRotate(isValidName, args, errorMessages)
 
         case strings.ray:
             return parseRay(isValidName, args, errorMessages)

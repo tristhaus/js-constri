@@ -9,6 +9,7 @@ import { CommandLine } from './CommandLine'
 import { CommandPoint } from './CommandPoint'
 import { CommandPolygon } from './CommandPolygon'
 import { CommandRay } from './CommandRay'
+import { CommandRotate } from './CommandRotate'
 import { CommandSegment } from './CommandSegment'
 import { ItemAngle } from './ItemAngle'
 import { ItemCircle } from './ItemCircle'
@@ -5617,7 +5618,7 @@ describe('solver logic unit tests', () => {
         })
     })
 
-    describe('point logic unit tests', () => {
+    describe('polygon logic unit tests', () => {
 
         test('valid polygon input returns extended state', () => {
             const state = {
@@ -5958,6 +5959,90 @@ describe('solver logic unit tests', () => {
             expect(result).not.toBeNull()
             expect(result.isValid).toBe(false)
             expect(result.errorMessage).toBe('A|B')
+        })
+    })
+
+    describe('rotate logic unit tests', () => {
+        test('valid rotate input returns modified state', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', -3.0, -4.0)
+            const pointC = new ItemPoint('C', -5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
+
+            const result = solve(new CommandRotate(0.5 * Math.PI), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(4)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(-2, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(1, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(4, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(-3, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.ray)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.point)
+            expect(result.collection[3].name).toBe('C')
+            expect(result.collection[3].x).toBeCloseTo(-6, jestPrecision)
+            expect(result.collection[3].y).toBeCloseTo(-5, jestPrecision)
+        })
+
+        test('rotate input with zero angle is valid', () => {
+            const pointA = new ItemPoint('A', 1.0, 2.0)
+            const pointB = new ItemPoint('B', 3.0, 4.0)
+            const pointC = new ItemPoint('C', 5.0, 6.0)
+            const rayAB = new ItemRay('ab', pointA, pointB)
+
+            const state = {
+                collection: [
+                    pointA,
+                    pointB,
+                    rayAB,
+                    pointC,
+                ]
+            }
+
+            const result = solve(new CommandRotate(0), state, emptyErrorMessages)
+
+            expect(result).not.toBeNull()
+            expect(result.collection.length).toBe(4)
+
+            expect(result.collection[0].type).toBe(registry.point)
+            expect(result.collection[0].name).toBe('A')
+            expect(result.collection[0].x).toBeCloseTo(1, jestPrecision)
+            expect(result.collection[0].y).toBeCloseTo(2, jestPrecision)
+
+            expect(result.collection[1].type).toBe(registry.point)
+            expect(result.collection[1].name).toBe('B')
+            expect(result.collection[1].x).toBeCloseTo(3, jestPrecision)
+            expect(result.collection[1].y).toBeCloseTo(4, jestPrecision)
+
+            expect(result.collection[2].type).toBe(registry.ray)
+            expect(result.collection[2].name).toBe('ab')
+            expect(result.collection[2].startPoint.name).toBe('A')
+            expect(result.collection[2].endPoint.name).toBe('B')
+
+            expect(result.collection[3].type).toBe(registry.point)
+            expect(result.collection[3].name).toBe('C')
+            expect(result.collection[3].x).toBeCloseTo(5, jestPrecision)
+            expect(result.collection[3].y).toBeCloseTo(6, jestPrecision)
         })
     })
 
