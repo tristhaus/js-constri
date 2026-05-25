@@ -81,6 +81,7 @@ function App() {
     const [splitCode, setSplitCode] = useState(toCodeArray(allStrings[lang].ui.defaultInput))
     const [plotlyData, setPlotlyData] = useState([])
     const [auxPointsData, setAuxPointsData] = useState({ x: [], y: [] })
+    const [plotlyAnnotations, setPlotlyAnnotations] = useState([])
     const [errorMessage, setErrorMessage] = useState('')
     const [animationCounter, setAnimationCounter] = useState(0)
     const [animationRunning, setAnimationRunning] = useState(false)
@@ -90,15 +91,17 @@ function App() {
 
         if (state.isValid) {
             const items = state?.collection
-            const [newPlotlyData, newAuxPointsData] = transform(items)
+            const [newPlotlyData, newAuxPointsData, newAnnotations] = transform(items)
 
             setPlotlyData(newPlotlyData ?? [])
             setAuxPointsData(newAuxPointsData ?? { x: [], y: [] })
+            setPlotlyAnnotations(newAnnotations ?? [])
             setErrorMessage('')
         }
         else {
             setPlotlyData([])
             setAuxPointsData({ x: [], y: [] })
+            setPlotlyAnnotations([])
             setErrorMessage(state.errorMessage)
         }
     }
@@ -180,7 +183,7 @@ function App() {
     const aspectRatio = availableHeight / availableWidth
 
     const [xRange, yRange] = (plotlyData.length > 0)
-        ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x), plotlyData[0].y.concat(auxPointsData.y), aspectRatio)
+        ? calculateRanges(plotlyData[0].x.concat(auxPointsData.x, plotlyAnnotations.map(a => a.x)), plotlyData[0].y.concat(auxPointsData.y, plotlyAnnotations.map(a => a.y)), aspectRatio)
         : calculateRanges([0, 5], [0, 5], aspectRatio)
 
     const handleLanguageButtonClicked = newLang => {
@@ -214,6 +217,7 @@ function App() {
                 <Plot
                     data={plotlyData}
                     layout={{
+                        annotations: plotlyAnnotations,
                         margin: {
                             l: Math.floor(0.03 * availableWidth),
                             t: Math.floor(0.03 * availableHeight),
@@ -234,12 +238,14 @@ function App() {
                         xaxis: {
                             zeroline: false,
                             showgrid: false, // relevant property: dtick
+                            dtick: 1,
                             showticklabels: false,
                             range: xRange,
                         },
                         yaxis: {
                             zeroline: false,
                             showgrid: false, // relevant property: dtick
+                            dtick: 1,
                             showticklabels: false,
                             range: yRange,
                         },

@@ -43,6 +43,26 @@ const normalizeAngle = angle => {
     return angle
 }
 
+const getAnnotationDistanceFromExtrema = (extrema) => {
+    const deltaX = extrema.maxX - extrema.minX
+    const deltaY = extrema.maxY - extrema.minY
+
+    const delta = Math.min(deltaX, deltaY)
+
+    return Math.max(0.2, 0.025 * delta)
+}
+
+const getAnnotationCoordinatesForLineLike = (lineLike, extrema) => {
+    const factor = getAnnotationDistanceFromExtrema(extrema)
+
+    const norm = Math.sqrt((lineLike.endPoint.x - lineLike.startPoint.x) ** 2 + (lineLike.endPoint.y - lineLike.startPoint.y) ** 2)
+
+    const x = 0.5 * (lineLike.startPoint.x + lineLike.endPoint.x) + factor * (lineLike.endPoint.y - lineLike.startPoint.y) / norm
+    const y = 0.5 * (lineLike.startPoint.y + lineLike.endPoint.y) - factor * (lineLike.endPoint.x - lineLike.startPoint.x) / norm
+
+    return [x, y]
+}
+
 const createPlotlyDataFromAngle = (angle, extrema, currentColor) => {
     const xData = []
     const yData = []
@@ -135,7 +155,16 @@ const createPlotlyDataFromLine = (line, currentColor, extrema) => {
         line: { color: currentColor },
     }
 
-    return linePlotlyData
+    const [xAnnotation, yAnnotation] = getAnnotationCoordinatesForLineLike(line, extrema)
+
+    const annotationItem = {
+        x: xAnnotation,
+        y: yAnnotation,
+        text: line.name,
+        showarrow: false,
+    }
+
+    return [linePlotlyData, annotationItem]
 }
 
 const createPlotlyDataFromRay = (ray, currentColor, extrema) => {
@@ -155,10 +184,19 @@ const createPlotlyDataFromRay = (ray, currentColor, extrema) => {
         line: { color: currentColor },
     }
 
-    return rayPlotlyData
+    const [xAnnotation, yAnnotation] = getAnnotationCoordinatesForLineLike(ray, extrema)
+
+    const annotationItem = {
+        x: xAnnotation,
+        y: yAnnotation,
+        text: ray.name,
+        showarrow: false,
+    }
+
+    return [rayPlotlyData, annotationItem]
 }
 
-const createPlotlyDataFromSegment = (segment, currentColor) => {
+const createPlotlyDataFromSegment = (segment, currentColor, extrema) => {
     const segmentPlotlyData = {
         x: [segment.startPoint.x, segment.endPoint.x],
         y: [segment.startPoint.y, segment.endPoint.y],
@@ -167,7 +205,16 @@ const createPlotlyDataFromSegment = (segment, currentColor) => {
         line: { color: currentColor },
     }
 
-    return segmentPlotlyData
+    const [xAnnotation, yAnnotation] = getAnnotationCoordinatesForLineLike(segment, extrema)
+
+    const annotationItem = {
+        x: xAnnotation,
+        y: yAnnotation,
+        text: segment.name,
+        showarrow: false,
+    }
+
+    return [segmentPlotlyData, annotationItem]
 }
 
 const transform = items => {
@@ -188,6 +235,8 @@ const transform = items => {
     const raysPlotlyDatas = []
     const segmentsPlotlyDatas = []
 
+    const annotations = []
+
     for (const item of items) {
         switch (item.type) {
             case registry.angle:
@@ -203,7 +252,11 @@ const transform = items => {
                 break
 
             case registry.line:
-                linesPlotlyDatas.push(createPlotlyDataFromLine(item, currentColor, extrema))
+                {
+                    const [dataPortion, annotationItem] = createPlotlyDataFromLine(item, currentColor, extrema)
+                    linesPlotlyDatas.push(dataPortion)
+                    annotations.push(annotationItem)
+                }
                 break
 
             case registry.point:
@@ -219,11 +272,19 @@ const transform = items => {
                 break
 
             case registry.ray:
-                raysPlotlyDatas.push(createPlotlyDataFromRay(item, currentColor, extrema))
+                {
+                    const [dataPortion, annotationItem] = createPlotlyDataFromRay(item, currentColor, extrema)
+                    raysPlotlyDatas.push(dataPortion)
+                    annotations.push(annotationItem)
+                }
                 break
 
             case registry.segment:
-                segmentsPlotlyDatas.push(createPlotlyDataFromSegment(item, currentColor))
+                {
+                    const [dataPortion, annotationItem] = createPlotlyDataFromSegment(item, currentColor, extrema)
+                    segmentsPlotlyDatas.push(dataPortion)
+                    annotations.push(annotationItem)
+                }
                 break
 
             default:
@@ -256,7 +317,8 @@ const transform = items => {
             ...raysPlotlyDatas,
             ...segmentsPlotlyDatas
         ],
-        fakePointsPlotlyData]
+        fakePointsPlotlyData,
+        annotations]
 }
 
 export { transform }

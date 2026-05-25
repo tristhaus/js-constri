@@ -16,7 +16,7 @@ const jestPrecision = 4
 describe('transformer tests', () => {
 
     test('empty items collection returns data with empty entries', () => {
-        const [collection, aux] = transform([])
+        const [collection, aux, annotations] = transform([])
 
         expect(collection.length).toBe(1)
 
@@ -26,10 +26,11 @@ describe('transformer tests', () => {
         expect(collection[0].y).toStrictEqual([])
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with points returns data', () => {
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             new ItemPoint('A', 1, 2),
             new ItemPoint('B', 3, 4),
             new ItemPoint('§x', 5, 6),
@@ -49,6 +50,8 @@ describe('transformer tests', () => {
         expect(aux.x[0]).toStrictEqual(7)
         expect(aux.y.length).toBe(1)
         expect(aux.y[0]).toStrictEqual(8)
+
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with point and circle returns data', () => {
@@ -61,7 +64,7 @@ describe('transformer tests', () => {
             new ItemPoint('!ab.circle.ny', 1, -1),
         ]
 
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             pointA,
             ...extremaPoints,
             new ItemCircle('ab', pointA, 3.0, extremaPoints),
@@ -103,6 +106,8 @@ describe('transformer tests', () => {
         expect(aux.y[1]).toBeCloseTo(2, jestPrecision)
         expect(aux.y[2]).toBeCloseTo(5, jestPrecision)
         expect(aux.y[3]).toBeCloseTo(-1, jestPrecision)
+
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with color and segment returns data', () => {
@@ -112,7 +117,7 @@ describe('transformer tests', () => {
 
         const extremaPoints = []
 
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             new CommandColor(registry.colors.red),
             pointA,
             pointB,
@@ -136,13 +141,16 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#ff0000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+
+        expect(annotations.length).toBe(1)
+        expect(annotations[0].text).toBe('ab')
     })
 
     test('items collection with points and segment returns data', () => {
         const pointA = new ItemPoint('A', 1, 2)
         const pointB = new ItemPoint('B', 3, 4)
 
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             pointA,
             pointB,
             new ItemPoint('§x', 5, 6),
@@ -165,13 +173,16 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+
+        expect(annotations.length).toBe(1)
+        expect(annotations[0].text).toBe('ab')
     })
 
     test('items collection with points and line returns data', () => {
         const pointA = new ItemPoint('A', 1, 2)
         const pointB = new ItemPoint('B', 3, 6)
 
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             pointA,
             pointB,
             new ItemPoint('§x', 5, 4),
@@ -194,13 +205,16 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+
+        expect(annotations.length).toBe(1)
+        expect(annotations[0].text).toBe('ab')
     })
 
     test('items collection with points and ray returns data', () => {
         const pointA = new ItemPoint('A', 1, 2)
         const pointB = new ItemPoint('B', 3, 6)
 
-        const [collection, aux] = transform([
+        const [collection, aux, annotations] = transform([
             pointA,
             pointB,
             new ItemPoint('§x', 5, 4),
@@ -223,10 +237,55 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+
+        expect(annotations.length).toBe(1)
+        expect(annotations[0].text).toBe('ab')
+    })
+
+    test('items collection with points, segment, and ray returns data', () => {
+        const pointA = new ItemPoint('A', 1, 2)
+        const pointB = new ItemPoint('B', 3, 6)
+        const pointC = new ItemPoint('C', 7, 8)
+
+        const [collection, aux, annotations] = transform([
+            pointA,
+            pointB,
+            pointC,
+            new ItemPoint('§x', 5, 4),
+            new ItemSegment('ab', pointA, pointB),
+            new ItemRay('bc', pointB, pointC),
+        ])
+
+        expect(collection.length).toBe(3)
+
+        expect(collection[0].type).toStrictEqual('scatter')
+        expect(collection[0].mode).toStrictEqual('markers+text')
+        expect(collection[0].text).toStrictEqual(['A', 'B', 'C', ''])
+        expect(collection[0].x).toStrictEqual([1, 3, 7, 5])
+        expect(collection[0].y).toStrictEqual([2, 6, 8, 4])
+        expect(collection[0].marker.color).toStrictEqual('#000000')
+
+        expect(collection[1].type).toStrictEqual('scatter')
+        expect(collection[1].mode).toStrictEqual('lines')
+        const slope0 = (collection[1].y[0] - collection[1].y[1]) / (collection[1].x[0] - collection[1].x[1])
+        expect(slope0).toBeCloseTo(0.5, jestPrecision)
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(collection[2].type).toStrictEqual('scatter')
+        expect(collection[2].mode).toStrictEqual('lines')
+        const slope1 = (collection[2].y[0] - collection[2].y[1]) / (collection[2].x[0] - collection[2].x[1])
+        expect(slope1).toBeCloseTo(2, jestPrecision)
+        expect(collection[1].line.color).toStrictEqual('#000000')
+
+        expect(aux).toStrictEqual({ x: [], y: [] })
+
+        expect(annotations.length).toBe(2)
+        expect(annotations[0].text).toBe('ab')
+        expect(annotations[1].text).toBe('bc')
     })
 
     test('items collection with angle returns data (Q1, cw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -254,10 +313,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q2, cw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -285,10 +345,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q3, cw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -316,10 +377,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q4, cw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -347,10 +409,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q1, ccw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, -Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), Math.PI / 3, -Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -378,10 +441,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q2, ccw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, -Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 5 / 6 * Math.PI, -Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -409,10 +473,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q3, ccw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, -Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 4 / 3 * Math.PI, -Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -440,10 +505,11 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 
     test('items collection with angle returns data (Q4, ccw)', () => {
-        const [collection, aux] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, -Math.PI / 2)])
+        const [collection, aux, annotations] = transform([new ItemAngle('omega', new ItemPoint('w', 0.0, 0.0), 11 / 6 * Math.PI, -Math.PI / 2)])
 
         expect(collection.length).toBe(2)
 
@@ -471,5 +537,6 @@ describe('transformer tests', () => {
         expect(collection[1].line.color).toStrictEqual('#000000')
 
         expect(aux).toStrictEqual({ x: [], y: [] })
+        expect(annotations).toStrictEqual([])
     })
 })
